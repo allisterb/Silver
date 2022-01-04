@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Grover.Base": {
+      "commandName": "Project",
+      "commandLineArgs": "bct"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Grover.CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "ssc -c  C:\\Users\\Allister\\Downloads\\SketchSharp-master\\SketchSharp-master\\SpecSharp\\SpecSharp\\Microsoft.SpecSharp\\Samples\\Bag\\Bag.sscproj /foo"
+    }
+  }
+}

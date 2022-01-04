@@ -1,0 +1,2 @@
+#!/bin/bash
+src/Grover.CLI/bin/Debug/net6.0/Grover.CLI $*

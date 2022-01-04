@@ -1,0 +1,26 @@
+{
+  "Z3": {
+    "Name": "z3",
+    "Version": "4.8.14",
+    "DownloadURLs": {
+      "windows": "https://github.com/Z3Prover/z3/releases/download/z3-4.8.14/z3-4.8.14-x64-win.zip",
+      "linux": "https://github.com/Z3Prover/z3/releases/download/z3-4.8.14/z3-4.8.14-x64-glibc-2.31.zip",
+      "osx": "https://github.com/Z3Prover/z3/releases/download/z3-4.8.14/z3-4.8.14-x64-osx-10.16.zip"
+    },
+    "ExePathsWithinZip": {
+      "windows": "z3-4.8.14-x64-win\\bin\\z3.exe",
+      "linux": "z3-4.8.14-x64-glibc-2.31/bin/z3",
+      "osx": "z3-4.8.14-x64-osx-10.16/bin/z3"
+    }
+  },
+  "Boogie": {
+    "Name": "boogie",
+    "Version": "2.11.1",
+    "DependencyRelativePath": ".store/boogie/2.11.1/boogie/2.11.1/tools/net6.0/any/"
+  },
+  "Corral": {
+    "Name": "corral",
+    "Version": "1.1.8",
+    "DependencyRelativePath": ".store/corral/1.1.8/corral/1.1.8/tools/net5.0/any/"
+  }
+}

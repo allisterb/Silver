@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ext\cci-bct\NET6\Microsoft.Cci\Microsoft.Cci.NET6.csproj" />
+    <ProjectReference Include="..\..\ext\Nuclear.Assemblies\Nuclear.Assemblies.csproj" />
+    <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
+  </ItemGroup>
+
+</Project>
