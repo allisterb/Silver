@@ -113,30 +113,6 @@ class Program : Runtime
                 }
             }
         })
-        .WithParsed<TranslateOptions>(o =>
-        {
-            if (!File.Exists(o.File))
-            {
-                Error("The file {0} does not exist.", o.File);
-                Exit(ExitResult.INVALID_OPTIONS);
-
-            }
-            if (o.File.EndsWith(".dll") || o.File.EndsWith(".exe"))
-            {
-                using (var op = Begin("Translating .NET assembly {0} to Boogie IVL", o.File))
-                {
-                    var a = new Silver.Metadata.Assembly(o.File);
-                    var files = new List<string> ();
-                    //files.AddRange(a.References.Where(r => r.ResolverData is not null).Select(r => r.ResolverData!.File.FullName));
-                    files.Add(o.File);
-                    Info("Assemblies to translate: {0}.", files);
-                    var ret = BytecodeTranslator.BCT.TranslateAssemblyAndWriteOutput(files, new BytecodeTranslator.GeneralHeap(), new BytecodeTranslator.Options(), new List<Regex>(), false);
-                    op.Complete();
-                }
-            }
-            
-        })
-        
         #endregion
 
         #region Print options help

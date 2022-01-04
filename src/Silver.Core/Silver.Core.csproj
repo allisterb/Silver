@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ext\bytecodetranslator\BytecodeTranslator\ByteCodeTranslator.NET6.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
     <ProjectReference Include="..\Silver.SpecSharp\Silver.SpecSharp.csproj" />

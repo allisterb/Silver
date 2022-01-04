@@ -9,6 +9,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.SpecSharp", "Silver.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Metadata", "Silver.Metadata\Silver.Metadata.csproj", "{D7515C78-F485-4C16-B72F-2828AAFFBC97}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{2B3C8FF5-A5FA-499C-9AE1-480CD6884D3A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Cci.NET6", "..\ext\cci\NET6\Microsoft.Cci\Microsoft.Cci.NET6.csproj", "{958DF08C-4720-4608-A785-B6B97C3D3CBA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nuclear.Assemblies", "..\ext\Nuclear.Assemblies\Nuclear.Assemblies.csproj", "{E55EF43E-2BA4-414A-A853-4D054F241983}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cci", "cci", "{97B84996-DCED-4188-A2B2-1BDFDDEBA0E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.DiaSymReader.Converter", "..\ext\cci\NET6\ext\symreader-converter\src\Microsoft.DiaSymReader.Converter\Microsoft.DiaSymReader.Converter.csproj", "{924EFAC3-8EE8-4B89-BC37-678E2D47C216}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Core", "Silver.Core\Silver.Core.csproj", "{C9209A62-8645-44B7-8F7D-B7902EF28EFA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CLI", "Silver.CLI\Silver.CLI.csproj", "{C3470CEA-A6AB-4D35-8252-296641558163}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,9 +41,35 @@ Global
 		{D7515C78-F485-4C16-B72F-2828AAFFBC97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7515C78-F485-4C16-B72F-2828AAFFBC97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7515C78-F485-4C16-B72F-2828AAFFBC97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{958DF08C-4720-4608-A785-B6B97C3D3CBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{958DF08C-4720-4608-A785-B6B97C3D3CBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{958DF08C-4720-4608-A785-B6B97C3D3CBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{958DF08C-4720-4608-A785-B6B97C3D3CBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E55EF43E-2BA4-414A-A853-4D054F241983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E55EF43E-2BA4-414A-A853-4D054F241983}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E55EF43E-2BA4-414A-A853-4D054F241983}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E55EF43E-2BA4-414A-A853-4D054F241983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{924EFAC3-8EE8-4B89-BC37-678E2D47C216}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{924EFAC3-8EE8-4B89-BC37-678E2D47C216}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{924EFAC3-8EE8-4B89-BC37-678E2D47C216}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{924EFAC3-8EE8-4B89-BC37-678E2D47C216}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9209A62-8645-44B7-8F7D-B7902EF28EFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9209A62-8645-44B7-8F7D-B7902EF28EFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9209A62-8645-44B7-8F7D-B7902EF28EFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9209A62-8645-44B7-8F7D-B7902EF28EFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3470CEA-A6AB-4D35-8252-296641558163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3470CEA-A6AB-4D35-8252-296641558163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3470CEA-A6AB-4D35-8252-296641558163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3470CEA-A6AB-4D35-8252-296641558163}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{958DF08C-4720-4608-A785-B6B97C3D3CBA} = {97B84996-DCED-4188-A2B2-1BDFDDEBA0E0}
+		{E55EF43E-2BA4-414A-A853-4D054F241983} = {2B3C8FF5-A5FA-499C-9AE1-480CD6884D3A}
+		{97B84996-DCED-4188-A2B2-1BDFDDEBA0E0} = {2B3C8FF5-A5FA-499C-9AE1-480CD6884D3A}
+		{924EFAC3-8EE8-4B89-BC37-678E2D47C216} = {97B84996-DCED-4188-A2B2-1BDFDDEBA0E0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}
