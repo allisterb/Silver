@@ -1,0 +1,3 @@
+[submodule "ext/cci"]
+	path = ext/cci
+	url = https://github.com/allisterb/cci.git
