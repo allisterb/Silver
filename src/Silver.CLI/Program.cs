@@ -195,7 +195,7 @@ class Program : Runtime
 
     static void PrintLogo()
     {
-        Con.Write(new FigletText(Font, "Silver").LeftAligned().Color(Spectre.Console.Color.Blue));
+        Con.Write(new FigletText(Font, "Silver").LeftAligned().Color(Spectre.Console.Color.Cyan1));
         Con.Write(new Text($"v{AssemblyVersion.ToString(3)}\n").LeftAligned());
     }
 

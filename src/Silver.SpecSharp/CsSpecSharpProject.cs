@@ -2,11 +2,17 @@ namespace Silver.SpecSharp;
 
 using Microsoft.Build;
 using Microsoft.Build.Evaluation;
+using Microsoft.Build.Locator;
 public class CsSpecSharpProject : SpecSharpProject
 {
     #region Constructors
+    static CsSpecSharpProject()
+    {
+       
+    }
     public CsSpecSharpProject(string filePath) : base(filePath)
     {
+        var vs = MSBuildLocator.QueryVisualStudioInstances();
         var collection = new ProjectCollection();
         MsBuildProject = collection.LoadProject(filePath);
         if (MsBuildProject is not null)

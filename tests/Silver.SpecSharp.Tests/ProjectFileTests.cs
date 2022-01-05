@@ -8,6 +8,7 @@ public class ProjectFileTests
     [Fact]
     public void CanReadXmlProjectFile()
     {
+        
         var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test1.sscproj");
         Assert.True(File.Exists(path));
         var proj = new XmlSpecSharpProject(path);
@@ -22,6 +23,9 @@ public class ProjectFileTests
     [Fact]
     public void CanReadCsProjectFile()
     {
-
+        Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
+        var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test3.csproj");
+        Assert.True(File.Exists(path));
+        var proj = new CsSpecSharpProject(path);
     }
 }
