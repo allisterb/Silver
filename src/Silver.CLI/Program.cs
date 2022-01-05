@@ -185,7 +185,7 @@ class Program : Runtime
     #endregion
 
     #region Properties
-    private static FigletFont Font { get; } = FigletFont.Load("chunky.flf");
+    private static FigletFont Font { get; } = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
 
     
     static Dictionary<string, Type> OptionTypesMap { get; } = new Dictionary<string, Type>();

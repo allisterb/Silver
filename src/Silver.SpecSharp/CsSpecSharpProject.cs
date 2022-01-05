@@ -11,9 +11,11 @@ public class CsSpecSharpProject : SpecSharpProject
         MsBuildProject = collection.LoadProject(filePath);
         if (MsBuildProject is not null)
         {
-            AssemblyName = MsBuildProject.AllEvaluatedProperties.Single(p => p.Name == "AssemblyName").EvaluatedValue;
-            OutputType = MsBuildProject.AllEvaluatedProperties.Single(p => p.Name == "OutputType").EvaluatedValue;
-            RootNamespace = MsBuildProject.AllEvaluatedProperties.Single(p => p.Name == "RootNamespace").EvaluatedValue;
+            AssemblyName = MsBuildProject.AllEvaluatedProperties.SingleOrDefault(p => p.Name == "AssemblyName")?.EvaluatedValue ?? ProjectFile.Name.Replace(ProjectFile.Extension, "");
+            OutputType = MsBuildProject.AllEvaluatedProperties.Single(p => p.Name == "OutputType")?.EvaluatedValue ?? "library";
+            RootNamespace = MsBuildProject.AllEvaluatedProperties.Single(p => p.Name == "RootNamespace")?.EvaluatedValue ;
+            TargetPlatform = "v4";
+
             Initialized = true;
         }
     }

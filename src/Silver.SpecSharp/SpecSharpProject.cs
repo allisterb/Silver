@@ -1,5 +1,6 @@
 namespace Silver.SpecSharp;
 
+public readonly record struct AssemblyReference(string Name, string? ProjectPath, string? HintPath );
 public abstract class SpecSharpProject : Runtime
 {
     #region Constructors
@@ -16,21 +17,25 @@ public abstract class SpecSharpProject : Runtime
     #region Properties
     public FileInfo ProjectFile { get; init; }
 
-    public string AssemblyName { get; protected init; } = string.Empty;
+    public string? AssemblyName { get; protected init; }
 
-    public string OutputType { get; protected set; } = string.Empty;
+    public string? OutputType { get; protected set; }
 
-    public string RootNamespace { get; protected set; } = string.Empty;
+    public string? RootNamespace { get; protected set; }
 
     public List<string> FilesToCompile { get; } = new List<string>();
 
-    public string StartupObject { get; protected set; } = string.Empty;
+    public string? StartupObject { get; protected set; }
 
-    public string StandardLibraryLocation { get; protected set; } = string.Empty;
+    public string? StandardLibraryLocation { get; protected set; }
 
-    public string TargetPlatform { get; protected set; } = string.Empty;
+    public string? TargetPlatform { get; protected set; }
 
-    public string TargetPlatformLocation { get; protected set; } = string.Empty;
+    public string? TargetPlatformLocation { get; protected set; }
+
+    public string? ShadowedAssembly { get; protected set; }
+
+    public AssemblyReference[]? References { get; protected set; }
 
     #endregion
 }
