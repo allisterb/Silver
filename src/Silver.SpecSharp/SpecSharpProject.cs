@@ -1,5 +1,7 @@
 namespace Silver.SpecSharp;
 
+using Silver.Metadata;
+
 public readonly record struct ProjectAssemblyReference(string Name, string? version, string? ProjectPath, string? HintPath );
 public abstract class SpecSharpProject : Runtime
 {
