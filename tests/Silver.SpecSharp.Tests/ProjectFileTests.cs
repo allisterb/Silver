@@ -24,8 +24,11 @@ public class ProjectFileTests
     public void CanReadCsProjectFile()
     {
         Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
-        var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test3.csproj");
+        var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test2.csproj");
         Assert.True(File.Exists(path));
         var proj = new CsSpecSharpProject(path);
+        path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "..", "src", "Silver.Base", "Silver.Base.csproj");
+        Assert.True(File.Exists(path));
+        proj = new CsSpecSharpProject(path);
     }
 }

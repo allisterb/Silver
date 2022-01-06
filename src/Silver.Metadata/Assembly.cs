@@ -8,7 +8,7 @@ using Nuclear.Assemblies;
 using Nuclear.Assemblies.Resolvers;
 using Nuclear.Assemblies.ResolverData;
 using Nuclear.Assemblies.Resolvers.Internal;
-public readonly record struct AssemblyReference(IAssemblyReference Ref, IAssemblyResolverData? ResolverData);
+public readonly record struct AssemblyReference(AssemblyName Name, IAssemblyResolverData? ResolverData);
 public class Assembly : Runtime
 {
     #region Constructors
@@ -17,7 +17,7 @@ public class Assembly : Runtime
         Directory = new FileInfo(assemblyPath).Directory!;
         Host = new CodeContractAwareHostEnvironment(new string[] { Directory.FullName }, true, true);
         Module = (IModule)Host.LoadUnitFrom(assemblyPath);
-        References = Module.AssemblyReferences.Select(a => new AssemblyReference(a, TryResolve(a, Directory.FullName)));
+        References = Module.AssemblyReferences.Select(a => new AssemblyReference(GetAssemblyName(a), TryResolve(a, Directory.FullName)));
     }
     #endregion
 
@@ -33,9 +33,20 @@ public class Assembly : Runtime
     #endregion
 
     #region Methods
+    public static AssemblyName GetAssemblyName(IAssemblyReference r)
+    {
+        var name = new AssemblyName(r.Name.Value)
+        {
+            Version = r.Version,
+            CultureName = r.Culture,
+        };
+        name.SetPublicKey(r.PublicKey.Any() ? r.PublicKey.ToArray() : null);
+        name.SetPublicKeyToken(r.PublicKeyToken.Any() ? r.PublicKeyToken.ToArray() : null);
+        return name;
+    }
     public static IAssemblyResolverData? TryResolve(AssemblyName name, string searchPath)
     {
-        var defaultResolverData = DefaultResolver.CoreResolver.Resolve(name, new DirectoryInfo(searchPath), SearchOption.AllDirectories, VersionMatchingStrategies.Strict);
+        var defaultResolverData = System.IO.Directory.Exists(searchPath) ? DefaultResolver.CoreResolver.Resolve(name, new DirectoryInfo(searchPath), SearchOption.AllDirectories, VersionMatchingStrategies.Strict) : null;
         if (defaultResolverData is not null && defaultResolverData.Any())
         {
             Debug("Resolved assembly {0} using default resolver.", name);
@@ -56,17 +67,8 @@ public class Assembly : Runtime
         }
     }
 
-    public static IAssemblyResolverData? TryResolve(IAssemblyReference r, string searchPath)
-    {
-        var name = new AssemblyName(r.Name.Value)
-        {
-            Version =  r.Version,
-            CultureName = r.Culture,
-        };
-        name.SetPublicKey(r.PublicKey.Any() ? r.PublicKey.ToArray() : null);
-        name.SetPublicKeyToken(r.PublicKeyToken.Any() ? r.PublicKeyToken.ToArray() : null);
-        return TryResolve(name, searchPath);
-    }
+    public static IAssemblyResolverData? TryResolve(IAssemblyReference r, string searchPath) => TryResolve(GetAssemblyName(r), searchPath);
+    
     #endregion
 }
 

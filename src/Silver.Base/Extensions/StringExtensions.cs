@@ -43,6 +43,8 @@ public static class StringExtensions
         }
     }
 
+    public static Version? ToVersion(this string s) => Version.TryParse(s, out var v) ? v : null;
+
     public static Markup ToMarkup(this string s) => new Markup(s);
 
     private static Dictionary<string, int> numberTable = new Dictionary<string, int>
