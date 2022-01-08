@@ -88,10 +88,10 @@ public abstract class SpecSharpProject : Runtime
         FailIfNotInitialized();
         using (var op = Begin("Compiling project"))
         {
-            var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"));
+            var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
+                (sender, e) => { if (e.Data is not null && e.Data.Contains("error CS")) Error(e.Data); });
             if (output is null || output.Contains("error CS"))
             {
-                foreach(var e in output.Split(Environment.NewLine))
                 Error("Compile failed.");
                 op.Cancel(); 
                 return false;

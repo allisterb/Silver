@@ -136,7 +136,7 @@ public abstract class Runtime
 
     public T FailIfNotInitialized<T>(Func<T> r) => Initialized ? r() : throw new RuntimeNotInitializedException(this);
 
-    public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null)
+    public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler errorHandler = null)
     {
         if (!File.Exists(cmdName))
         {
@@ -159,17 +159,19 @@ public abstract class Runtime
                 if (e.Data is not null) 
                 { 
                     output.Append(e.Data); 
-                    if (e.Data.Contains("error CS"))
-                    {
-                        Error(e.Data);
-                    }
-                    else
-                    {
-                        Debug(e.Data);
-                    }
+                    Debug(e.Data);
+                    outputHandler?.Invoke(sender, e);
                 } 
             };
-            p.ErrorDataReceived += (sender, e) => { if (e.Data is not null) { error.Append(e.Data); Error(e.Data); } };
+            p.ErrorDataReceived += (sender, e) => 
+            { 
+                if (e.Data is not null) 
+                { 
+                    error.Append(e.Data); 
+                    Error(e.Data);
+                    errorHandler?.Invoke(sender, e);
+                } 
+            };
             if (workingDir is not null)
             {
                 p.StartInfo.WorkingDirectory = workingDir;

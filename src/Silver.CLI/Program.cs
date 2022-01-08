@@ -136,7 +136,7 @@ class Program : Runtime
             if (errors.Any(e => e.Tag == ErrorType.VersionRequestedError))
             {
                 help.Heading = new HeadingInfo("Silver", AssemblyVersion.ToString(3));
-                help.Copyright = new CopyrightInfo("Allister Beharry", new int[] { 2021 });
+                help.Copyright = new CopyrightInfo("Allister Beharry", new int[] { 2021, 2022 });
                 Info(help);
                 Exit(ExitResult.SUCCESS);
             }
