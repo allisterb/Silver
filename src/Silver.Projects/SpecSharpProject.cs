@@ -3,17 +3,20 @@ namespace Silver.Projects;
 public abstract class SpecSharpProject : Runtime
 {
     #region Constructors
-    public SpecSharpProject(string filePath) :base() 
+    public SpecSharpProject(string filePath, string buildConfig) :base() 
     {
         ThrowIfFileNotFound(filePath);
         ProjectFile = new FileInfo(filePath);
         Debug("Project directory is {0}.", ProjectFile.DirectoryName!);
+        RequestedBuildConfig = buildConfig;
         TargetPlatform = "v4";
     }
     #endregion
 
     #region Properties
     public FileInfo ProjectFile { get; init; }
+
+    public string RequestedBuildConfig { get; init; }
 
     public string AssemblyName { get; protected set; } = string.Empty;
 
@@ -75,15 +78,15 @@ public abstract class SpecSharpProject : Runtime
     #endregion
 
     #region Methods
-    public static SpecSharpProject? GetProject(string filePath)
+    public static SpecSharpProject? GetProject(string filePath, string buildConfig)
     {  
         var f = new FileInfo(ThrowIfFileNotFound(filePath));
         switch(f.Extension)
         {
             case ".csproj":
-                return new MSBuildSpecSharpProject(f.FullName);
+                return new MSBuildSpecSharpProject(f.FullName, buildConfig);
             case ".sscproj":
-                return new XmlSpecSharpProject(f.FullName);
+                return new XmlSpecSharpProject(f.FullName, buildConfig);
             default:
                 Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1} and {2}.", f.FullName, ".csproj", ".sscproj");
                 return null;

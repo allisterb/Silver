@@ -92,26 +92,27 @@ class Program : Runtime
         })
         .WithParsed<SpecSharpOptions>(o =>
         {
+            var buildConfig = o.BuildConfig;
             if (o.Compile)
             {
                 SscCmd.Compile(
                     o.Options.First(),
-                    o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).ToArray()
+                    buildConfig
                 );
             }
             else if(!string.IsNullOrEmpty(o.Property))
             {
-                SscCmd.GetProperty(o.Options.First(), o.Property);
+                SscCmd.GetProperty(o.Options.First(), buildConfig, o.Property);
             }
             else if (o.CommandLine)
             {
-                SscCmd.GetCommandLine(o.Options.First());
+                SscCmd.GetCommandLine(o.Options.First(), buildConfig);
             }
             else
             {
                 var ret = RunCmd(
                     Path.Combine(AssemblyLocation, "bin", "ssc"), 
-                    o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).Aggregate((a, b) => a + " " + b), 
+                    o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).JoinWithSpaces(), 
                     Path.Combine(AssemblyLocation, "bin")
                 );
                 if (ret is not null)
@@ -253,10 +254,10 @@ class Program : Runtime
     #endregion
 
     #region Fields
-    static object _uilock = new object();
+    static object uilock = new object();
     static Type[] optionTypes = { typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SpecSharpOptions), typeof(TranslateOptions) };
-    static FigletFont font { get; } = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
-    static Dictionary<string, Type> optionTypesMap { get; } = new Dictionary<string, Type>();
+    static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
+    static Dictionary<string, Type> optionTypesMap = new Dictionary<string, Type>();
     #endregion
 }
 

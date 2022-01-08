@@ -10,7 +10,7 @@ public class MSBuildSpecSharpProject : SpecSharpProject
 {
     #region Constructors
     static MSBuildSpecSharpProject() { }
-    public MSBuildSpecSharpProject(string filePath, MSBuildSpecSharpProject? parent = null) : base(filePath)
+    public MSBuildSpecSharpProject(string filePath, string buildConfig) : base(filePath, buildConfig)
     {
         using (var op = Begin("Loading MSBuild project {0}", filePath))
         {
@@ -20,8 +20,9 @@ public class MSBuildSpecSharpProject : SpecSharpProject
                 LogWriter = log
             };
             var m = new AnalyzerManager(options);
+            m.SetGlobalProperty("Configuration", RequestedBuildConfig);
             var a = m.GetProject(filePath);
-            Debug("Performing a design-time build of {0}.", ProjectFile.FullName);
+            Debug("Performing a design-time build of {0} in configuration {1}.", ProjectFile.FullName, RequestedBuildConfig);
             var _results = a.Build();
             foreach (var l in log.ToString().Split(Environment.NewLine))
             {

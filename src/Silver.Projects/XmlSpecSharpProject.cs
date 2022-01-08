@@ -6,7 +6,7 @@ namespace Silver.Projects
     public class XmlSpecSharpProject : SpecSharpProject
     {
         #region Constructor
-        public XmlSpecSharpProject(string fileName) : base(fileName)
+        public XmlSpecSharpProject(string fileName, string buildConfig) : base(fileName, buildConfig)
         {
             XmlSerializer ser = new XmlSerializer(typeof(Models.XmlSpecSharpProjectModel));
             using (XmlReader reader = XmlReader.Create(fileName))
@@ -15,6 +15,7 @@ namespace Silver.Projects
                 if (Model is not null)
                 {
                     AssemblyName = Model.XEN.Build.Settings.AssemblyName;
+                    //DebugEnabled = Model.XEN.Build.Settings.
                     OutputType = Model.XEN.Build.Settings.OutputType;
                     RootNamespace = Model.XEN.Build.Settings.RootNamespace;
                     StartupObject = Model.XEN.Build.Settings.StartupObject;

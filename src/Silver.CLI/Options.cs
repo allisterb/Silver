@@ -65,6 +65,9 @@ namespace Silver.CLI
 
         [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line for the specified project file.")]
         public bool CommandLine { get; set; }
+
+        [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the Spec# project file build configuration. Defaults to 'Debug'.")]
+        public string BuildConfig { get; set; } = string.Empty;
     }
 
     [Verb("translate", HelpText = "Translate a .NET bytecode assembly or project to Boogie.")]
