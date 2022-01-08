@@ -60,11 +60,7 @@ public class MSBuildSpecSharpProject : SpecSharpProject
 
     #region Properties
     public IAnalyzerResult? MsBuildProject { get; init;}
-    
-    public string? TargetDir { get; set; }
-    
-    public string? TargetExt { get; init; }
-
+     
     public string? TargetFramework { get; init; }
 
     public List<AssemblyReference>? PackageReferences { get; init; }

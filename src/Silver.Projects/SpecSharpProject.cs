@@ -35,6 +35,10 @@ public abstract class SpecSharpProject : Runtime
 
     public string TargetPath { get; protected set; } = string.Empty;
 
+    public string? TargetDir { get; protected set; }
+
+    public string? TargetExt { get; init; }
+
     public string StartupObject { get; protected set; } = string.Empty;
 
     public string StandardLibraryLocation { get; protected set; } = string.Empty;
@@ -77,7 +81,7 @@ public abstract class SpecSharpProject : Runtime
             {
                 sb.Append("/nostdlib+ ");
             }
-            sb.AppendFormat("/r:{0} ", References.JoinWithSpaces());
+            sb.AppendFormat("/r:{0} ", References.JoinWith(";"));
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
@@ -103,17 +107,16 @@ public abstract class SpecSharpProject : Runtime
                 References.ForEach(r =>
                 {
                     var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
-                    if (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr)))
+                    if (File.Exists(r) && !File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr)))
                     {
                         Info("Copying reference {0}.", Path.GetFileName(r));
                         File.Copy(r, Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r)));
                     }
-                    else
+                    else if (File.Exists(r))
                     {
                         Debug("Not copying reference {0} as it already exists.", r);
                     }
                 });
-                
                 op.Complete();
                 Info("Compile succeded. Assembly is at {0}.", TargetPath);
                 return true;

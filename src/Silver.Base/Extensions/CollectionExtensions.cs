@@ -17,5 +17,6 @@ public static class CollectionExtensions
 
 public static class CollectionUtils
 {
+    public static string JoinWith(this IEnumerable<string> s, string j) => s.Aggregate((a, b) => a + j + b);
     public static string JoinWithSpaces(this IEnumerable<string> s) => s.Aggregate((a, b) => a + " " + b);
 }

@@ -57,7 +57,18 @@ namespace Silver.Projects
                     {
                         BuildConfiguration = RequestedBuildConfig;
                         var config = Model.XEN.Build.Settings.Config.First(c => c.Name == RequestedBuildConfig);
-                        TargetPath = config.OutputPath;
+                        //foreach(var p in config.OutputPath.Split(PathSeparator).)
+                        //{
+                        //    if (Directory.Exists(Path.Combine(Pro)))
+                        //}
+                        TargetDir = Path.Combine(ProjectFile.DirectoryName!, Path.GetDirectoryName(config.OutputPath)!)!;
+                        if (!Directory.Exists(TargetDir))
+                        {
+                            Debug("Creating target directory {0}.", TargetDir);
+                            Directory.CreateDirectory(TargetDir);
+                        }
+                        TargetExt = OutputType == "exe" ? ".exe" : ".dll";
+                        TargetPath = Path.Combine(TargetDir, AssemblyName + TargetExt);
                         DefineConstants = config.DefineConstants;
                         op.Complete();
                         Initialized = true;
