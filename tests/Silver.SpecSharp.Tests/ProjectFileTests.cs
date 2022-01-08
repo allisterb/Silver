@@ -1,7 +1,8 @@
-namespace Silver.SpecSharp.Tests;
+namespace Silver.Projects.Tests;
 
 using System.IO;
 using Xunit;
+
 
 public class ProjectFileTests
 {
@@ -23,11 +24,11 @@ public class ProjectFileTests
     [Fact]
     public void CanReadCsProjectFile()
     {
-        Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
+        //Microsoft.Build.Locator.MSBuildLocator.RegisterDefaults();
         //var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test2.csproj");
         //Assert.True(File.Exists(path));
         //var proj = new CsSpecSharpProject(path);
-        var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "..", "src", "Silver.Core", "Silver.Core.csproj");
+        var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "Silver.SpecSharp.Tests", "Silver.SpecSharp.Tests.csproj");
         Assert.True(File.Exists(path));
         var proj = new CsSpecSharpProject(path);
     }

@@ -33,7 +33,7 @@ class Program : Runtime
         Console.OutputEncoding = Encoding.UTF8;
         foreach (var t in optionTypes)
         {
-            OptionTypesMap.Add(t.Name, t);
+            optionTypesMap.Add(t.Name, t);
         }
     }
     #endregion
@@ -41,7 +41,7 @@ class Program : Runtime
     #region Entry point
     static void Main(string[] args)
     {
-        if (args.Contains("--debug"))
+        if (args.Contains("--debug") || args.Contains("-d"))
         {
             SetLogger(new SerilogLogger(console: true, debug: true));
             Info("Debug mode set.");
@@ -55,7 +55,11 @@ class Program : Runtime
 
         #region Parse options
         ParserResult<object> result = new Parser().ParseArguments<Options, InstallOptions, AssemblyOptions, BoogieOptions, SpecSharpOptions, TranslateOptions>(args);
-        result.WithParsed<InstallOptions>(o =>
+        result.WithParsed<Options>(o =>
+        {
+            Interactive = !o.Script;
+        })
+        .WithParsed<InstallOptions>(o =>
         {
             ExternalToolsManager.EnsureAllExists();
             if(o.Info)
@@ -88,13 +92,16 @@ class Program : Runtime
         })
         .WithParsed<SpecSharpOptions>(o =>
         {
-            
             if (o.Compile)
             {
                 SscCmd.Compile(
                     o.Options.First(),
                     o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).ToArray()
                 );
+            }
+            else if(!string.IsNullOrEmpty(o.Property))
+            {
+                SscCmd.GetProperty(o.Options.First(), o.Property);
             }
             else
             {
@@ -184,18 +191,10 @@ class Program : Runtime
     }
     #endregion
 
-    #region Properties
-    private static FigletFont Font { get; } = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
-
-    
-    static Dictionary<string, Type> OptionTypesMap { get; } = new Dictionary<string, Type>();
-    #endregion
-
     #region Methods
-
     static void PrintLogo()
     {
-        Con.Write(new FigletText(Font, "Silver").LeftAligned().Color(Spectre.Console.Color.Cyan1));
+        Con.Write(new FigletText(font, "Silver").LeftAligned().Color(Spectre.Console.Color.Cyan1));
         Con.Write(new Text($"v{AssemblyVersion.ToString(3)}\n").LeftAligned());
     }
 
@@ -244,6 +243,8 @@ class Program : Runtime
     #region Fields
     static object _uilock = new object();
     static Type[] optionTypes = { typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SpecSharpOptions), typeof(TranslateOptions) };
+    static FigletFont font { get; } = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
+    static Dictionary<string, Type> optionTypesMap { get; } = new Dictionary<string, Type>();
     #endregion
 }
 

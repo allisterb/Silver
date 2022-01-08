@@ -2,7 +2,6 @@ namespace Silver.SpecSharp;
 
 using Silver.Metadata;
 
-public readonly record struct ProjectAssemblyReference(string Name, string? version, string? ProjectPath, string? HintPath );
 public abstract class SpecSharpProject : Runtime
 {
     #region Constructors
@@ -33,13 +32,13 @@ public abstract class SpecSharpProject : Runtime
 
     public string? TargetPlatform { get; protected set; }
 
-    public string TargetPath { get; protected set; }
+    public string? TargetPath { get; protected set; }
 
     public string? TargetPlatformLocation { get; protected set; }
 
     public string? ShadowedAssembly { get; protected set; }
 
-    public ProjectAssemblyReference[]? References { get; protected set; }
+    public List<AssemblyReference>? References { get; protected set; }
 
     #endregion
 }

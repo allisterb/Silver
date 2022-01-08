@@ -10,7 +10,22 @@ internal class SscCmd : Runtime
             Error("The file {0} does not exist.", fileName);
             Program.Exit(ExitResult.NOT_FOUND);
         }
-        SpecSharp.Compile(fileName);
+        Projects.Compile(fileName);
+    }
+
+    internal static void GetProperty(string filePath, string prop)
+    {
+        var p = Projects.GetProperty(filePath, prop);
+        if (p is null)
+        {
+            Error("The property {0} does not exist for the project file {1}.", prop, filePath);
+            Program.Exit(ExitResult.INVALID_OPTIONS);
+        }
+        else
+        {
+            Info("The compile-time value of property {0} is {1}.", prop, p);
+            Program.Exit(ExitResult.SUCCESS);
+        }
     }
 }
 

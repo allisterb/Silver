@@ -16,7 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
-    <ProjectReference Include="..\Silver.SpecSharp\Silver.SpecSharp.csproj" />
+    <ProjectReference Include="..\Silver.Projects\Silver.Projects.csproj" />
   </ItemGroup>
 
   <ItemGroup>

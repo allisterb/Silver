@@ -212,7 +212,7 @@ public abstract class Runtime
         #pragma warning restore SYSLIB0014 // Type or member is obsolete
     }
 
-    private static void SetProps<T>(T o, Dictionary<string, object> setprops)
+    public static void SetProps<T>(T o, Dictionary<string, object> setprops)
     {
         PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public |  BindingFlags.NonPublic | BindingFlags.Instance);
 
@@ -221,6 +221,12 @@ public abstract class Runtime
             properties.Where(x => x.Name == kv.Key).First().SetValue(o, kv.Value);
         }
     }
-   
+
+    public static object? GetProp<T>(T o, string name)
+    {
+        PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        return properties.FirstOrDefault(x => x.Name == name)?.GetValue(o); 
+    }
+
     #endregion
 }

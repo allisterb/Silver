@@ -8,6 +8,10 @@ namespace Silver.CLI
         [Option('d', "debug", Required = false, HelpText = "Enable debug mode.")]
         public bool Debug { get; set; }
 
+
+        [Option('s', "script", Required = false, HelpText = "Enable script(non-interactive) mode.")]
+        public bool Script { get; set; }
+
         public static Dictionary<string, object> Parse(string o)
         {
             Dictionary<string, object> options = new Dictionary<string, object>();
@@ -47,14 +51,17 @@ namespace Silver.CLI
         public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
     }
 
-    [Verb("ssc", HelpText = "Execute the installed SpecSharp tool with the specified options.")]
+    [Verb("ssc", HelpText = "Execute the installed Spec# compiler tool with the specified options.")]
     public class SpecSharpOptions : Options
     {
-        [Value(0, Required = false, HelpText = "The options to pass to the SpecSharp CLI tool.")]
+        [Value(0, Required = true, HelpText = "The options to pass to the SpecSharp CLI tool.")]
         public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
 
-        [Option('c', "compile", Required = false, HelpText = "Print references.")]
+        [Option('c', "compile", Required = false, HelpText = "Compile the specified source files or project file.")]
         public bool Compile { get; set; }
+
+        [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified project file.")]
+        public string Property { get; set; } = string.Empty;
     }
 
     [Verb("translate", HelpText = "Translate a .NET bytecode assembly or project to Boogie.")]

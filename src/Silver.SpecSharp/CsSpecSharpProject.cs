@@ -18,11 +18,11 @@ public class CsSpecSharpProject : SpecSharpProject
     public CsSpecSharpProject(string filePath, CsSpecSharpProject? parent = null) : base(filePath)
     {
         Parent = parent;
-        var collection = new ProjectCollection();
-        MsBuildProject = collection.LoadProject(filePath);
+        ProjectCollection = new ProjectCollection();
+        MsBuildProject = ProjectCollection.LoadProject(filePath);
         AssemblyName = MsBuildProject.AllEvaluatedProperties.SingleOrDefault(p => p.Name == "AssemblyName")?.EvaluatedValue ?? ProjectFile.Name.Replace(ProjectFile.Extension, "");
         OutputType = MsBuildProject.AllEvaluatedProperties.FirstOrDefault(p => p.Name == "OutputType")?.EvaluatedValue.ToLower() ?? "library";
-        RootNamespace = MsBuildProject.AllEvaluatedProperties.SingleOrDefault(p => p.Name == "RootNamespace")?.EvaluatedValue ;
+        RootNamespace = MsBuildProject.AllEvaluatedProperties.SingleOrDefault(p => p.Name == "RootNamespace")?.EvaluatedValue;
         TargetPlatform = "v4";
         TargetExt = MsBuildProject.AllEvaluatedProperties.Single(p => p.Name == "TargetExt").EvaluatedValue;
         TargetDir = MsBuildProject.AllEvaluatedProperties.Single(p => p.Name == "TargetDir").EvaluatedValue;
@@ -48,7 +48,7 @@ public class CsSpecSharpProject : SpecSharpProject
             MsBuildProject.AllEvaluatedItems
             .Where(i => i.ItemType == "ProjectReference")
             .Where(i => File.Exists(Path.Combine(ProjectFile.DirectoryName!, i.EvaluatedInclude)))
-            .Select(i => collection.LoadProject(Path.Combine(ProjectFile.DirectoryName!, i.EvaluatedInclude)))
+            .Select(i => ProjectCollection.LoadProject(Path.Combine(ProjectFile.DirectoryName!, i.EvaluatedInclude)))
             .ToList();
 
         Initialized = true;
@@ -60,6 +60,8 @@ public class CsSpecSharpProject : SpecSharpProject
 
     #region Properties
     public Project MsBuildProject { get; init;}
+
+    public ProjectCollection ProjectCollection { get; init;}
 
     public CsSpecSharpProject? Parent { get; init;}
     
