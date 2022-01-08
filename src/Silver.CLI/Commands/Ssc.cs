@@ -39,11 +39,11 @@ internal class SscCmd : Runtime
         Program.ExitIfFileNotFound(filePath);
         if (Projects.Compile(filePath, buildConfig))
         {
+            
             Program.Exit(ExitResult.SUCCESS);
         }
         else
         {
-            Error("Compile failed.");
             Program.Exit(ExitResult.UNKNOWN_ERROR);
         }
     }

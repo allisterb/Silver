@@ -145,6 +145,8 @@ public abstract class Runtime
         }
         using (Process p = new Process())
         {
+            var output = new StringBuilder();
+            var error = new StringBuilder();
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = false;
             p.StartInfo.RedirectStandardOutput = true;
@@ -152,6 +154,22 @@ public abstract class Runtime
             p.StartInfo.CreateNoWindow = true;
             p.StartInfo.FileName = cmdName;
             p.StartInfo.Arguments = arguments;
+            p.OutputDataReceived += (sender, e) => 
+            { 
+                if (e.Data is not null) 
+                { 
+                    output.Append(e.Data); 
+                    if (e.Data.Contains("error CS"))
+                    {
+                        Error(e.Data);
+                    }
+                    else
+                    {
+                        Debug(e.Data);
+                    }
+                } 
+            };
+            p.ErrorDataReceived += (sender, e) => { if (e.Data is not null) { error.Append(e.Data); Error(e.Data); } };
             if (workingDir is not null)
             {
                 p.StartInfo.WorkingDirectory = workingDir;
@@ -159,20 +177,10 @@ public abstract class Runtime
             try
             {
                 p.Start();
+                p.BeginOutputReadLine();
+                p.BeginErrorReadLine();
                 p.WaitForExit();
-                string outputBinary = p.StandardOutput.ReadToEnd();
-                string errorMsg = p.StandardError.ReadToEnd();
-                
-                if (!String.IsNullOrEmpty(errorMsg))
-                {
-                    Error(errorMsg);
-                    return null;
-                }
-                else
-                {
-                    Debug("Command {0} {1} returned {2}", cmdName, arguments, outputBinary.Trim());
-                    return outputBinary.Trim();
-                }
+                return error.ToString().IsNotEmpty() ? null : output.ToString();
             }
             
             catch (Exception ex)
@@ -180,15 +188,12 @@ public abstract class Runtime
                 Error(ex, "Error executing command {0} {1}", cmdName, arguments);
                 return null;
             }
-            finally
-            {
-                if (p.StandardOutput.EndOfStream)
-                {
-                    p.StandardOutput.Close();
-                    p.StandardError.Close();
-                }
-            }
         }
+    }
+
+    private static void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
+    {
+        throw new NotImplementedException();
     }
 
     public static void DownloadFile(string name, Uri downloadUrl, string downloadPath)

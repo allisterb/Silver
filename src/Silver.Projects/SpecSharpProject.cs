@@ -83,7 +83,26 @@ public abstract class SpecSharpProject : Runtime
     #endregion
 
     #region Methods
-    public bool Compile() => FailIfNotInitialized(() => RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc")) is not null);
+    public bool Compile()
+    {
+        FailIfNotInitialized();
+        using (var op = Begin("Compiling project"))
+        {
+            var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"));
+            if (output is null || output.Contains("error CS"))
+            {
+                foreach(var e in output.Split(Environment.NewLine))
+                Error("Compile failed.");
+                op.Cancel(); 
+                return false;
+            }
+            else
+            {
+                op.Complete();
+                return true;
+            }
+        }
+    }
     public static SpecSharpProject? GetProject(string filePath, string buildConfig)
     {  
         var f = new FileInfo(FailIfFileNotFound(filePath));
