@@ -5,7 +5,7 @@ public abstract class SpecSharpProject : Runtime
     #region Constructors
     public SpecSharpProject(string filePath, string buildConfig) :base() 
     {
-        ThrowIfFileNotFound(filePath);
+        FailIfFileNotFound(filePath);
         ProjectFile = new FileInfo(filePath);
         Debug("Project directory is {0}.", ProjectFile.DirectoryName!);
         RequestedBuildConfig = buildConfig;
@@ -24,7 +24,10 @@ public abstract class SpecSharpProject : Runtime
 
     public string OutputType { get; protected set; } = string.Empty;
 
-    public bool DebugEnabled { get; protected set; } = false;
+    public bool DebugEnabled 
+    {
+        get => RequestedBuildConfig.StartsWith("Debug") || RequestedBuildConfig.EndsWith("Debug"); 
+    } 
 
     public string RootNamespace { get; protected set; } = string.Empty;
 
@@ -46,11 +49,13 @@ public abstract class SpecSharpProject : Runtime
 
     public bool NoStdLib { get; protected set; } = false;
 
+    public string? BuildConfiguration { get; init; }
+
     public string CommandLine
     {
         get
         {
-            StringBuilder sb = new StringBuilder("ssc ");
+            StringBuilder sb = new StringBuilder();
             if (!string.IsNullOrEmpty(TargetPath))
             {
                 sb.AppendFormat("/out:{0} ", TargetPath);
@@ -78,9 +83,10 @@ public abstract class SpecSharpProject : Runtime
     #endregion
 
     #region Methods
+    public bool Compile() => FailIfNotInitialized(() => RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc")) is not null);
     public static SpecSharpProject? GetProject(string filePath, string buildConfig)
     {  
-        var f = new FileInfo(ThrowIfFileNotFound(filePath));
+        var f = new FileInfo(FailIfFileNotFound(filePath));
         switch(f.Extension)
         {
             case ".csproj":

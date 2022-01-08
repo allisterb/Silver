@@ -8,13 +8,13 @@ namespace Silver.Projects.Models;
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
 [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
-public partial class XmlSpecSharpProjectModel
+public partial class VisualStudioProject
 {
 
-    private XmlSpecSharpProjectXEN xENField = new();
+    private VisualStudioProjectXEN xENField = new();
 
     /// <remarks/>
-    public XmlSpecSharpProjectXEN XEN
+    public VisualStudioProjectXEN XEN
     {
         get
         {
@@ -31,12 +31,12 @@ public partial class XmlSpecSharpProjectModel
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class XmlSpecSharpProjectXEN
+public partial class VisualStudioProjectXEN
 {
 
-    private XmlSpecSharpProjectXENBuild buildField;
+    private VisualStudioProjectXENBuild buildField;
 
-    private XmlSpecSharpProjectXENFiles filesField = new XmlSpecSharpProjectXENFiles();
+    private VisualStudioProjectXENFiles filesField = new VisualStudioProjectXENFiles();
 
     private string projectTypeField;
 
@@ -47,7 +47,7 @@ public partial class XmlSpecSharpProjectXEN
     private string projectGuidField;
 
     /// <remarks/>
-    public XmlSpecSharpProjectXENBuild Build
+    public VisualStudioProjectXENBuild Build
     {
         get
         {
@@ -60,7 +60,7 @@ public partial class XmlSpecSharpProjectXEN
     }
 
     /// <remarks/>
-    public XmlSpecSharpProjectXENFiles Files
+    public VisualStudioProjectXENFiles Files
     {
         get
         {
@@ -133,15 +133,15 @@ public partial class XmlSpecSharpProjectXEN
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class XmlSpecSharpProjectXENBuild
+public partial class VisualStudioProjectXENBuild
 {
 
-    private XmlSpecSharpProjectXENBuildSettings settingsField;
+    private VisualStudioProjectXENBuildSettings settingsField;
 
-    private XmlSpecSharpProjectXENBuildReference[] referencesField;
+    private VisualStudioProjectXENBuildReference[] referencesField;
 
     /// <remarks/>
-    public XmlSpecSharpProjectXENBuildSettings Settings
+    public VisualStudioProjectXENBuildSettings Settings
     {
         get
         {
@@ -155,7 +155,7 @@ public partial class XmlSpecSharpProjectXENBuild
 
     /// <remarks/>
     [System.Xml.Serialization.XmlArrayItemAttribute("Reference", IsNullable = false)]
-    public XmlSpecSharpProjectXENBuildReference[] References
+    public VisualStudioProjectXENBuildReference[] References
     {
         get
         {
@@ -172,10 +172,10 @@ public partial class XmlSpecSharpProjectXENBuild
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class XmlSpecSharpProjectXENBuildSettings
+public partial class VisualStudioProjectXENBuildSettings
 {
 
-    private XmlSpecSharpProjectXENBuildSettingsConfig[] configField;
+    private VisualStudioProjectXENBuildSettingsConfig[] configField;
 
     private string applicationIconField;
 
@@ -197,7 +197,7 @@ public partial class XmlSpecSharpProjectXENBuildSettings
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElementAttribute("Config")]
-    public XmlSpecSharpProjectXENBuildSettingsConfig[] Config
+    public VisualStudioProjectXENBuildSettingsConfig[] Config
     {
         get
         {
@@ -340,7 +340,7 @@ public partial class XmlSpecSharpProjectXENBuildSettings
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class XmlSpecSharpProjectXENBuildSettingsConfig
+public partial class VisualStudioProjectXENBuildSettingsConfig
 {
 
     private string nameField;
@@ -716,7 +716,7 @@ public partial class XmlSpecSharpProjectXENBuildSettingsConfig
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class XmlSpecSharpProjectXENBuildReference
+public partial class VisualStudioProjectXENBuildReference
 {
 
     private string nameField;
@@ -804,14 +804,14 @@ public partial class XmlSpecSharpProjectXENBuildReference
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class XmlSpecSharpProjectXENFiles
+public partial class VisualStudioProjectXENFiles
 {
 
-    private XmlSpecSharpProjectXENFilesFile[] includeField = Array.Empty<XmlSpecSharpProjectXENFilesFile>();
+    private VisualStudioProjectXENFilesFile[] includeField = Array.Empty<VisualStudioProjectXENFilesFile>();
 
     /// <remarks/>
     [System.Xml.Serialization.XmlArrayItemAttribute("File", IsNullable = false)]
-    public XmlSpecSharpProjectXENFilesFile[] Include
+    public VisualStudioProjectXENFilesFile[] Include
     {
         get
         {
@@ -828,7 +828,7 @@ public partial class XmlSpecSharpProjectXENFiles
 [System.SerializableAttribute()]
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-public partial class XmlSpecSharpProjectXENFilesFile
+public partial class VisualStudioProjectXENFilesFile
 {
 
     private string relPathField;

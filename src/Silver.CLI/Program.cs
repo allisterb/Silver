@@ -111,9 +111,9 @@ class Program : Runtime
             else
             {
                 var ret = RunCmd(
-                    Path.Combine(AssemblyLocation, "bin", "ssc"), 
+                    Path.Combine(AssemblyLocation, "ssc", "ssc"), 
                     o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).JoinWithSpaces(), 
-                    Path.Combine(AssemblyLocation, "bin")
+                    Path.Combine(AssemblyLocation, "ssc")
                 );
                 if (ret is not null)
                 {

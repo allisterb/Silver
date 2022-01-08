@@ -128,11 +128,21 @@ public abstract class Runtime
 
     public void FailIfNotInitialized()
     {
-        if (!this.Initialized) throw new RuntimeNotInitializedException(this);
+        if(!Initialized)
+        {
+            throw new RuntimeNotInitializedException(this);
+        }
     }
+
+    public T FailIfNotInitialized<T>(Func<T> r) => Initialized ? r() : throw new RuntimeNotInitializedException(this);
 
     public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null)
     {
+        if (!File.Exists(cmdName))
+        {
+            Error("The executable {0} does not exist.", cmdName);
+            return null;
+        }
         using (Process p = new Process())
         {
             p.StartInfo.UseShellExecute = false;
@@ -149,9 +159,10 @@ public abstract class Runtime
             try
             {
                 p.Start();
+                p.WaitForExit();
                 string outputBinary = p.StandardOutput.ReadToEnd();
                 string errorMsg = p.StandardError.ReadToEnd();
-
+                
                 if (!String.IsNullOrEmpty(errorMsg))
                 {
                     Error(errorMsg);
@@ -163,6 +174,7 @@ public abstract class Runtime
                     return outputBinary.Trim();
                 }
             }
+            
             catch (Exception ex)
             {
                 Error(ex, "Error executing command {0} {1}", cmdName, arguments);
@@ -170,8 +182,11 @@ public abstract class Runtime
             }
             finally
             {
-                p.StandardOutput.Close();
-                p.StandardError.Close();
+                if (p.StandardOutput.EndOfStream)
+                {
+                    p.StandardOutput.Close();
+                    p.StandardError.Close();
+                }
             }
         }
     }
@@ -231,7 +246,7 @@ public abstract class Runtime
     }
 
     [DebuggerStepThrough]
-    public static string ThrowIfFileNotFound(string filePath)
+    public static string FailIfFileNotFound(string filePath)
     {
         if (!File.Exists(filePath)) throw new FileNotFoundException(filePath);
         return filePath;

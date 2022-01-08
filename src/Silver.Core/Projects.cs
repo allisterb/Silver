@@ -6,16 +6,16 @@ namespace Silver.Core
     {
         public static object? GetProperty(string filePath, string buildConfig, string prop)
         {
-            var file = new FileInfo(ThrowIfFileNotFound(filePath));
+            var file = new FileInfo(FailIfFileNotFound(filePath));
             if(file.Extension == ".csproj")
             {
                 var proj = new MSBuildSpecSharpProject(filePath, buildConfig);
-                return GetProp(proj, prop);
+                return proj.Initialized ? GetProp(proj, prop) : null;
             }
             else if (file.Extension == ".sscproj")
             {
                 var proj = new XmlSpecSharpProject(filePath, buildConfig);
-                return GetProp(proj, prop);
+                return proj.Initialized ? GetProp(proj, prop) : null;
             }
             else
             {
@@ -26,14 +26,20 @@ namespace Silver.Core
 
         public static string? GetCommandLine(string filePath, string buildConfig)
         {
-            return SpecSharpProject.GetProject(ThrowIfFileNotFound(filePath), buildConfig)?.CommandLine;
+            return SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig)?.CommandLine;
         }
 
-        public static void Compile(string file, string buildConfig)
+        public static bool Compile(string filePath, string buildConfig)
         {
-            FileInfo f = new FileInfo(file);
-
-            SpecSharpProject project = f.Extension == ".csproj" ? new MSBuildSpecSharpProject(file, buildConfig) : new XmlSpecSharpProject(file, buildConfig);
+            var proj = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig);
+            if (proj is not null && proj.Initialized)
+            {
+                return proj.Compile();
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

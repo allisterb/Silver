@@ -3,19 +3,13 @@ namespace Silver.CLI.Commands;
 using Silver.Core;
 internal class SscCmd : Runtime
 {
-    internal static void Compile(string filePath, string buildConfig)
-    {
-        Program.ExitIfFileNotFound(filePath);
-        Projects.Compile(filePath, buildConfig);
-    }
-
     internal static void GetProperty(string filePath, string buildConfig, string prop)
     {
         Program.ExitIfFileNotFound(filePath);
         var p = Projects.GetProperty(filePath, buildConfig, prop);
         if (p is null)
         {
-            Error("The property {0} does not exist for the project file {1}.", prop, filePath);
+            Error("The property {0} does not exist or is null for the project file {1}.", prop, filePath);
             Program.Exit(ExitResult.INVALID_OPTIONS);
         }
         else
@@ -35,8 +29,22 @@ internal class SscCmd : Runtime
         }
         else
         {
-            Info("Spec# compiler command-line is {0}.", cmdline);
+            Info("Spec# compiler command-line is {0}.", "ssc " + cmdline);
             Program.Exit(ExitResult.SUCCESS);
+        }
+    }
+
+    internal static void Compile(string filePath, string buildConfig)
+    {
+        Program.ExitIfFileNotFound(filePath);
+        if (Projects.Compile(filePath, buildConfig))
+        {
+            Program.Exit(ExitResult.SUCCESS);
+        }
+        else
+        {
+            Error("Compile failed.");
+            Program.Exit(ExitResult.UNKNOWN_ERROR);
         }
     }
 }

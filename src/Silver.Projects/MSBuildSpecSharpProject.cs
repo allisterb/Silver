@@ -51,9 +51,10 @@ public class MSBuildSpecSharpProject : SpecSharpProject
                 .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
             References = MsBuildProject.References.ToList();
+            Initialized = true;
             op.Complete();
         }
-        Initialized = true;     
+             
     }
     #endregion
 
@@ -65,8 +66,6 @@ public class MSBuildSpecSharpProject : SpecSharpProject
     public string? TargetExt { get; init; }
 
     public string? TargetFramework { get; init; }
-
-    public string? BuildConfiguration { get; init; } 
 
     public List<AssemblyReference>? PackageReferences { get; init; }
     #endregion
