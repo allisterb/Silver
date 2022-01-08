@@ -103,6 +103,10 @@ class Program : Runtime
             {
                 SscCmd.GetProperty(o.Options.First(), o.Property);
             }
+            else if (o.CommandLine)
+            {
+                SscCmd.GetCommandLine(o.Options.First());
+            }
             else
             {
                 var ret = RunCmd(
@@ -209,6 +213,14 @@ class Program : Runtime
         Environment.Exit((int)result);
     }
 
+    public static void ExitIfFileNotFound(string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            Error("The file {0} does not exist.", filePath);
+            Exit(ExitResult.NOT_FOUND);
+        }
+    }
     static HelpText GetAutoBuiltHelpText(ParserResult<object> result)
     {
         return HelpText.AutoBuild(result, h =>

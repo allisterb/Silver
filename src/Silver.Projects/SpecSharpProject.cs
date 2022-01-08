@@ -3,13 +3,11 @@ namespace Silver.Projects;
 public abstract class SpecSharpProject : Runtime
 {
     #region Constructors
-    public SpecSharpProject(string fileName) :base() 
+    public SpecSharpProject(string filePath) :base() 
     {
-        if (!File.Exists(fileName))
-        {
-            throw new FileNotFoundException($"The project file {fileName} was not found.");
-        }
-        ProjectFile = new FileInfo(fileName);
+        ThrowIfFileNotFound(filePath);
+        ProjectFile = new FileInfo(filePath);
+        Debug("Project directory is {0}.", ProjectFile.DirectoryName!);
         TargetPlatform = "v4";
     }
     #endregion
@@ -45,14 +43,11 @@ public abstract class SpecSharpProject : Runtime
 
     public bool NoStdLib { get; protected set; } = false;
 
-    #endregion
-
-    #region Methods
     public string CommandLine
     {
         get
         {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder("ssc ");
             if (!string.IsNullOrEmpty(TargetPath))
             {
                 sb.AppendFormat("/out:{0} ", TargetPath);
@@ -73,7 +68,25 @@ public abstract class SpecSharpProject : Runtime
             {
                 sb.Append("/nostdlib+ ");
             }
-            return sb.ToString();
+            sb.Append(SourceFiles.JoinWithSpaces());
+            return sb.ToString().TrimEnd();
+        }
+    }
+    #endregion
+
+    #region Methods
+    public static SpecSharpProject? GetProject(string filePath)
+    {  
+        var f = new FileInfo(ThrowIfFileNotFound(filePath));
+        switch(f.Extension)
+        {
+            case ".csproj":
+                return new MSBuildSpecSharpProject(f.FullName);
+            case ".sscproj":
+                return new XmlSpecSharpProject(f.FullName);
+            default:
+                Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1} and {2}.", f.FullName, ".csproj", ".sscproj");
+                return null;
         }
     }
     #endregion

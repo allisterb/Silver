@@ -6,11 +6,11 @@ using Buildalyzer;
 
 using Silver.Metadata;
 
-public class CsSpecSharpProject : SpecSharpProject
+public class MSBuildSpecSharpProject : SpecSharpProject
 {
     #region Constructors
-    static CsSpecSharpProject() { }
-    public CsSpecSharpProject(string filePath, CsSpecSharpProject? parent = null) : base(filePath)
+    static MSBuildSpecSharpProject() { }
+    public MSBuildSpecSharpProject(string filePath, MSBuildSpecSharpProject? parent = null) : base(filePath)
     {
         using (var op = Begin("Loading MSBuild project {0}", filePath))
         {

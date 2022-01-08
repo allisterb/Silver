@@ -30,6 +30,6 @@ public class ProjectFileTests
         //var proj = new CsSpecSharpProject(path);
         var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "Silver.SpecSharp.Tests", "Silver.SpecSharp.Tests.csproj");
         Assert.True(File.Exists(path));
-        var proj = new CsSpecSharpProject(path);
+        var proj = new MSBuildSpecSharpProject(path);
     }
 }

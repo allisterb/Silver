@@ -62,6 +62,9 @@ namespace Silver.CLI
 
         [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified project file.")]
         public string Property { get; set; } = string.Empty;
+
+        [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line for the specified project file.")]
+        public bool CommandLine { get; set; }
     }
 
     [Verb("translate", HelpText = "Translate a .NET bytecode assembly or project to Boogie.")]

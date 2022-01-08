@@ -17,7 +17,5 @@ public static class CollectionExtensions
 
 public static class CollectionUtils
 {
-    public static List<T> EmptyList<T>() => new List<T>();
-
-    public static Dictionary<T1, T2> EmptyDict<T1, T2>() where T1: notnull => new Dictionary<T1, T2>();
+    public static string JoinWithSpaces(this IEnumerable<string> s) => s.Aggregate((a, b) => a + " " + b);
 }
