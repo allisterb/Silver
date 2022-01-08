@@ -56,6 +56,7 @@ public abstract class SpecSharpProject : Runtime
         get
         {
             StringBuilder sb = new StringBuilder();
+            sb.Append("/platform:v4 ");
             if (!string.IsNullOrEmpty(TargetPath))
             {
                 sb.AppendFormat("/out:{0} ", TargetPath);
@@ -86,7 +87,7 @@ public abstract class SpecSharpProject : Runtime
     public bool Compile()
     {
         FailIfNotInitialized();
-        using (var op = Begin("Compiling project"))
+        using (var op = Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!))
         {
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => { if (e.Data is not null && e.Data.Contains("error CS")) Error(e.Data); });
@@ -99,6 +100,7 @@ public abstract class SpecSharpProject : Runtime
             else
             {
                 op.Complete();
+                Info("Compile succeded. Assembly is at {0}.", TargetPath);
                 return true;
             }
         }

@@ -138,7 +138,7 @@ public abstract class Runtime
 
     public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler errorHandler = null)
     {
-        if (!File.Exists(cmdName))
+        if (!File.Exists(cmdName) && !File.Exists(cmdName + ".exe"))
         {
             Error("The executable {0} does not exist.", cmdName);
             return null;
@@ -158,7 +158,7 @@ public abstract class Runtime
             { 
                 if (e.Data is not null) 
                 { 
-                    output.Append(e.Data); 
+                    output.AppendLine(e.Data); 
                     Debug(e.Data);
                     outputHandler?.Invoke(sender, e);
                 } 
@@ -167,7 +167,7 @@ public abstract class Runtime
             { 
                 if (e.Data is not null) 
                 { 
-                    error.Append(e.Data); 
+                    error.AppendLine(e.Data); 
                     Error(e.Data);
                     errorHandler?.Invoke(sender, e);
                 } 

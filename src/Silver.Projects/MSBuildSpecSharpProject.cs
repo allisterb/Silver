@@ -38,7 +38,7 @@ public class MSBuildSpecSharpProject : SpecSharpProject
             AssemblyName = MsBuildProject.GetProperty("AssemblyName");
             OutputType = MsBuildProject.GetProperty("OutputType").ToLower();
             RootNamespace = MsBuildProject.GetProperty("RootNamespace") ?? AssemblyName;
-            SourceFiles = MsBuildProject.Items["Compile"].Select(i => i.ItemSpec).ToList();
+            SourceFiles = MsBuildProject.Items["Compile"].Select(i => Path.Combine(ProjectFile.DirectoryName!, i.ItemSpec)).ToList();
             StartupObject = MsBuildProject.GetProperty("StartupObject");
             TargetPath = MsBuildProject.GetProperty("TargetPath");
             TargetDir = MsBuildProject.GetProperty("TargetDir");
@@ -50,7 +50,7 @@ public class MSBuildSpecSharpProject : SpecSharpProject
                 .Select(r => new AssemblyName(r.Key) { Version = r.Value.ContainsKey("Version") ? r.Value["Version"].ToVersion() : null })
                 .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
-            References = MsBuildProject.References.ToList();
+            References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
             Initialized = true;
             op.Complete();
         }
