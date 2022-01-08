@@ -8,7 +8,7 @@ namespace Silver.Projects
         #region Constructor
         public XmlSpecSharpProject(string filePath, string buildConfig) : base(filePath, buildConfig)
         {
-            using (var op = Begin("Loading XML project {0}", filePath))
+            using (var op = Begin("Loading XML Spec# project {0}", filePath))
             {
                 XmlSerializer ser = new XmlSerializer(typeof(Models.VisualStudioProject));
                 using (XmlReader reader = XmlReader.Create(filePath))

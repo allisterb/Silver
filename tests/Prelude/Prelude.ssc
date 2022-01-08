@@ -1,0 +1,137 @@
+//-----------------------------------------------------------------------------
+//
+// Copyright (C) Microsoft Corporation.  All Rights Reserved.
+//
+//-----------------------------------------------------------------------------
+namespace Microsoft.Boogie
+{
+  using Bpl = Microsoft.Boogie;
+
+  public class Prelude
+  {
+    // ***********************************************
+    // *                                             *
+    // *          NOTE! NOTE! NOTE! NOTE!            *
+    // *                                             *
+    // * The following names must be kept consistent *
+    // * with the contents of PRELUDE.bpl.           *
+    // *                                             *
+    // ***********************************************
+
+    // Names used globally 
+
+    public const string! HeapName                = "$Heap";
+
+    public const string! ArrayIndex              = "ArrayIndex";
+
+    public const string! StructGetterName        = "$StructGet";
+    public const string! StructSetterName        = "$StructSet";
+    public const string! ExHeapPtrStructGetterName  = "$ExHeapStructGet";
+    public const string! ExHeapPtrStructSetterName  = "$ExHeapStructSet";
+
+    public const string! ElementTypeName         = "$ElementType";
+    public const string! ArrayRankName           = "$Rank";
+    public const string! ArrayLengthName         = "$Length";
+    public const string! ArrayLBoundName         = "$LBound";
+    public const string! ArrayUBoundName         = "$UBound";
+    public const string! ArrayDimLengthName      = "$DimLength";
+    public const string! ElementProxy            = "$ElementProxy";
+    public const string! ElementProxyStruct      = "$ElementProxyStruct";
+    public const string! StringLengthName        = "$StringLength";
+    public const string! StringIsInternedName    = "#System.String.IsInterned$System.String$notnull";
+
+    public const string! IfThenElse              = "$IfThenElse";
+    
+    public const string! IsImmutableFunction     = "$IsImmutable";
+    public const string! AsImmutableFunction     = "$AsImmutable";
+    public const string! AsInterfaceFunction     = "$AsInterface";
+    public const string! AsMutableFunction       = "$AsMutable";
+    public const string! InRange                 = "InRange";
+    public const string! IsFunction              = "$Is";
+    public const string! AsFunction              = "$As";
+    public const string! IsNotNullPredicate      = "$IsNotNull";
+    public const string! PointerFunctionName     = "$Pointer";
+    public const string! ReferenceFunctionName   = "$Reference";
+    public const string! ValueArrayFunctionName  = "ValueArray";
+    public const string! IntArrayFunctionName    = "IntArray";
+    public const string! RefArrayFunctionName    = "RefArray";
+    public const string! NonNullRefArrayFunctionName = "NonNullRefArray";
+    public const string! ArrayFunctionNamePtr    = "$ArrayPtr";
+    public const string! BoxFunctionName         = "Box";
+    public const string! UnboxFunctionName       = "Unbox";
+    public const string! UnboxedTypeFunctionName = "UnboxedType";
+    public const string! BoxTesterFunction       = "BoxTester";
+    public const string! IntToIntFunctionName    = "$IntToInt";
+    public const string! IntToRealFunctionName   = "$IntToReal";
+    public const string! RealToIntFunctionName   = "$RealToInt";
+    public const string! RealToRealFunctionName  = "$RealToReal";
+    public const string! SizeIsFunctionName      = "$SizeIs";
+    public const string! TypeTokenFunctionName   = "$IsTokenForType";
+    public const string! TypeObjectFunctionName  = "TypeObject";
+    public const string! TypeNameFunctionName    = "TypeName";
+    public const string! ClassRepresentative     = "ClassRepr";
+    public const string! TypeOfFunctionName      = "$typeof";
+    public const string! BaseClassFunctionName   = "$BaseClass";
+    public const string! IsMemberlessTypeName    = "$IsMemberlessType";
+    public const string! ZeroInit                = "ZeroInit";
+    public const string! ZeroInitStruct          = "ZeroInitStruct";
+    
+    public const string! AsDirectSubClass        = "AsDirectSubClass";
+    public const string! BeingContructedName     = "$BeingConstructed";
+    public const string! NonNullFieldsAreInitialized = "$NonNullFieldsAreInitialized";
+    public const string! PurityAxiomsCanBeAssumed = "$PurityAxiomsCanBeAssumed";    
+    public const string! AllocatedName           = "$allocated";
+    public const string! IsAllocated             = "IsAllocated";
+    public const string! OwnerRefName            = "$ownerRef";
+    public const string! OwnerClassFrameName     = "$ownerFrame";
+    public const string! PeerGroupPlaceholderName = "$PeerGroupPlaceholder";
+    public const string! SetOwnerProcName        = "$SetOwner";
+    public const string! UpdateOwnersForRepProcName = "$UpdateOwnersForRep";
+    public const string! UpdateOwnersForPeerProcName = "$UpdateOwnersForPeer";
+    public const string! ElementsName            = "$elements";
+    public const string! InvFieldName            = "$inv";
+    public const string! LocalInv                = "$localinv";
+    public const string! ValidFor                = "$validfor";
+    public const string! FirstConsistentOwner    = "$FirstConsistentOwner";
+    public const string! AsPureObject            = "$AsPureObject";
+    public const string! ExposeVersionFieldName  = "$exposeVersion";
+    public const string! DeclType                = "DeclType";  // the class that declares a field
+    public const string! AsNonNullRefField       = "AsNonNullRefField";  // used to explain the type of a field, if that type is a non-null reference type
+    public const string! AsRefField              = "AsRefField";  // used to explain the type of a field, if that type is a reference type
+    public const string! AsRangeField            = "AsRangeField";  // used to explain the type of a field, if that type is an integral type
+    
+    public const string! IncludeInMainFrameCondition = "IncludeInMainFrameCondition";
+    public const string! HeapSucc                = "$HeapSucc";
+    public const string! IsStaticField           = "IsStaticField";
+    public const string! IncludedInModifiesStar  = "$IncludedInModifiesStar";
+    public const string! AsRepField              = "AsRepField";
+    public const string! AsPeerField             = "AsPeerField";
+    public const string! AsElementsRepField      = "AsElementsRepField";
+    public const string! AsElementsPeerField     = "AsElementsPeerField";
+
+    public const string! BitwiseAnd              = "#and";
+    public const string! BitwiseOr               = "#or";
+    public const string! BitwiseXor              = "#xor";
+    public const string! BitwiseShl              = "#shl";
+    public const string! BitwiseShr              = "#shr";
+    public const string! BitwiseNeg              = "#neg";
+    public const string! RealNeg                 = "#rneg";
+    public const string! RealAdd                 = "#radd";
+    public const string! RealSub                 = "#rsub";
+    public const string! RealMul                 = "#rmul";
+    public const string! RealDiv                 = "#rdiv";
+    public const string! RealMod                 = "#rmod";
+    public const string! RealLess                = "#rLess";
+    public const string! RealAtmost              = "#rAtmost";
+    public const string! RealEq                  = "#rEq";
+    public const string! RealNeq                 = "#rNeq";
+    public const string! RealAtleast             = "#rAtleast";
+    public const string! RealGreater             = "#rGreater";
+
+    // Names used locally
+
+    public const string! ResultVariableName      = "$result";
+    
+
+  }
+}

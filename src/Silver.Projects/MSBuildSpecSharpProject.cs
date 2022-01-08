@@ -12,7 +12,7 @@ public class MSBuildSpecSharpProject : SpecSharpProject
     static MSBuildSpecSharpProject() { }
     public MSBuildSpecSharpProject(string filePath, string buildConfig) : base(filePath, buildConfig)
     {
-        using (var op = Begin("Loading MSBuild project {0}", filePath))
+        using (var op = Begin("Loading MSBuild Spec# project {0}", filePath))
         {
             StringWriter log = new StringWriter();
             AnalyzerManagerOptions options = new AnalyzerManagerOptions
