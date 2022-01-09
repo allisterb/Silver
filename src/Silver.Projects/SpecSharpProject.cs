@@ -1,11 +1,18 @@
 namespace Silver.Projects;
 
+internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
+
+internal readonly record struct AssemblyProjectReference(string Name, SpecSharpProject Project, bool isprivate);
+
+internal readonly record struct AssemblyGACReference(string Name, bool isprivate);
+
 public abstract class SpecSharpProject : Runtime
 {
     #region Constructors
-    public SpecSharpProject(string filePath, string buildConfig) :base() 
+    public SpecSharpProject(string filePath, string buildConfig, SpecSharpProject? parent = null) :base() 
     {
         ProjectFile = new FileInfo(FailIfFileNotFound(filePath));
+        Parent = parent;
         Debug("Project directory is {0}.", ProjectFile.DirectoryName!);
         RequestedBuildConfig = buildConfig;
         TargetPlatform = "v4";
@@ -14,6 +21,8 @@ public abstract class SpecSharpProject : Runtime
 
     #region Properties
     public FileInfo ProjectFile { get; init; }
+
+    protected SpecSharpProject? Parent { get; init; }
 
     public string RequestedBuildConfig { get; init; }
 
@@ -51,6 +60,12 @@ public abstract class SpecSharpProject : Runtime
     public bool AllowUnsafe { get; protected set; } = false;
 
     public List<string> References { get; protected set; } = new();
+
+    internal List<AssemblyFileReference> FileReferences { get; } = new();
+
+    internal List<AssemblyProjectReference> ProjectReferences { get; } = new();
+
+    internal List<AssemblyGACReference> GACReferences { get; } = new();
 
     public bool NoStdLib { get; protected set; } = false;
 
@@ -95,13 +110,23 @@ public abstract class SpecSharpProject : Runtime
             return sb.ToString().TrimEnd();
         }
     }
+
+    public IEnumerable<string> PublicReferences
+    {
+        get => References.Where(r => 
+            !FileReferences.Any(fr => fr.HintPath == r && fr.isprivate) && 
+            !ProjectReferences.Any(pr => pr.Project.TargetPath == r && pr.isprivate) &&
+            !GACReferences.Any(gr => gr.Name == r && gr.isprivate)
+        );
+    }
     #endregion
 
     #region Methods
     public bool Compile()
     {
         FailIfNotInitialized();
-        using (var op = Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!))
+        var opdesc = Parent is null ? "Compiling Spec# project using configuration {0}" : "Compiling Spec# reference for project {1} using configuration {0}";
+        using (var op = Begin(opdesc, BuildConfiguration!, Parent?.ProjectFile.Name ?? ""))
         {
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => 
@@ -122,26 +147,34 @@ public abstract class SpecSharpProject : Runtime
             }
             else
             {
-                References.ForEach(r =>
+                foreach (var r in PublicReferences)
                 {
                     var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
                     if (File.Exists(r) && (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr))))
                     {
-                        Info("Copying reference {0}.", Path.GetFileName(r));
                         if (File.Exists(cr)) File.Delete(cr);
                         File.Copy(r, cr);
+                        var pr = Path.ChangeExtension(r, ".pdb");
+                        if (File.Exists(pr))
+                        {
+                            var pcr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(pr));
+                            if (File.Exists(pcr)) File.Delete(pcr);
+                            File.Copy(pr, pcr);
+                        }
+                        Info("Copied reference {0}.", Path.GetFileName(r));
                     }
                     else if (File.Exists(r))
                     {
                         Debug("Not copying reference {0} as it already exists.", r);
                     }
-                });
+                }
                 op.Complete();
                 Info("Compile succeded. Assembly is at {0}.", TargetPath);
                 return true;
             }
         }
     }
+
     public static SpecSharpProject? GetProject(string filePath, string buildConfig)
     {  
         var f = new FileInfo(FailIfFileNotFound(filePath));

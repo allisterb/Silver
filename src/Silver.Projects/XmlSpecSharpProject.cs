@@ -6,7 +6,7 @@ namespace Silver.Projects
     public class XmlSpecSharpProject : SpecSharpProject
     {
         #region Constructor
-        public XmlSpecSharpProject(string filePath, string buildConfig) : base(filePath, buildConfig)
+        public XmlSpecSharpProject(string filePath, string buildConfig, XmlSpecSharpProject? parent = null) : base(filePath, buildConfig, parent)
         {
             using (var op = Begin("Loading XML Spec# project {0}", filePath))
             {
@@ -35,13 +35,48 @@ namespace Silver.Projects
                             if (!string.IsNullOrEmpty(r.Project) && Guid.TryParse(r.Project, out var _))
                             {
                                 Error("Project reference using a GUID is not supported. Use a project file reference for {0} with GUID {1}.", r.Name, r.Project);
+                                continue;
+                            }
+                            else if (!string.IsNullOrEmpty(r.Project))
+                            {
+                                var prf = Path.Combine(ProjectFile.DirectoryName!, r.Project.NormalizeFilePath());
+                                if (!File.Exists(prf))
+                                {
+                                    Error("The project reference {0} does not exist.", prf);
+                                    continue;
+                                }
+                                var pr = new XmlSpecSharpProject(prf, buildConfig, this);
+                                if (!pr.Initialized)
+                                {
+                                    Error("The project reference {0} could not be loaded.", pr.ProjectFile.FullName);
+                                    continue;
+                                }
+                                else if(!pr.Compile())
+                                {
+                                    Error("The project reference {0} could not be built.", pr.ProjectFile.FullName);
+                                    continue;
+                                }
+                                else
+                                {
+                                    References.Add(pr.TargetPath);
+                                    Debug("Added project reference {0}.", pr.TargetPath);
+                                    if (!r.Private && pr.PublicReferences.Any())
+                                    {
+                                        Debug("Added transitive references {0} for project {1}.", pr.PublicReferences, pr.TargetPath);
+                                        References.AddRange(pr.PublicReferences);
+                                    }
+                                    ProjectReferences.Add(new(r.Project, pr, r.Private));
+                                }
                             }
                             else if (!string.IsNullOrEmpty(r.AssemblyName) && !string.IsNullOrEmpty(r.HintPath))
                             {
-                                References.Add(Path.Combine(ProjectFile.DirectoryName!, r.HintPath.Replace("/", PathSeparator)));
+                                var hp = Path.Combine(ProjectFile.DirectoryName!, r.HintPath.NormalizeFilePath());
+                                References.Add(hp);
+                                FileReferences.Add(new(r.AssemblyName, hp, r.Private));
                             }
                             else if (!string.IsNullOrEmpty(r.AssemblyName))
                             {
+                                GACReferences.Add(new(r.AssemblyName + ".dll", r.Private));
                                 References.Add(r.AssemblyName + ".dll");
                             }
                         }
@@ -50,25 +85,25 @@ namespace Silver.Projects
                     {
                         if (f.BuildAction == "Compile")
                         {
-                            SourceFiles.Add(Path.Combine(ProjectFile.Directory!.FullName, f.RelPath.Replace("/", PathSeparator)));
+                            SourceFiles.Add(Path.Combine(ProjectFile.Directory!.FullName, f.RelPath.NormalizeFilePath()));
                         }
                     }
                     if (Model.XEN.Build.Settings.Config.Any(c => c.Name == RequestedBuildConfig))
                     {
                         BuildConfiguration = RequestedBuildConfig;
                         var config = Model.XEN.Build.Settings.Config.First(c => c.Name == RequestedBuildConfig);
-                        TargetDir = Path.Combine(ProjectFile.DirectoryName!, config.OutputPath)!;
+                        TargetDir = Path.Combine(ProjectFile.DirectoryName!, config.OutputPath.NormalizeFilePath())!;
                         if (!Directory.Exists(TargetDir))
                         {
                             Debug("Creating target directory {0}.", TargetDir);
                             Directory.CreateDirectory(TargetDir);
                         }
-                        TargetExt = OutputType == "exe" ? ".exe" : ".dll";
+                        TargetExt = OutputType.ToLower() == "exe" ? ".exe" : ".dll";
                         TargetPath = Path.Combine(TargetDir, AssemblyName + TargetExt);
                         DefineConstants = config.DefineConstants;
                         AllowUnsafe = config.AllowUnsafeBlocks.ToLower() == "true" ? true : false;
-                        op.Complete();
                         Initialized = true;
+                        op.Complete();
                     }
                     else
                     {

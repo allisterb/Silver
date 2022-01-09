@@ -6,7 +6,7 @@ using SerilogTimings.Extensions;
 
 public class SerilogLogger : Logger
 {
-    public SerilogLogger(bool console = false, string logFileName = "", bool debug = false)
+    public SerilogLogger(bool console = false, string? logFileName = null, bool debug = false)
     {
         Config = new LoggerConfiguration();
         if (console)
