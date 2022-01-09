@@ -1,3 +1,6 @@
 [submodule "ext/cci"]
 	path = ext/cci
 	url = https://github.com/allisterb/cci.git
+[submodule "ext/specsharp"]
+	path = ext/specsharp
+	url = https://github.com/allisterb/specsharp-ms.git
