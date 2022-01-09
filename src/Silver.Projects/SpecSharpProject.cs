@@ -49,6 +49,8 @@ public abstract class SpecSharpProject : Runtime
 
     public string ShadowedAssembly { get; protected set; } = string.Empty;
 
+    public bool AllowUnsafe { get; protected set; } = false;
+
     public List<string> References { get; protected set; } = new();
 
     public bool NoStdLib { get; protected set; } = false;
@@ -81,6 +83,14 @@ public abstract class SpecSharpProject : Runtime
             {
                 sb.Append("/nostdlib+ ");
             }
+            if (!string.IsNullOrEmpty(ShadowedAssembly))
+            {
+                sb.AppendFormat("/shadow:{0} ", Path.Combine(ProjectFile.DirectoryName!, ShadowedAssembly));
+            }
+            if (AllowUnsafe)
+            {
+                sb.Append("/unsafe+ ");
+            }
             sb.AppendFormat("/r:{0} ", References.JoinWith(";"));
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
@@ -95,7 +105,16 @@ public abstract class SpecSharpProject : Runtime
         using (var op = Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!))
         {
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
-                (sender, e) => { if (e.Data is not null && e.Data.Contains("error CS")) Error(e.Data); });
+                (sender, e) => 
+                {
+                    if (e.Data is not null && e.Data.Contains("error CS"))
+                    {
+                        var errs = e.Data.Split(": error");
+                        var errmsg = errs[1].Split(":");
+                        Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine + 
+                            "               Msg: {1}", errmsg[0], errmsg[1]); 
+                    }
+                });
             if (output is null || output.Contains("error CS"))
             {
                 Error("Compile failed.");
@@ -107,10 +126,11 @@ public abstract class SpecSharpProject : Runtime
                 References.ForEach(r =>
                 {
                     var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
-                    if (File.Exists(r) && !File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr)))
+                    if (File.Exists(r) && (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr))))
                     {
                         Info("Copying reference {0}.", Path.GetFileName(r));
-                        File.Copy(r, Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r)));
+                        if (File.Exists(cr)) File.Delete(cr);
+                        File.Copy(r, cr);
                     }
                     else if (File.Exists(r))
                     {

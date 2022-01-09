@@ -57,11 +57,7 @@ namespace Silver.Projects
                     {
                         BuildConfiguration = RequestedBuildConfig;
                         var config = Model.XEN.Build.Settings.Config.First(c => c.Name == RequestedBuildConfig);
-                        //foreach(var p in config.OutputPath.Split(PathSeparator).)
-                        //{
-                        //    if (Directory.Exists(Path.Combine(Pro)))
-                        //}
-                        TargetDir = Path.Combine(ProjectFile.DirectoryName!, Path.GetDirectoryName(config.OutputPath)!)!;
+                        TargetDir = Path.Combine(ProjectFile.DirectoryName!, config.OutputPath)!;
                         if (!Directory.Exists(TargetDir))
                         {
                             Debug("Creating target directory {0}.", TargetDir);
@@ -70,6 +66,7 @@ namespace Silver.Projects
                         TargetExt = OutputType == "exe" ? ".exe" : ".dll";
                         TargetPath = Path.Combine(TargetDir, AssemblyName + TargetExt);
                         DefineConstants = config.DefineConstants;
+                        AllowUnsafe = config.AllowUnsafeBlocks.ToLower() == "true" ? true : false;
                         op.Complete();
                         Initialized = true;
                     }
