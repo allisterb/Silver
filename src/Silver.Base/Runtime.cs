@@ -112,6 +112,9 @@ public abstract class Runtime
     public static void Error(Exception ex, string messageTemplate, params object[] args) => Logger.Error(ex, messageTemplate, args);
 
     [DebuggerStepThrough]
+    public static void Warn(string messageTemplate, params object[] args) => Logger.Error(messageTemplate, args);
+
+    [DebuggerStepThrough]
     public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
 
     [DebuggerStepThrough]

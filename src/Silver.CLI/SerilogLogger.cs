@@ -13,7 +13,7 @@ public class SerilogLogger : Logger
         {
             Config = new LoggerConfiguration().WriteTo.Console();
         }
-        Config = Config.WriteTo.File(logFileName ?? "TigerGraph.NET.log");
+        Config = Config.WriteTo.File(logFileName ?? "Silver.log");
         if (debug)
         {
             Config = Config.MinimumLevel.Debug();
@@ -42,6 +42,9 @@ public class SerilogLogger : Logger
 
     [DebuggerStepThrough]
     public override void Error(Exception ex, string messageTemplate, params object[] args) => Logger.Error(ex, messageTemplate, args);
+
+    [DebuggerStepThrough]
+    public override void Warn(string messageTemplate, params object[] args) => Logger.Warning(messageTemplate, args);
 
     [DebuggerStepThrough]
     public override Op Begin(string messageTemplate, params object[] args)

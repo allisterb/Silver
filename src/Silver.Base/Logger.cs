@@ -34,6 +34,8 @@ public abstract class Logger
 
     public abstract void Error(Exception ex, string messageTemplate, params object[] args);
 
+    public abstract void Warn(string messageTemplate, params object[] args);
+
     public abstract Op Begin(string messageTemplate, params object[] args);
 }
 
@@ -69,19 +71,21 @@ public class ConsoleLogger : Logger
         IsDebug = debug; 
     }
     
-    public override void Info(string messageTemplate, params object[] args) => Console.WriteLine(messageTemplate, args);
+    public override void Info(string messageTemplate, params object[] args) => Console.WriteLine("[INFO] " + messageTemplate, args);
 
     public override void Debug(string messageTemplate, params object[] args)
     {
         if (IsDebug) 
         { 
-            Console.WriteLine(messageTemplate, args); 
+            Console.WriteLine("[DEBUG] " + messageTemplate, args); 
         }
     }
 
-    public override void Error(string messageTemplate, params object[] args) => Console.WriteLine(messageTemplate, args);
+    public override void Error(string messageTemplate, params object[] args) => Console.WriteLine("[ERROR] " + messageTemplate, args);
 
-    public override void Error(Exception ex, string messageTemplate, params object[] args) => Console.WriteLine(messageTemplate, args);
+    public override void Error(Exception ex, string messageTemplate, params object[] args) => Console.WriteLine("[ERROR] " + messageTemplate, args);
+
+    public override void Warn(string messageTemplate, params object[] args) => Console.WriteLine("[WARN] " + messageTemplate, args);
 
     public override Op Begin(string messageTemplate, params object[] args) => new ConsoleOp(this);
 }

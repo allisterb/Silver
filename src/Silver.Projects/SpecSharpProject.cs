@@ -5,8 +5,7 @@ public abstract class SpecSharpProject : Runtime
     #region Constructors
     public SpecSharpProject(string filePath, string buildConfig) :base() 
     {
-        FailIfFileNotFound(filePath);
-        ProjectFile = new FileInfo(filePath);
+        ProjectFile = new FileInfo(FailIfFileNotFound(filePath));
         Debug("Project directory is {0}.", ProjectFile.DirectoryName!);
         RequestedBuildConfig = buildConfig;
         TargetPlatform = "v4";
