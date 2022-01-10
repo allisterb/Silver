@@ -125,21 +125,37 @@ public abstract class SpecSharpProject : Runtime
     public bool Compile()
     {
         FailIfNotInitialized();
-        var opdesc = Parent is null ? "Compiling Spec# project using configuration {0}" : "Compiling Spec# reference for project {1} using configuration {0}";
-        using (var op = Begin(opdesc, BuildConfiguration!, Parent?.ProjectFile.Name ?? ""))
+        using (var op = Parent is null ?  
+            Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => 
                 {
-                    if (e.Data is not null && e.Data.Contains("error CS"))
+                    if (e.Data is not null && e.Data.Contains("error CS") && !e.Data.Trim().StartsWith("error"))
                     {
                         var errs = e.Data.Split(": error");
                         var errmsg = errs[1].Split(":");
                         Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine + 
                             "               Msg: {1}", errmsg[0], errmsg[1]); 
                     }
+                    else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("error"))
+                    {
+                        var err = e.Data.Split("error ").Last().Split(":");
+                        Error("Code:{0}" + Environment.NewLine + "               Msg:{1}", err[0], err.Skip(1).JoinWith(""));
+                    }
+                    else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("fatal error"))
+                    {
+                        var err = e.Data.Split("fatal error ").Last().Split(":");
+                        Error("Code:{0}" + Environment.NewLine + "               Msg:{1}", err[0], err.Skip(1).JoinWith(""));
+                        //Error("goo");
+                    }
+                    else if (e.Data is not null && e.Data.Contains("error"))
+                    {
+                        var errs = e.Data.Split("error:");
+                        Error(errs.Last());
+                    }
                 });
-            if (output is null || output.Contains("error CS"))
+            if (output is null || output.Contains("error"))
             {
                 Error("Compile failed.");
                 op.Cancel(); 
