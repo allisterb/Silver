@@ -16,7 +16,7 @@ namespace Silver.Projects
                     Model = (Models.VisualStudioProject?) ser.Deserialize(reader);
                     if (Model is null)
                     {
-                        Error("This file is not a valid Spec# XML project file.");
+                        Fatal("This file is not a valid Spec# XML project file.");
                         op.Cancel();
                         return;
                     }
@@ -34,43 +34,53 @@ namespace Silver.Projects
                         {
                             if (!string.IsNullOrEmpty(r.Project) && Guid.TryParse(r.Project, out var _))
                             {
-                                Error("Project reference using a GUID is not supported. Use a project file reference for {0} with GUID {1}.", r.Name, r.Project);
-                                continue;
+                                Fatal("Project reference using a GUID is not supported. Use a project file reference for {0} with GUID {1}.", r.Name, r.Project);
+                                op.Cancel();
+                                return;
                             }
                             else if (!string.IsNullOrEmpty(r.Project))
                             {
                                 var prf = Path.Combine(ProjectFile.DirectoryName!, r.Project.NormalizeFilePath());
                                 if (!File.Exists(prf))
                                 {
-                                    Error("The project reference {0} does not exist.", prf);
-                                    continue;
+                                    Fatal("The project reference {0} does not exist.", prf);
+                                    op.Cancel();
+                                    return;
                                 }
                                 var pr = new XmlSpecSharpProject(prf, buildConfig, this);
                                 if (!pr.Initialized)
                                 {
-                                    Error("The project reference {0} could not be loaded.", pr.ProjectFile.FullName);
-                                    continue;
+                                    Fatal("The project reference {0} could not be loaded.", pr.ProjectFile.FullName);
+                                    op.Cancel();
+                                    return;
                                 }
-                                else if(!pr.Compile())
+                                if (!(File.Exists(pr.TargetPath)) || pr.ProjectFile.LastWriteTime > File.GetLastWriteTime(pr.TargetPath))
                                 {
-                                    Error("The project reference {0} could not be built.", pr.ProjectFile.FullName);
-                                    continue;
-                                }
-                                else
-                                {
-                                    References.Add(pr.TargetPath);
-                                    Debug("Added project reference {0}.", pr.TargetPath);
-                                    if (!r.Private && pr.PublicReferences.Any())
+                                    if(!pr.Compile())
                                     {
-                                        Debug("Added transitive references {0} for project {1}.", pr.PublicReferences, pr.TargetPath);
-                                        References.AddRange(pr.PublicReferences);
+                                        Fatal("The project reference {0} could not be built and is not up-to-date.", pr.ProjectFile.FullName);
+                                        op.Cancel();
+                                        return;
                                     }
-                                    ProjectReferences.Add(new(r.Project, pr, r.Private));
                                 }
+                                References.Add(pr.TargetPath);
+                                Debug("Added project reference {0}.", pr.TargetPath);
+                                if (!r.Private && pr.PublicReferences.Any())
+                                {
+                                    Debug("Added transitive references {0} for project {1}.", pr.PublicReferences, pr.TargetPath);
+                                    References.AddRange(pr.PublicReferences);
+                                }
+                                ProjectReferences.Add(new(r.Project, pr, r.Private));
                             }
                             else if (!string.IsNullOrEmpty(r.AssemblyName) && !string.IsNullOrEmpty(r.HintPath))
                             {
                                 var hp = Path.Combine(ProjectFile.DirectoryName!, r.HintPath.NormalizeFilePath());
+                                if (!File.Exists(hp))
+                                {
+                                    Fatal("The file reference {0} does not exist.", hp);
+                                    op.Cancel();
+                                    return;
+                                }
                                 References.Add(hp);
                                 FileReferences.Add(new(r.AssemblyName, hp, r.Private));
                             }
@@ -85,7 +95,14 @@ namespace Silver.Projects
                     {
                         if (f.BuildAction == "Compile")
                         {
-                            SourceFiles.Add(Path.Combine(ProjectFile.Directory!.FullName, f.RelPath.NormalizeFilePath()));
+                            var s = Path.Combine(ProjectFile.Directory!.FullName, f.RelPath.NormalizeFilePath());
+                            if(!File.Exists(s))
+                            {
+                                Fatal("The file {0} does not exist.", s);
+                                op.Cancel();
+                                return;
+                            }
+                            SourceFiles.Add(s);
                         }
                     }
                     if (Model.XEN.Build.Settings.Config.Any(c => c.Name == RequestedBuildConfig))
@@ -107,7 +124,7 @@ namespace Silver.Projects
                     }
                     else
                     {
-                        Error("The requested build configuration {0} does not exist in the project file.", RequestedBuildConfig);
+                        Fatal("The requested build configuration {0} does not exist in the project file.", RequestedBuildConfig);
                         op.Cancel();
                     }
                 }

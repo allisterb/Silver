@@ -115,6 +115,9 @@ public abstract class Runtime
     public static void Warn(string messageTemplate, params object[] args) => Logger.Error(messageTemplate, args);
 
     [DebuggerStepThrough]
+    public static void Fatal(string messageTemplate, params object[] args) => Logger.Fatal(messageTemplate, args);
+
+    [DebuggerStepThrough]
     public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
 
     [DebuggerStepThrough]

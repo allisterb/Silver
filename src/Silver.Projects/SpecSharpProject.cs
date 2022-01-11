@@ -147,12 +147,18 @@ public abstract class SpecSharpProject : Runtime
                     {
                         var err = e.Data.Split("fatal error ").Last().Split(":");
                         Error("Code:{0}" + Environment.NewLine + "               Msg:{1}", err[0], err.Skip(1).JoinWith(""));
-                        //Error("goo");
                     }
                     else if (e.Data is not null && e.Data.Contains("error"))
                     {
                         var errs = e.Data.Split("error:");
                         Error(errs.Last());
+                    }
+                    else if (e.Data is not null && e.Data.Contains("warning CS") && !e.Data.Trim().StartsWith("warning"))
+                    {
+                        var errs = e.Data.Split(": warning");
+                        var warnmsg = errs[1].Split(":");
+                        Warn("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
+                            "               Msg: {1}", warnmsg[0], warnmsg[1]);
                     }
                 });
             if (output is null || output.Contains("error"))

@@ -36,6 +36,8 @@ public abstract class Logger
 
     public abstract void Warn(string messageTemplate, params object[] args);
 
+    public abstract void Fatal(string messageTemplate, params object[] args);
+
     public abstract Op Begin(string messageTemplate, params object[] args);
 }
 
@@ -86,6 +88,8 @@ public class ConsoleLogger : Logger
     public override void Error(Exception ex, string messageTemplate, params object[] args) => Console.WriteLine("[ERROR] " + messageTemplate, args);
 
     public override void Warn(string messageTemplate, params object[] args) => Console.WriteLine("[WARN] " + messageTemplate, args);
+
+    public override void Fatal(string messageTemplate, params object[] args) => Console.WriteLine("[FATAL] " + messageTemplate, args);
 
     public override Op Begin(string messageTemplate, params object[] args) => new ConsoleOp(this);
 }
