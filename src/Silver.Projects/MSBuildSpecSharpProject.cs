@@ -30,9 +30,11 @@ public class MSBuildSpecSharpProject : SpecSharpProject
             }
             if (!_results.Any(r => r.Succeeded))
             {
-                Error("Design-time build of {0} failed.", ProjectFile.FullName);
+                Fatal("Design-time build of {0} failed.", ProjectFile.FullName);
+                op.Cancel();
+                return;
             }
-            MsBuildProject = _results.First();
+            MsBuildProject = _results.First(r => r.Succeeded);
             BuildConfiguration = MsBuildProject.GetProperty("Configuration");
             DefineConstants = MsBuildProject.GetProperty("DefineConstants");
             AssemblyName = MsBuildProject.GetProperty("AssemblyName");
