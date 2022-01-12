@@ -37,7 +37,7 @@ public abstract class SpecSharpProject : Runtime
         get => RequestedBuildConfig.StartsWith("Debug") || RequestedBuildConfig.EndsWith("Debug"); 
     } 
 
-    public string RootNamespace { get; protected set; } = string.Empty;
+    public string? RootNamespace { get; protected set; } = string.Empty;
 
     public List<string> SourceFiles { get; init; } = new();
 
@@ -105,7 +105,10 @@ public abstract class SpecSharpProject : Runtime
             {
                 sb.Append("/unsafe+ ");
             }
-            sb.AppendFormat("/r:{0} ", References.JoinWith(";"));
+            if (References.Any())
+            {
+                sb.AppendFormat("/r:{0} ", References.JoinWith(";"));
+            }
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
@@ -197,7 +200,7 @@ public abstract class SpecSharpProject : Runtime
         }
     }
 
-    public static SpecSharpProject? GetProject(string filePath, string buildConfig)
+    public static SpecSharpProject? GetProject(string filePath, string buildConfig, params string [] additionalFiles)
     {  
         var f = new FileInfo(FailIfFileNotFound(filePath));
         switch(f.Extension)
@@ -206,8 +209,16 @@ public abstract class SpecSharpProject : Runtime
                 return new MSBuildSpecSharpProject(f.FullName, buildConfig);
             case ".sscproj":
                 return new XmlSpecSharpProject(f.FullName, buildConfig);
+            case ".ssc":
+                var sourceFiles = additionalFiles.ToList().Prepend(filePath).ToList();
+                var settings = new Dictionary<string, object> 
+                {
+                    { "BuildConfig", "Debug" },
+                    { "SourceFiles", sourceFiles } 
+                };
+                return new AdHocSpecSharpProject(settings);
             default:
-                Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1} and {2}.", f.FullName, ".csproj", ".sscproj");
+                Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1}, {2}, and {3}.", f.FullName, ".csproj", ".sscproj", ".ssc");
                 return null;
         }
     }

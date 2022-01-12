@@ -19,4 +19,9 @@ public static class CollectionUtils
 {
     public static string JoinWith(this IEnumerable<string> s, string j) => s.Aggregate((a, b) => a + j + b);
     public static string JoinWithSpaces(this IEnumerable<string> s) => s.Aggregate((a, b) => a + " " + b);
+
+    public static T FailIfKeyNotPresent<T>(this Dictionary<string, object> d, string k)  
+        => d.ContainsKey(k) ? (T) d[k] : throw new KeyNotFoundException($"The required key {k} is not present.");
+
+    public static T? TryGet<T>(this Dictionary<string, object> d, string k) => d.ContainsKey(k) ? (T)d[k] : default(T);
 }

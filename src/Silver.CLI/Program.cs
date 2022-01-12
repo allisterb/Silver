@@ -92,21 +92,24 @@ class Program : Runtime
         })
         .WithParsed<SpecSharpOptions>(o =>
         {
+            var file = o.Options.First();
+            var additionalFiles = o.Options.Count() > 1 ? o.Options.Skip(1).ToArray() : Array.Empty<string>();
             var buildConfig = o.BuildConfig;
             if (o.Compile)
             {
                 SscCmd.Compile(
                     o.Options.First(),
-                    buildConfig
+                    buildConfig,
+                    additionalFiles
                 );
             }
             else if(!string.IsNullOrEmpty(o.Property))
             {
-                SscCmd.GetProperty(o.Options.First(), buildConfig, o.Property);
+                SscCmd.GetProperty(o.Options.First(), buildConfig, o.Property, additionalFiles);
             }
             else if (o.CommandLine)
             {
-                SscCmd.GetCommandLine(o.Options.First(), buildConfig);
+                SscCmd.GetCommandLine(o.Options.First(), buildConfig, additionalFiles);
             }
             else
             {
