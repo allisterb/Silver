@@ -47,7 +47,7 @@ public class SerilogLogger : Logger
     public override void Warn(string messageTemplate, params object[] args) => Logger.Warning(messageTemplate, args);
 
     [DebuggerStepThrough]
-    public override void Fatal(string messageTemplate, params object[] args) => Logger.Warning(messageTemplate, args);
+    public override void Fatal(string messageTemplate, params object[] args) => Logger.Fatal(messageTemplate, args);
 
     [DebuggerStepThrough]
     public override Op Begin(string messageTemplate, params object[] args)

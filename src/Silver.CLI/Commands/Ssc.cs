@@ -46,4 +46,17 @@ internal class SscCmd : Runtime
             Program.Exit(ExitResult.UNKNOWN_ERROR);
         }
     }
+
+    internal static void Verify(string filePath, string buildConfig, params string[] additionalFiles)
+    {
+        Program.ExitIfFileNotFound(filePath);
+        if (Projects.Verify(filePath, buildConfig))
+        {
+            Program.Exit(ExitResult.SUCCESS);
+        }
+        else
+        {
+            Program.Exit(ExitResult.UNKNOWN_ERROR);
+        }
+    }
 }

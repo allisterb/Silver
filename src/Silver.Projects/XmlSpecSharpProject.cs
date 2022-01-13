@@ -56,7 +56,7 @@ namespace Silver.Projects
                                 }
                                 if (!(File.Exists(pr.TargetPath)) || pr.ProjectFile.LastWriteTime > File.GetLastWriteTime(pr.TargetPath))
                                 {
-                                    if(!pr.Compile())
+                                    if(!pr.Compile().Succeded)
                                     {
                                         Fatal("The project reference {0} could not be built and is not up-to-date.", pr.ProjectFile.FullName);
                                         op.Cancel();

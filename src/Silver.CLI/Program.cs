@@ -103,6 +103,14 @@ class Program : Runtime
                     additionalFiles
                 );
             }
+            else if (o.Verify)
+            {
+                SscCmd.Verify(
+                    o.Options.First(),
+                    buildConfig,
+                    additionalFiles
+                );
+            }
             else if(!string.IsNullOrEmpty(o.Property))
             {
                 SscCmd.GetProperty(o.Options.First(), buildConfig, o.Property, additionalFiles);

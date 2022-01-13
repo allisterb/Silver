@@ -1,10 +1,12 @@
 namespace Silver.Projects;
 
+#region Records
 internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
 
 internal readonly record struct AssemblyProjectReference(string Name, SpecSharpProject Project, bool isprivate);
 
 internal readonly record struct AssemblyGACReference(string Name, bool isprivate);
+#endregion
 
 public abstract class SpecSharpProject : Runtime
 {
@@ -71,6 +73,7 @@ public abstract class SpecSharpProject : Runtime
 
     public string? BuildConfiguration { get; init; }
 
+    public bool Verify { get; set; } = false;
     public string CommandLine
     {
         get
@@ -105,6 +108,10 @@ public abstract class SpecSharpProject : Runtime
             {
                 sb.Append("/unsafe+ ");
             }
+            if (Verify)
+            {
+                sb.Append("/verify ");
+            }
             if (References.Any())
             {
                 sb.AppendFormat("/r:{0} ", References.JoinWith(";"));
@@ -125,12 +132,15 @@ public abstract class SpecSharpProject : Runtime
     #endregion
 
     #region Methods
-    public bool Compile()
+    public SpecSharpCompilation Compile()
     {
         FailIfNotInitialized();
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
+            var compilerErrors = new List<CompilerError>();
+            var compilerWarnings = new List<CompilerWarning>();
+
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => 
                 {
@@ -138,6 +148,7 @@ public abstract class SpecSharpProject : Runtime
                     {
                         var errs = e.Data.Split(": error");
                         var errmsg = errs[1].Split(":");
+                        compilerErrors.Add(new(errs[0], errmsg[0], errmsg[1]));
                         Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine + 
                             "               Msg: {1}", errmsg[0], errmsg[1]); 
                     }
@@ -158,44 +169,63 @@ public abstract class SpecSharpProject : Runtime
                     }
                     else if (e.Data is not null && e.Data.Contains("warning CS") && !e.Data.Trim().StartsWith("warning"))
                     {
-                        var errs = e.Data.Split(": warning");
-                        var warnmsg = errs[1].Split(":");
-                        Warn("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
+                        var warns = e.Data.Split(": warning");
+                        var warnmsg = warns[1].Split(":");
+                        compilerWarnings.Add(new(warns[0], warnmsg[0], warnmsg[1]));
+                        Warn("File: " + warns[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
                             "               Msg: {1}", warnmsg[0], warnmsg[1]);
                     }
                 });
+
             if (output is null || output.Contains("error"))
             {
                 Error("Compile failed.");
-                op.Cancel(); 
-                return false;
+                op.Cancel();
+                return new SpecSharpCompilation(this, false, Verify, compilerErrors, compilerWarnings);
             }
             else
             {
-                foreach (var r in PublicReferences)
+                if (!Verify)
                 {
-                    var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
-                    if (File.Exists(r) && (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr))))
+                    foreach (var r in PublicReferences)
                     {
-                        if (File.Exists(cr)) File.Delete(cr);
-                        File.Copy(r, cr);
-                        var pr = Path.ChangeExtension(r, ".pdb");
-                        if (File.Exists(pr))
+                        var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
+                        if (File.Exists(r) && (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr))))
                         {
-                            var pcr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(pr));
-                            if (File.Exists(pcr)) File.Delete(pcr);
-                            File.Copy(pr, pcr);
+                            if (File.Exists(cr)) File.Delete(cr);
+                            File.Copy(r, cr);
+                            var pr = Path.ChangeExtension(r, ".pdb");
+                            if (File.Exists(pr))
+                            {
+                                var pcr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(pr));
+                                if (File.Exists(pcr)) File.Delete(pcr);
+                                File.Copy(pr, pcr);
+                            }
+                            Info("Copied reference {0}.", Path.GetFileName(r));
                         }
-                        Info("Copied reference {0}.", Path.GetFileName(r));
+                        else if (File.Exists(r))
+                        {
+                            Debug("Not copying reference {0} as it already exists.", r);
+                        }
                     }
-                    else if (File.Exists(r))
+                    op.Complete();
+                    Info("Compile succeded. Assembly is at {0}.", TargetPath);
+                }
+                else 
+                {
+                    File.Delete(TargetPath);
+                    op.Complete();
+                    var vwarn = compilerWarnings.Where(w => w.Msg.ToLower().Contains("unsatisfied"));
+                    if (vwarn.Count() > 0)
                     {
-                        Debug("Not copying reference {0} as it already exists.", r);
+                        Info("Verification completed with {0} warnings. Target assembly not retained.", vwarn.Count());
+                    }
+                    else
+                    {
+                        Info("Verification succeded. Target assembly not retained");
                     }
                 }
-                op.Complete();
-                Info("Compile succeded. Assembly is at {0}.", TargetPath);
-                return true;
+                return new SpecSharpCompilation(this, true, Verify, compilerErrors, compilerWarnings);
             }
         }
     }

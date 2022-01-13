@@ -45,7 +45,21 @@ namespace Silver.Core
             var proj = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
-                return proj.Compile();
+                return proj.Compile().Succeded;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public static bool Verify(string filePath, string buildConfig, params string[] additionalFiles)
+        {
+            var proj = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
+            if (proj is not null && proj.Initialized)
+            {
+                proj.Verify = true;
+                return proj.Compile().Succeded;
             }
             else
             {

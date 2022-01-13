@@ -60,6 +60,9 @@ namespace Silver.CLI
         [Option('c', "compile", Required = false, HelpText = "Compile the specified source files or project file.")]
         public bool Compile { get; set; }
 
+        [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file.")]
+        public bool Verify { get; set; }
+
         [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified project file.")]
         public string Property { get; set; } = string.Empty;
 

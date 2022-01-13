@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "Grover.CLI": {
+    "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "ssc -c  C:\\Users\\Allister\\Downloads\\SketchSharp-master\\SketchSharp-master\\SpecSharp\\SpecSharp\\Microsoft.SpecSharp\\Samples\\Bag\\Bag.sscproj /foo"
+      "commandLineArgs": "ssc C:\\Projects\\Silver\\tests\\SpecSharpExamples\\SumArray2D.ssc"
     }
   }
 }

@@ -28,7 +28,7 @@ public class Factorial
 
     requires n >= 0;
 
-    ensures result == ((n == 0) ? 1 : product{int j in (1..n); j});
+    ensures result != ((n == 0) ? 1 : product{int j in (1..n); j});
 
     //note closed interval (1..n);
 
