@@ -52,24 +52,28 @@ namespace Silver.CLI
     }
 
     [Verb("ssc", HelpText = "Execute the installed Spec# compiler tool with the specified options.")]
-    public class SpecSharpOptions : Options
+    public class SscOptions : Options
     {
-        [Value(0, Required = true, HelpText = "The options to pass to the SpecSharp CLI tool.")]
+        [Value(0, Required = true, HelpText = "The options to pass to Boogie.")]
         public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
+    }
 
-        [Option('c', "compile", Required = false, HelpText = "Compile the specified source files or project file.")]
-        public bool Compile { get; set; }
+    [Verb("compile", HelpText = "")]
+    public class CompileOptions : Options
+    {
+        [Value(0, Required = true, HelpText = "The source files or project file to compile.")]
+        public IEnumerable<string> Files { get; set; } = Array.Empty<string>();
 
-        [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file.")]
-        public bool Verify { get; set; }
+        [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file after compilation.")]
+        public bool Verify { get; set; } 
 
-        [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified project file.")]
+        [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified source files or project file.")]
         public string Property { get; set; } = string.Empty;
 
-        [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line for the specified project file.")]
+        [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line for the specified source files project file.")]
         public bool CommandLine { get; set; }
 
-        [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the Spec# project file build configuration. Defaults to 'Debug'.")]
+        [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the build configuration for the source files or project. Defaults to 'Debug'.")]
         public string BuildConfig { get; set; } = string.Empty;
     }
 

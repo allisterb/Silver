@@ -2,7 +2,7 @@
 
 namespace Silver.Core
 {
-    public class Projects : Runtime
+    public class Compiler : Runtime
     {
         public static object? GetProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
         {
@@ -40,25 +40,12 @@ namespace Silver.Core
             return SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles)?.CommandLine;
         }
 
-        public static bool Compile(string filePath, string buildConfig, params string[] additionalFiles)
+        public static bool Compile(string filePath, string buildConfig, bool verify = false, params string[] additionalFiles)
         {
             var proj = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
-                return proj.Compile().Succeded;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public static bool Verify(string filePath, string buildConfig, params string[] additionalFiles)
-        {
-            var proj = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
-            if (proj is not null && proj.Initialized)
-            {
-                proj.Verify = true;
+                proj.Verify = verify;
                 return proj.Compile().Succeded;
             }
             else

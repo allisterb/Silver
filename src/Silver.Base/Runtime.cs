@@ -182,6 +182,7 @@ public abstract class Runtime
             {
                 p.StartInfo.WorkingDirectory = workingDir;
             }
+            Debug("Executing cmd {0} in working directory {1}.", cmdName + " " + arguments, p.StartInfo.WorkingDirectory);
             try
             {
                 p.Start();

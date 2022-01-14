@@ -54,7 +54,7 @@ class Program : Runtime
         PrintLogo();
 
         #region Parse options
-        ParserResult<object> result = new Parser().ParseArguments<Options, InstallOptions, AssemblyOptions, BoogieOptions, SpecSharpOptions, TranslateOptions>(args);
+        ParserResult<object> result = new Parser().ParseArguments<Options, InstallOptions, AssemblyOptions, BoogieOptions, SscOptions, CompileOptions, TranslateOptions>(args);
         result.WithParsed<Options>(o =>
         {
             Interactive = !o.Script;
@@ -80,7 +80,7 @@ class Program : Runtime
         })
         .WithParsed<BoogieOptions>(o =>
         {
-            var ret = RunCmd("boogie", o.Options.Aggregate((a, b) => a + " " + b));
+            var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie"), o.Options.Aggregate((a, b) => a + " " + b));
             if (ret is not null)
             {
                 Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
@@ -90,52 +90,40 @@ class Program : Runtime
                 Error("Error executing Boogie.");
             }
         })
-        .WithParsed<SpecSharpOptions>(o =>
+        .WithParsed<SscOptions>(o =>
         {
-            var file = o.Options.First();
-            var additionalFiles = o.Options.Count() > 1 ? o.Options.Skip(1).ToArray() : Array.Empty<string>();
-            var buildConfig = o.BuildConfig;
-            if (o.Compile)
-            {
-                SscCmd.Compile(
-                    o.Options.First(),
-                    buildConfig,
-                    additionalFiles
+            var ret = RunCmd(
+                    Path.Combine(AssemblyLocation, "ssc", "ssc"),
+                    o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).JoinWithSpaces(),
+                    Path.Combine(AssemblyLocation, "ssc")
                 );
-            }
-            else if (o.Verify)
+            if (ret is not null)
             {
-                SscCmd.Verify(
-                    o.Options.First(),
-                    buildConfig,
-                    additionalFiles
-                );
-            }
-            else if(!string.IsNullOrEmpty(o.Property))
-            {
-                SscCmd.GetProperty(o.Options.First(), buildConfig, o.Property, additionalFiles);
-            }
-            else if (o.CommandLine)
-            {
-                SscCmd.GetCommandLine(o.Options.First(), buildConfig, additionalFiles);
+                Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
             }
             else
             {
-                var ret = RunCmd(
-                    Path.Combine(AssemblyLocation, "ssc", "ssc"), 
-                    o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).JoinWithSpaces(), 
-                    Path.Combine(AssemblyLocation, "ssc")
-                );
-                if (ret is not null)
-                {
-                    Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
-                }
-                else
-                {
-                    Error("Error executing ssc.");
-                }
+                Error("Error executing ssc.");
             }
         })
+         .WithParsed<CompileOptions>(o =>
+         {
+             var file = o.Files.First();
+             var additionalFiles = o.Files.Count() > 1 ? o.Files.Skip(1).ToArray() : Array.Empty<string>();
+             var buildConfig = o.BuildConfig;
+             if (!string.IsNullOrEmpty(o.Property))
+             {
+                 CompilerCmd.GetProperty(o.Files.First(), buildConfig, o.Property, additionalFiles);
+             }
+             else if (o.CommandLine)
+             {
+                 CompilerCmd.GetCommandLine(o.Files.First(), buildConfig, additionalFiles);
+             }
+             else
+             {
+                 CompilerCmd.Compile(file, buildConfig, o.Verify, additionalFiles);
+             }
+         })
         #endregion
 
         #region Print options help
@@ -266,7 +254,7 @@ class Program : Runtime
 
     #region Fields
     static object uilock = new object();
-    static Type[] optionTypes = { typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SpecSharpOptions), typeof(TranslateOptions) };
+    static Type[] optionTypes = { typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(CompileOptions), typeof(TranslateOptions) };
     static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
     static Dictionary<string, Type> optionTypesMap = new Dictionary<string, Type>();
     #endregion

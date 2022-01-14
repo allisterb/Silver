@@ -49,6 +49,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.SpecSharp", "..\e
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ssc", "..\ext\specsharp\Microsoft.SpecSharp\CommandLineCompiler\ssc.csproj", "{01298982-80B4-44B2-AD1D-05BC9FE4F990}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.Verifiier", "Silver.Verifiier\Silver.Verifiier.csproj", "{14D248FE-D12F-48FB-8A58-1A3B63E19512}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -270,6 +272,20 @@ Global
 		{01298982-80B4-44B2-AD1D-05BC9FE4F990}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01298982-80B4-44B2-AD1D-05BC9FE4F990}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
 		{01298982-80B4-44B2-AD1D-05BC9FE4F990}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.DebugCommandLine|Any CPU.ActiveCfg = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.DebugCommandLine|Any CPU.Build.0 = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.DebugExp|Any CPU.ActiveCfg = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.DebugExp|Any CPU.Build.0 = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.DebugNoData|Any CPU.ActiveCfg = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.DebugNoData|Any CPU.Build.0 = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.NoExtendedRuntime|Any CPU.ActiveCfg = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.NoExtendedRuntime|Any CPU.Build.0 = Debug|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -293,6 +309,7 @@ Global
 		{5D3B8B5B-703E-4843-ABF3-A864F5B6ADA3} = {9A6DED94-0B62-42EA-8CA4-3A4BFEB3ED3F}
 		{0B747571-5739-4A09-B368-2FF47C01A698} = {9A6DED94-0B62-42EA-8CA4-3A4BFEB3ED3F}
 		{01298982-80B4-44B2-AD1D-05BC9FE4F990} = {9A6DED94-0B62-42EA-8CA4-3A4BFEB3ED3F}
+		{14D248FE-D12F-48FB-8A58-1A3B63E19512} = {BD039360-D4FD-4D2C-BF67-C4BEA9A8AC9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}

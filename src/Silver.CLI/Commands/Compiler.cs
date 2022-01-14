@@ -1,12 +1,12 @@
 namespace Silver.CLI.Commands;
 
 using Silver.Core;
-internal class SscCmd : Runtime
+internal class CompilerCmd : Runtime
 {
     internal static void GetProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
     {
         Program.ExitIfFileNotFound(filePath);
-        var p = Projects.GetProperty(filePath, buildConfig, prop, additionalFiles);
+        var p = Compiler.GetProperty(filePath, buildConfig, prop, additionalFiles);
         if (p is null)
         {
             Error("The property {0} does not exist or is null for the project file {1}.", prop, filePath);
@@ -21,7 +21,7 @@ internal class SscCmd : Runtime
     internal static void GetCommandLine(string filePath, string buildConfig, params string[] additionalFiles)
     {
         Program.ExitIfFileNotFound(filePath);
-        var cmdline = Projects.GetCommandLine(filePath, buildConfig);
+        var cmdline = Compiler.GetCommandLine(filePath, buildConfig);
         if (cmdline is null)
         {
             Error("Could not get command line for project file {0}.", filePath);
@@ -34,10 +34,10 @@ internal class SscCmd : Runtime
         }
     }
 
-    internal static void Compile(string filePath, string buildConfig, params string[] additionalFiles)
+    internal static void Compile(string filePath, string buildConfig, bool verify, params string[] additionalFiles)
     {
         Program.ExitIfFileNotFound(filePath);
-        if (Projects.Compile(filePath, buildConfig))
+        if (Compiler.Compile(filePath, buildConfig, verify))
         {
             Program.Exit(ExitResult.SUCCESS);
         }
@@ -47,16 +47,4 @@ internal class SscCmd : Runtime
         }
     }
 
-    internal static void Verify(string filePath, string buildConfig, params string[] additionalFiles)
-    {
-        Program.ExitIfFileNotFound(filePath);
-        if (Projects.Verify(filePath, buildConfig))
-        {
-            Program.Exit(ExitResult.SUCCESS);
-        }
-        else
-        {
-            Program.Exit(ExitResult.UNKNOWN_ERROR);
-        }
-    }
 }
