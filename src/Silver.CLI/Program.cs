@@ -54,7 +54,7 @@ class Program : Runtime
         PrintLogo();
 
         #region Parse options
-        ParserResult<object> result = new Parser().ParseArguments<Options, InstallOptions, AssemblyOptions, BoogieOptions, SscOptions, CompileOptions, TranslateOptions>(args);
+        ParserResult<object> result = new Parser().ParseArguments<Options, InstallOptions, AssemblyOptions, BoogieOptions, SscOptions, CompileOptions, VerifyOptions, TranslateOptions>(args);
         result.WithParsed<Options>(o =>
         {
             Interactive = !o.Script;
@@ -123,6 +123,11 @@ class Program : Runtime
              {
                  CompilerCmd.Compile(file, buildConfig, o.Verify, additionalFiles);
              }
+         })
+         .WithParsed<VerifyOptions>(o =>
+         {
+             ExitIfFileNotFound(o.File);
+             VerifierCmd.Verify(o.File);
          })
         #endregion
 
@@ -254,7 +259,11 @@ class Program : Runtime
 
     #region Fields
     static object uilock = new object();
-    static Type[] optionTypes = { typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(CompileOptions), typeof(TranslateOptions) };
+    static Type[] optionTypes = 
+    { 
+        typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(CompileOptions), typeof(TranslateOptions),
+        typeof(VerifyOptions)
+    };
     static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
     static Dictionary<string, Type> optionTypesMap = new Dictionary<string, Type>();
     #endregion

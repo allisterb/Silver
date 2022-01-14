@@ -84,6 +84,13 @@ namespace Silver.CLI
         public string File { get; set; } = String.Empty;
     }
 
+    [Verb("verify", HelpText = "Verify a .NET assembly using Boogie.")]
+    public class VerifyOptions : Options
+    {
+        [Value(0, Required = true, HelpText = "The .NET assembly file to translate.")]
+        public string File { get; set; } = String.Empty;
+    }
+
     [Verb("assembly", HelpText = "Analyze a .NET bytecode assembly.")]
     public class AssemblyOptions : Options
     {
