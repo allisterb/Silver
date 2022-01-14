@@ -2,6 +2,6 @@
 
 public class Boogie
 {
-    public stat
+    
 }
 

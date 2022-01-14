@@ -127,7 +127,7 @@ public partial class BoogieFileMethod
     }
 
     /// <remarks/>
-    [System.Xml.Serialization.XmlAttribute("conclusion")]
+    [System.Xml.Serialization.XmlElement("conclusion")]
     public BoogieFileMethodConclusion Conclusion
     {
         get

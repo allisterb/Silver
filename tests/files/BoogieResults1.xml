@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<boogie version="2.0.0.0" commandLine="&quot;C:\Projects\Silver\src\Silver.CLI\bin\Debug\net6.0\ssc\SscBoogie&quot; C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.dll /xml:foo.xml">
+  <file name="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.dll">
+    <method name="DrawingEngine.SpecSharp.CheckInvariant$System.Boolean" startTime="2022-01-13 22:24:25Z">
+      <error message="array reference might be null">
+        <trace>
+          <traceNode label="PreconditionGeneratedEntry0" />
+          <traceNode label="block4114" />
+        </trace>
+      </error>
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.3417117" outcome="errors" />
+    </method>
+    <method name="DrawingEngine.AddItem$Instruction$System.Int32$System.Int32" startTime="2022-01-13 22:24:26Z">
+      <error message="array reference might be null" file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="12" column="5">
+        <trace>
+          <traceNode label="PreconditionGeneratedEntry0" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="12" column="5" label="block12801" />
+        </trace>
+      </error>
+      <error message="Possible null dereference" file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="17" column="7">
+        <trace>
+          <traceNode label="PreconditionGeneratedEntry0" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="12" column="5" label="block12801" />
+          <traceNode label="false12801to12818" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="13" column="7" label="block12818" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="15" column="13" label="block12835" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="16" column="16" label="block12852" />
+        </trace>
+      </error>
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0950723" outcome="errors" />
+    </method>
+    <method name="DrawingEngine.EnlargeArray" startTime="2022-01-13 22:24:26Z">
+      <error message="array reference might be null" file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="25" column="19">
+        <trace>
+          <traceNode label="PreconditionGeneratedEntry0" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="24" column="13" label="block14552" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="25" column="19" label="block14569" />
+        </trace>
+      </error>
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0885751" outcome="errors" />
+    </method>
+    <method name="DrawingEngine.Apply" startTime="2022-01-13 22:24:26Z">
+      <error message="Possible null dereference" file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="32" column="17">
+        <trace>
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="31" column="14" label="block16337" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="31" column="14" label="block16337" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="31" column="21" label="block16354" />
+          <traceNode label="false16354to16371" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="32" column="17" label="block16371" />
+        </trace>
+      </error>
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0634496" outcome="errors" />
+    </method>
+    <method name="DrawingEngine.Debugging0" startTime="2022-01-13 22:24:26Z">
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0160169" outcome="correct" />
+    </method>
+    <method name="DrawingEngine.Debugging1$WorkItem" startTime="2022-01-13 22:24:26Z">
+      <error message="Possible null dereference" file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="50" column="7">
+        <trace>
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="49" column="14" label="block18836" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="49" column="14" label="block18836" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="49" column="21" label="block18751" />
+          <traceNode label="false18751to19074" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="50" column="7" label="block19074" />
+        </trace>
+      </error>
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0145564" outcome="errors" />
+    </method>
+    <method name="DrawingEngine.Debugging2$WorkItem" startTime="2022-01-13 22:24:26Z">
+      <error message="Possible null dereference" file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="60" column="7">
+        <trace>
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="58" column="14" label="block20179" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="58" column="14" label="block20179" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="58" column="21" label="block20247" />
+          <traceNode label="false20247to20077" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="59" column="7" label="block20077" />
+          <traceNode file="C:\Projects\specsharp\SscBoogie\Test\test22\DrawingEngine.ssc" line="60" column="7" label="block20315" />
+        </trace>
+      </error>
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.025075" outcome="errors" />
+    </method>
+    <method name="DrawingEngine..ctor" startTime="2022-01-13 22:24:26Z">
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.05" outcome="correct" />
+    </method>
+    <method name="DrawingEngine..cctor" startTime="2022-01-13 22:24:26Z">
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0050009" outcome="correct" />
+    </method>
+    <method name="WorkItem..ctor$Instruction$System.Int32$System.Int32" startTime="2022-01-13 22:24:26Z">
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0188347" outcome="correct" />
+    </method>
+    <method name="WorkItem.DoWork" startTime="2022-01-13 22:24:26Z">
+      <conclusion endTime="2022-01-13 22:24:26Z" duration="0.0059993" outcome="correct" />
+    </method>
+  </file>
+</boogie>
