@@ -6,7 +6,7 @@
 [System.ComponentModel.DesignerCategoryAttribute("code")]
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
 [System.Xml.Serialization.XmlRootAttribute(Namespace = "", ElementName = "boogie", IsNullable = false)]
-public partial class BoogieResult
+public partial class BoogieResults
 {
     private BoogieFile fileField;
 
@@ -70,7 +70,7 @@ public partial class BoogieFile
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElement("method")]
-    public BoogieFileMethod[] Method
+    public BoogieFileMethod[] Methods
     {
         get
         {
@@ -248,7 +248,7 @@ public partial class BoogieFileMethodError
 
     /// <remarks/>
     [System.Xml.Serialization.XmlIgnoreAttribute()]
-    public bool lineSpecified
+    public bool LineSpecified
     {
         get
         {
@@ -276,7 +276,7 @@ public partial class BoogieFileMethodError
 
     /// <remarks/>
     [System.Xml.Serialization.XmlIgnoreAttribute()]
-    public bool columnSpecified
+    public bool ColumnSpecified
     {
         get
         {
@@ -352,7 +352,7 @@ public partial class BoogieFileMethodErrorTraceNode
 
     /// <remarks/>
     [System.Xml.Serialization.XmlIgnoreAttribute()]
-    public bool lineSpecified
+    public bool LineSpecified
     {
         get
         {
@@ -380,7 +380,7 @@ public partial class BoogieFileMethodErrorTraceNode
 
     /// <remarks/>
     [System.Xml.Serialization.XmlIgnoreAttribute()]
-    public bool columnSpecified
+    public bool ColumnSpecified
     {
         get
         {
