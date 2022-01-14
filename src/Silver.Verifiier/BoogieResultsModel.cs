@@ -1,5 +1,5 @@
 ﻿namespace Silver.Verifier.Models;
-#nullable disable
+
 // NOTE: Generated code may require at least .NET Framework 4.5 or .NET Core/Standard 2.0.
 /// <remarks/>
 [System.SerializableAttribute()]
@@ -8,11 +8,11 @@
 [System.Xml.Serialization.XmlRootAttribute(Namespace = "", ElementName = "boogie", IsNullable = false)]
 public partial class BoogieResults
 {
-    private BoogieFile fileField;
+    private BoogieFile fileField = new();
 
-    private string versionField;
+    private string versionField = string.Empty;
 
-    private string commandLineField;
+    private string commandLineField = string.Empty;
 
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute("version")]
@@ -64,9 +64,9 @@ public partial class BoogieResults
 public partial class BoogieFile
 {
 
-    private BoogieFileMethod[] methodField;
+    private BoogieFileMethod[] methodField = Array.Empty<BoogieFileMethod>();
 
-    private string nameField;
+    private string nameField = string.Empty;
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElement("method")]
@@ -103,18 +103,17 @@ public partial class BoogieFile
 [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
 public partial class BoogieFileMethod
 {
+    private BoogieFileMethodError[]? errorField;
 
-    private BoogieFileMethodError[] errorField;
+    private BoogieFileMethodConclusion conclusionField = new();
 
-    private BoogieFileMethodConclusion conclusionField;
+    private string nameField = string.Empty;
 
-    private string nameField;
-
-    private string startTimeField;
+    private string startTimeField = string.Empty;
 
     /// <remarks/>
     [System.Xml.Serialization.XmlElement("error")]
-    public BoogieFileMethodError[] Error
+    public BoogieFileMethodError[]? Errors
     {
         get
         {
@@ -176,23 +175,23 @@ public partial class BoogieFileMethod
 public partial class BoogieFileMethodError
 {
 
-    private BoogieFileMethodErrorTraceNode[] traceField;
+    private BoogieFileMethodErrorTraceNode[]? traceField;
 
-    private string messageField;
+    private string messageField = string.Empty;
 
-    private string fileField;
+    private string? fileField;
 
-    private byte lineField;
+    private int lineField = 0;
 
     private bool lineFieldSpecified;
 
-    private byte columnField;
+    private int columnField = 0;
 
     private bool columnFieldSpecified;
 
     /// <remarks/>
     [System.Xml.Serialization.XmlArrayItem("traceNode", IsNullable = false)]
-    public BoogieFileMethodErrorTraceNode[] Trace
+    public BoogieFileMethodErrorTraceNode[]? Trace
     {
         get
         {
@@ -220,7 +219,7 @@ public partial class BoogieFileMethodError
 
     /// <remarks/>
     [System.Xml.Serialization.XmlAttribute("file")]
-    public string File
+    public string? File
     {
         get
         {
@@ -234,7 +233,7 @@ public partial class BoogieFileMethodError
 
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute("line")]
-    public byte Line
+    public int Line
     {
         get
         {
@@ -262,7 +261,7 @@ public partial class BoogieFileMethodError
 
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute("column")]
-    public byte Column
+    public int Column
     {
         get
         {
@@ -296,15 +295,15 @@ public partial class BoogieFileMethodError
 public partial class BoogieFileMethodErrorTraceNode
 {
 
-    private string labelField;
+    private string labelField = string.Empty;
 
-    private string fileField;
+    private string? fileField;
 
-    private byte lineField;
+    private byte lineField = 0;
 
     private bool lineFieldSpecified;
 
-    private byte columnField;
+    private byte columnField = 0;
 
     private bool columnFieldSpecified;
 
@@ -324,7 +323,7 @@ public partial class BoogieFileMethodErrorTraceNode
 
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute("file")]
-    public string File
+    public string? File
     {
         get
         {
@@ -400,11 +399,11 @@ public partial class BoogieFileMethodErrorTraceNode
 public partial class BoogieFileMethodConclusion
 {
 
-    private string endTimeField;
+    private string endTimeField = string.Empty;
 
-    private decimal durationField;
+    private decimal durationField = default;
 
-    private string outcomeField;
+    private string outcomeField = string.Empty;
 
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute("endTime")]
@@ -448,4 +447,3 @@ public partial class BoogieFileMethodConclusion
         }
     }
 }
-#nullable restore

@@ -39,18 +39,30 @@ public class Boogie : Runtime
 
     public static void PrintVerifierResultsToConsole(BoogieResults results)
     {
-        var tree = new Tree("Results");
-        var file = tree.AddNode($"File: {results.File.Name}");
+        AnsiConsole.WriteLine("");
+        var tree = new Tree("Verification results");
+        var file = tree.AddNode($"[royalblue1]File: {results.File.Name}[/]");
         var methods = file.AddNode("[yellow]Methods[/]");
         foreach (var m in results.File.Methods)
         {
-            if (m.Error is null) continue;
-            var method = methods.AddNode(($"[green]{m.Name.EscapeMarkup()}[/]"));
-            foreach (var error in m.Error.Where(e => e is not null))
+            var status = m.Conclusion.Outcome == "errors" ?  "[red]Failed[/]" : "[lime]Ok[/]";
+            var method = methods.AddNode(($"[cyan]{m.Name.EscapeMarkup()}[/]: {status}"));
+            if (m.Errors is not null)
             {
-                method.AddNode($"Line: {error.Line}");
-                method.AddNode($"Message: {error.Message}");
+                foreach (var error in m.Errors)
+                {
+                    if (error.LineSpecified)
+                    {
+                        method.AddNode($"Line: {error.Line}");
+                    }
+                    if (error.ColumnSpecified)
+                    {
+                        method.AddNode($"Column: {error.Column}");
+                    }
+                    method.AddNode($"Message: {error.Message}");
+                }
             }
+            method.AddNode($"Duration: {m.Conclusion.Duration}s");
         }
         AnsiConsole.Write(tree);
     }
