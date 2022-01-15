@@ -22,7 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ext\analysis-net\Backend\Backend.NET6.csproj" />
-    <ProjectReference Include="..\..\ext\analysis-net\CCIProvider\CCIProvider.NET6.csproj" />
+    <ProjectReference Include="..\..\ext\analysis-net\cci\NET6\Microsoft.Cci\Microsoft.Cci.NET6.csproj" />
     <ProjectReference Include="..\..\src\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\TestProjects\Silver.CodeAnalysis.IL.TestProject1\Silver.CodeAnalysis.IL.TestProject1.csproj" />
   </ItemGroup>
