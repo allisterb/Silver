@@ -7,3 +7,6 @@
 [submodule "ext/analysis-net"]
 	path = ext/analysis-net
 	url = https://github.com/allisterb/analysis-net.git
+[submodule "ext/TinyBCT"]
+	path = ext/TinyBCT
+	url = https://github.com/allisterb/TinyBCT.git
