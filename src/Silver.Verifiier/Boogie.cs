@@ -10,7 +10,6 @@ public class Boogie : Runtime
 {
     public static BoogieResults? Verify(string path)
     {
-
         var f = DateTime.Now.Ticks.ToString() + Path.GetFileName(FailIfFileNotFound(path)) + ".xml";
         Debug("XML output will be written to file {0}.", Path.GetFullPath(f));
         var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie"), path + " " + "/xml:"+ f);
@@ -47,19 +46,22 @@ public class Boogie : Runtime
         {
             var status = m.Conclusion.Outcome == "errors" ?  "[red]Failed[/]" : "[lime]Ok[/]";
             var method = methods.AddNode(($"[cyan]{m.Name.EscapeMarkup()}[/]: {status}"));
-            if (m.Errors is not null)
+            if (m.Errors is not null && m.Errors.Any())
             {
+                var errors = method.AddNode("[red]Errors[/]");
+                int i = 0;
                 foreach (var error in m.Errors)
                 {
+                    var e = errors.AddNode(error.Message);
                     if (error.LineSpecified)
                     {
-                        method.AddNode($"Line: {error.Line}");
+                       e.AddNode($"Line: {error.Line}");
                     }
                     if (error.ColumnSpecified)
                     {
-                        method.AddNode($"Column: {error.Column}");
+                        e.AddNode($"Column: {error.Column}");
                     }
-                    method.AddNode($"Message: {error.Message}");
+                    //method.AddNode($"Message: {error.Message}");
                 }
             }
             method.AddNode($"Duration: {m.Conclusion.Duration}s");

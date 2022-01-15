@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ext\analysis-net\cci\NET6\Microsoft.Cci\Microsoft.Cci.NET6.csproj" />
-    <ProjectReference Include="..\..\ext\Nuclear.Assemblies\Nuclear.Assemblies.csproj" />
+    <ProjectReference Include="..\..\ext\analysis-net\Backend\Backend.NET6.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
   </ItemGroup>
 

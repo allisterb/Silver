@@ -15,7 +15,7 @@ public class Assembly : Runtime
     public Assembly(string assemblyPath)
     { 
         Directory = new FileInfo(assemblyPath).Directory!;
-        Host = new CodeContractAwareHostEnvironment(new string[] { Directory.FullName }, true, true);
+        Host = new PeReader.DefaultHost();
         Module = (IModule)Host.LoadUnitFrom(assemblyPath);
         References = Module.AssemblyReferences.Select(a => new AssemblyReference(GetAssemblyName(a), TryResolve(a, Directory.FullName)));
     }
@@ -23,7 +23,7 @@ public class Assembly : Runtime
 
     #region Properties
     public DirectoryInfo Directory { get; init; }
-    public CodeContractAwareHostEnvironment Host { get; init; }
+    public PeReader.DefaultHost Host { get; init; }
     public IModule Module { get; init; }
 
     public IEnumerable<AssemblyReference> References { get; init; }
