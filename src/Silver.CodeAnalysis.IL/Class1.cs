@@ -16,10 +16,6 @@
 		public void CanAnalyzeClassHierarchy()
 		{
 
-			const string root = @"..\..\..";
-			//const string root = @"C:"; // casa
-			//const string root = @"C:\Users\Edgar\Projects"; // facu
-
 			const string input = @"C:\Projects\Silver\tests\TestProjects\Silver.CodeAnalysis.IL.TestProject1\bin\Debug\net6.0\Silver.CodeAnalysis.IL.TestProject1.dll";
 
 			using (var host = new PeReader.DefaultHost())
