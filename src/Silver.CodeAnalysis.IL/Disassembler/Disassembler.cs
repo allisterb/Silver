@@ -9,7 +9,7 @@ using Microsoft.Cci.MetadataReader;
 
 public class Disassembler : Runtime
 {
-    public static string? Run(string fileName)
+    public static string? Run(string fileName, bool noIL = false, bool noStack = true)
     {
         using var host = new PeReader.DefaultHost();
         
@@ -24,10 +24,13 @@ public class Disassembler : Runtime
         using var pdbReader = new PdbReader(fileName, pdbFile, host, true);
         
         var options = DecompilerOptions.AnonymousDelegates | DecompilerOptions.Iterators | DecompilerOptions.Loops;
-        options |= DecompilerOptions.Unstack;
+        if (noStack)
+        {
+            options |= DecompilerOptions.Unstack;
+        }
         module = Decompiler.GetCodeModelFromMetadataModel(host, module, pdbReader, options);
         SourceEmitterOutputString sourceEmitterOutput = new SourceEmitterOutputString();
-        SourceEmitter csSourceEmitter = new PeToText.SourceEmitter(sourceEmitterOutput, host, pdbReader, true, printCompilerGeneratedMembers: true);
+        SourceEmitter csSourceEmitter = new PeToText.SourceEmitter(sourceEmitterOutput, host, pdbReader, noIL, printCompilerGeneratedMembers: true);
         csSourceEmitter.Traverse(module);
         return sourceEmitterOutput.Data;
     }

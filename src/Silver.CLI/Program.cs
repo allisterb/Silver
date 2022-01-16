@@ -81,7 +81,7 @@ class Program : Runtime
         })
         .WithParsed<DisassemblerOptions>(o =>
         {
-            ILCmd.Dissassemble(o.File);
+            ILCmd.Dissassemble(o.File, o.NoIL, !o.Stack);
         })
         .WithParsed<BoogieOptions>(o =>
         {

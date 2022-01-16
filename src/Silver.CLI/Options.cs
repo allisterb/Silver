@@ -107,7 +107,10 @@ namespace Silver.CLI
         [Value(0, Required = true, HelpText = "The assembly file (usually *.dll or *.exe) to disassemble.")]
         public string File { get; set; } = String.Empty;
 
-        [Option('n', "no-stack", Required = false, HelpText = "Emit only C# code.")]
+        [Option('n', "noil", Required = false, HelpText = "Emit only C# code i.e. decompile the assembly.")]
         public bool NoIL { get; set; }
+
+        [Option('k', "stack", Required = false, HelpText = "Emit code that retains a stack.")]
+        public bool Stack { get; set; }
     }
 }

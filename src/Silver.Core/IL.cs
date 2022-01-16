@@ -10,9 +10,9 @@ namespace Silver.Core
             c.CanAnalyzeClassHierarchy();
         }
 
-        public static bool PrintDisassembly(string fileName)
+        public static bool PrintDisassembly(string fileName, bool noIL, bool noStack)
         {
-            var output = Disassembler.Run(FailIfFileNotFound(fileName));
+            var output = Disassembler.Run(FailIfFileNotFound(fileName), noIL, noStack);
             if (output is null)
             {
                 Error("Could not disassemble {0}.", fileName);
