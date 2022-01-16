@@ -14,3 +14,6 @@ global using System.Threading.Tasks;
 
 global using static Silver.CollectionUtils;
 
+global using Spectre.Console;
+global using Con = Spectre.Console.AnsiConsole;
+global using ColorCon = Colorful.Console;

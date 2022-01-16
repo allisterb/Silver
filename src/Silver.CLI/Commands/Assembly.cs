@@ -1,8 +1,5 @@
 namespace Silver.CLI;
 
-using Spectre.Console;
-using Silver;
-
 internal class AssemblyCmd : Runtime
 {
     internal static void References(string path)

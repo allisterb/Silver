@@ -55,7 +55,7 @@ class Program : Runtime
         PrintLogo();
 
         #region Parse options
-        ParserResult<object> result = new Parser().ParseArguments<Options, InstallOptions, AssemblyOptions, BoogieOptions, SscOptions, CompileOptions, VerifyOptions, TranslateOptions>(args);
+        ParserResult<object> result = new Parser().ParseArguments<Options, InstallOptions, AssemblyOptions, DisassemblerOptions, BoogieOptions, SscOptions, CompileOptions, VerifyOptions, TranslateOptions>(args);
         result.WithParsed<Options>(o =>
         {
             Interactive = !o.Script;
@@ -78,6 +78,10 @@ class Program : Runtime
                 AssemblyCmd.References(o.File);
                 Exit(ExitResult.SUCCESS);
             }
+        })
+        .WithParsed<DisassemblerOptions>(o =>
+        {
+            ILCmd.Dissassemble(o.File);
         })
         .WithParsed<BoogieOptions>(o =>
         {
@@ -262,7 +266,7 @@ class Program : Runtime
     static object uilock = new object();
     static Type[] optionTypes = 
     { 
-        typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(CompileOptions), typeof(TranslateOptions),
+        typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(DisassemblerOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(CompileOptions), typeof(TranslateOptions),
         typeof(VerifyOptions)
     };
     static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));

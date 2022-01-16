@@ -100,4 +100,14 @@ namespace Silver.CLI
         [Option('r', "references", Required = false, HelpText = "Print references.")]
         public bool References { get; set; }
     }
+
+    [Verb("dis", HelpText = "Disassenble a .NET bytecode assembly.")]
+    public class DisassemblerOptions : Options
+    {
+        [Value(0, Required = true, HelpText = "The assembly file (usually *.dll or *.exe) to disassemble.")]
+        public string File { get; set; } = String.Empty;
+
+        [Option('n', "no-stack", Required = false, HelpText = "Emit only C# code.")]
+        public bool NoIL { get; set; }
+    }
 }

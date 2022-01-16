@@ -27,7 +27,7 @@ public class Disassembler : Runtime
         options |= DecompilerOptions.Unstack;
         module = Decompiler.GetCodeModelFromMetadataModel(host, module, pdbReader, options);
         SourceEmitterOutputString sourceEmitterOutput = new SourceEmitterOutputString();
-        SourceEmitter csSourceEmitter = new PeToText.SourceEmitter(sourceEmitterOutput, host, pdbReader, false, printCompilerGeneratedMembers: true);
+        SourceEmitter csSourceEmitter = new PeToText.SourceEmitter(sourceEmitterOutput, host, pdbReader, true, printCompilerGeneratedMembers: true);
         csSourceEmitter.Traverse(module);
         return sourceEmitterOutput.Data;
     }

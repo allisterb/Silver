@@ -13,7 +13,16 @@ namespace Silver.Core
         public static bool PrintDisassembly(string fileName)
         {
             var output = Disassembler.Run(FailIfFileNotFound(fileName));
-            return false;
+            if (output is null)
+            {
+                Error("Could not disassemble {0}.", fileName);
+                return false;
+            }
+            else
+            {
+                Con.WriteLine(output);
+                return true;
+            }
         }
     }
 }
