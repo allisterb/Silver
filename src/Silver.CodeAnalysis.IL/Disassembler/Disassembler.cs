@@ -9,7 +9,7 @@ using Microsoft.Cci.MetadataReader;
 
 public class Disassembler : Runtime
 {
-    public static string? Print(string fileName)
+    public static string? Run(string fileName)
     {
         using var host = new PeReader.DefaultHost();
         

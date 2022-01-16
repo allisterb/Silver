@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Spectre.Console" Version="0.43.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
   </ItemGroup>
 

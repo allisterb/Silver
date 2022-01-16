@@ -19,7 +19,7 @@ namespace Silver.Core
             }
             else if (file.Extension == ".ssc")
             {
-                var sourceFiles = additionalFiles.ToList().Prepend(filePath).ToList();
+                var sourceFiles = additionalFiles.Prepend(filePath).ToList();
                 var settings = new Dictionary<string, object>
                 {
                     { "BuildConfig", "Debug" },
