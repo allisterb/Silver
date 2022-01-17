@@ -8,7 +8,7 @@ using Microsoft.Cci;
 using Backend;
 using Backend.Analyses;
 using Backend.Serialization;
-using Backend.ThreeAddressCode;
+//using Backend.ThreeAddressCode;
 using Backend.Transformations;
 
 namespace Console2
@@ -31,7 +31,7 @@ namespace Console2
 
 			if (methodDefinition.IsAbstract || methodDefinition.IsExternal) return;
 
-			var disassembler = new Disassembler(host, methodDefinition, sourceLocationProvider);
+			var disassembler = new Backend.Transformations.Disassembler(host, methodDefinition, sourceLocationProvider);
 			var methodBody = disassembler.Execute();
 
 			//System.Console.WriteLine(methodBody);

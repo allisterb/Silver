@@ -8,9 +8,11 @@ namespace Silver.CLI
         [Option('d', "debug", Required = false, HelpText = "Enable debug mode.")]
         public bool Debug { get; set; }
 
-
         [Option('s', "script", Required = false, HelpText = "Enable script(non-interactive) mode.")]
         public bool Script { get; set; }
+
+        [Option('o', "output", Required = false, HelpText = "The output file (if any) for the operation.")]
+        public string OutputFile { get; set; } = string.Empty;
 
         public static Dictionary<string, object> Parse(string o)
         {
@@ -77,11 +79,14 @@ namespace Silver.CLI
         public string BuildConfig { get; set; } = string.Empty;
     }
 
-    [Verb("translate", HelpText = "Translate a .NET bytecode assembly or project to Boogie.")]
-    public class TranslateOptions : Options 
+    [Verb("analyze", HelpText = "Analyze a .NET bytecode assembly.")]
+    public class AnalyzeOptions : Options 
     {
-        [Value(0, Required = true, HelpText = "The file to translate.")]
+        [Value(0, Required = true, HelpText = "The file to analyze.")]
         public string File { get; set; } = String.Empty;
+
+        [Option("print-cfg", Required = false, HelpText = "Print the control-flow graph for classes in the assembly.")]
+        public bool PrintCFG { get; set; }
     }
 
     [Verb("verify", HelpText = "Verify a .NET assembly using Boogie.")]
@@ -101,7 +106,7 @@ namespace Silver.CLI
         public bool References { get; set; }
     }
 
-    [Verb("dis", HelpText = "Disassenble a .NET bytecode assembly.")]
+    [Verb("dis", HelpText = "Disassemble a .NET bytecode assembly.")]
     public class DisassemblerOptions : Options
     {
         [Value(0, Required = true, HelpText = "The assembly file (usually *.dll or *.exe) to disassemble.")]

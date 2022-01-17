@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-
 using CCIProvider;
 using Model;
 using Model.Types;
@@ -16,21 +15,19 @@ using Model.ThreeAddressCode.Values;
 using Backend.Model;
 using Tac = Model.ThreeAddressCode.Instructions;
 using Bytecode = Model.Bytecode;
-
 using Xunit;
 
 namespace Silver.CodeAnalysis.IL
 {
     public class AssemblyTests
     {
-
 		Host host = new();
 		[Fact]
 		public void CanAnalyzeClassHierarchy()
 		{
 			
 			
-			var path =  Path.Combine(Runtime.AssemblyLocation, "Factorial.dll");
+			var path =  Path.Combine(Runtime.AssemblyLocation, "Silver.CodeAnalysis.IL.TestProject1.dll");
 			Assert.True(File.Exists(path));	
 			//host.Assemblies.Add(assembly);
 
