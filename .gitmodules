@@ -10,3 +10,6 @@
 [submodule "ext/TinyBCT"]
 	path = ext/TinyBCT
 	url = https://github.com/allisterb/TinyBCT.git
+[submodule "ext/AGL"]
+	path = ext/AGL
+	url = https://github.com/allisterb/AGL.git
