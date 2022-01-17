@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutomaticGraphLayout" Version="1.1.12" />
-    <PackageReference Include="AutomaticGraphLayout.Drawing" Version="1.1.12" />
+    <PackageReference Include="Spectre.Console" Version="0.43.0" />
+    <PackageReference Include="Spectre.Console.ImageSharp" Version="0.43.0" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,7 +15,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.Gdi\AGL.Drawing.Gdi.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.NETStandard\AGL.Drawing.NETStandard.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\AGL.NETStandard\AGL.NETStandard.csproj" />
     <ProjectReference Include="..\..\ext\QUT.ShiftReduceParser\QUT.ShiftReduceParser.csproj" />
+    <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
   </ItemGroup>
 
 </Project>
