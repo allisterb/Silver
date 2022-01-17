@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "ssc C:\\Projects\\Silver\\tests\\SpecSharpExamples\\SumArray2D.ssc"
+      "commandLineArgs": "dis C:\\Projects\\Silver\\tests\\TestProjects\\Silver.TestProject1\\bin\\Debug\\net6.0\\Silver.TestProject1.dll -b -d"
     }
   }
 }

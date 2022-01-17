@@ -58,7 +58,7 @@ namespace Silver.CLI
         public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
     }
 
-    [Verb("compile", HelpText = "")]
+    [Verb("compile", HelpText = "Compile a .NET project or file using the Spec# compiler.")]
     public class CompileOptions : Options
     {
         [Value(0, Required = true, HelpText = "The source files or project file to compile.")]
@@ -112,5 +112,8 @@ namespace Silver.CLI
 
         [Option('k', "stack", Required = false, HelpText = "Emit code that retains a stack.")]
         public bool Stack { get; set; }
+
+        [Option('b', "boogie", Required = false, HelpText = "Translate the assembly bytecode to Boogie.")]
+        public bool Boogie { get; set; }
     }
 }
