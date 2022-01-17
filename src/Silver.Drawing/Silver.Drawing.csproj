@@ -18,7 +18,7 @@
     <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.Gdi\AGL.Drawing.Gdi.csproj" />
     <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.NETStandard\AGL.Drawing.NETStandard.csproj" />
     <ProjectReference Include="..\..\ext\AGL\AGL.NETStandard\AGL.NETStandard.csproj" />
-    <ProjectReference Include="..\..\ext\QUT.ShiftReduceParser\QUT.ShiftReduceParser.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\QUT.ShiftReduceParser\QUT.ShiftReduceParser.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
   </ItemGroup>
 
