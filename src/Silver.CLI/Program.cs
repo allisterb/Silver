@@ -41,7 +41,7 @@ class Program : Runtime
     #region Entry point
     static void Main(string[] args)
     {
-        Silver.Core.IL.Test();
+        Silver.Core.IL.Test2(@"C:\Projects\Silver\tests\TestProjects\Silver.TestProject1\bin\Debug\net6.0\Silver.TestProject1.dll");
         if (args.Contains("--debug") || args.Contains("-d"))
         {
             SetLogger(new SerilogLogger(console: true, debug: true));

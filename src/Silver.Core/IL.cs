@@ -6,8 +6,7 @@ namespace Silver.Core
     {
         public static void Test()
         {
-            var c = new Class1();
-            c.CanAnalyzeClassHierarchy();
+            
         }
 
         public static bool PrintDisassembly(string fileName, bool boogie, bool noIL, bool noStack)
@@ -24,5 +23,7 @@ namespace Silver.Core
                 return true;
             }
         }
+
+        public static void Test2(string fileName) => Analyzer.Test(fileName);
     }
 }
