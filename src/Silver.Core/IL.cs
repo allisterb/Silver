@@ -38,28 +38,40 @@ namespace Silver.Core
             }
             else return null;
         }
-        public static string? Disassemble(string fileName, bool boogie, bool noIL, bool noStack) =>
-            boogie ? Translator.ToBoogie(FailIfFileNotFound(fileName)) : Disassembler.Run(FailIfFileNotFound(fileName), noIL, noStack);
-
-        public static void Summarize(string fileName, bool all)
+        public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack)
+        {
+            var output =  boogie? Translator.ToBoogie(FailIfFileNotFound(fileName)) : Disassembler.Run(FailIfFileNotFound(fileName), noIL, noStack);
+            if (output is null)
+            {
+                Error("Could not disassemble {0}.", fileName);
+                return false;
+            }
+            else
+            {
+                Con.WriteLine(output);
+                return true; ;
+            }
+        }
+        public static bool Summarize(string fileName, bool all)
         {
             var a = GetTargetAssembly(FailIfFileNotFound(fileName));
             if (a is null)
             {
                 Error("Could not get target assembly to analyze.");
-                return;
+                return false;
             }
             
             var an = new Analyzer(a, all);
             if (!an.Initialized)
             {
                 Error("Could not create an analyzer for {0}.", an);
-                return;
+                return false;
             }
             else
             {
                 var s =  an.GetSummary();
                 Info("Structs:{0}.", s.Structs);
+                return true;
             }
             //var cfg = an.GetControlFlowGraphs();
                 

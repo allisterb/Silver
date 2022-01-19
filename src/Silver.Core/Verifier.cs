@@ -6,7 +6,20 @@ using Silver.Verifier;
 using Silver.Verifier.Models;
 public class Verifier : Runtime
 {
-    public static BoogieResults? Verify(string path) => Boogie.Verify(FailIfFileNotFound(path));
+    public static bool Verify(string path)
+    {
+        var results = Boogie.Verify(FailIfFileNotFound(path));
+        if (results is null)
+        {
+            Error("Could not read the verifier response.");
+            return false;
+        }
+        else
+        {
+            PrintVerifierResultsToConsole(results);
+            return true;
+        }
+    }
 
     public static void PrintVerifierResultsToConsole(BoogieResults results)
     {

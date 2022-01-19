@@ -6,15 +6,12 @@ internal class ILCmd : Command
     internal static void Dissassemble(string fileName, bool boogie, bool noIL, bool noStack)
     {
         ExitIfFileNotExists(fileName);
-        var d = IL.Disassemble(fileName, boogie, noIL, noStack);
-       if (d is null)
-       {
-            Error("Could not disassemble {0}.", fileName);
-            Program.Exit(ExitResult.ERROR_IN_RESULTS);
-       }
-       else
+        if (!IL.Disassemble(fileName, boogie, noIL, noStack))
         {
-            Con.WriteLine(d);
+            Program.Exit(ExitResult.ERROR_IN_RESULTS);
+        }
+        else
+        {
             ExitWithSuccess();
         }
     }
@@ -22,7 +19,15 @@ internal class ILCmd : Command
     internal static void Summarize(string fileName, bool all)
     {
         ExitIfFileNotExists(fileName);
-        IL.Summarize(fileName, all);
+
+        if (!IL.Summarize(fileName, all))
+        {
+            Program.Exit(ExitResult.ERROR_IN_RESULTS);
+        }
+        else
+        {
+            ExitWithSuccess();
+        }
     }
 
     internal static void PrintCFG(string fileName, bool all)
