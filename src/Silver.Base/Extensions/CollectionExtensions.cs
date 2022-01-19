@@ -24,4 +24,12 @@ public static class CollectionUtils
         => d.ContainsKey(k) ? (T) d[k] : throw new KeyNotFoundException($"The required key {k} is not present.");
 
     public static T? TryGet<T>(this Dictionary<string, object> d, string k) => d.ContainsKey(k) ? (T)d[k] : default(T);
+
+    public static void AddIfNotExists<K, V>(this Dictionary<K, V> d, K k, V v) where K:notnull
+    {
+        if (!d.ContainsKey(k))
+        {
+            d.Add(k, v);
+        }
+    }
 }

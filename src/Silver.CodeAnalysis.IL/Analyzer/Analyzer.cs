@@ -2,15 +2,20 @@
 
 using Backend.Analyses;
 
+public enum Analysis
+{
+	Cfg
+}
 public partial class Analyzer : Runtime
 {
     #region Constructors
-    public Analyzer(string fileName, AnalyzerState? state = null)
+    public Analyzer(string fileName, bool all = false, AnalyzerState? state = null)
 	{
 		FileName = fileName;
 		Host = new PeReader.DefaultHost();
 		Module = this.Host.LoadUnitFrom(fileName) as IModule;
 		State = state ?? new();
+		State.AddIfNotExists("all", all);
 		if (Module is null || Module == Dummy.Module || Module == Dummy.Assembly)
 		{
 			Error("The file {0} is not a valid CLR module or assembly.", fileName);
@@ -36,9 +41,17 @@ public partial class Analyzer : Runtime
 	#endregion
 
 	#region Methods
+	public (int, int) GetSummary()
+    {
+		FailIfNotInitialized();
+		var visitor = new SummaryVisitor(this.State);
+		visitor.Traverse(Module);
+		return ((int)State["types"], (int)State["methods"]);
+    }
 	public AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
-		var visitor = new MethodVisitor(Host, PdbReader, action, State);
+		FailIfNotInitialized();
+		var visitor = new MethodVisitor(action, State);
 		visitor.Traverse(Module);
 		return State;
 	}

@@ -19,10 +19,10 @@ internal class ILCmd : Command
         }
     }
 
-    internal static void PrintCFG(string fileName)
+    internal static void PrintCFG(string fileName, bool all)
     {
         ExitIfFileNotExists(fileName);
-        IL.PrintCfg(fileName);
+        IL.PrintCfg(fileName, all);
     }
 }
 

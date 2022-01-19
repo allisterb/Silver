@@ -1,19 +1,27 @@
 ﻿namespace Silver.CodeAnalysis.IL;
 
 using Backend.Analyses;
+using Backend.Model;
+using Backend.Serialization;
 public partial class Analyzer
 {
-    public static void GetControlFlowGraph(string fileName)
+    public AnalyzerState GetControlFlowGraphs()
     {
-        var analyzer = new Analyzer(FailIfFileNotFound(fileName));
-        System.Action<IMethodDefinition, AnalyzerState> a = (methodDefinition, state) =>
+        System.Action<IMethodDefinition, AnalyzerState> a = (m, state) =>
         {
-            var m = new Backend.Transformations.Disassembler(analyzer.Host, methodDefinition, analyzer.PdbReader).Execute();
-            var cfAnalysis = new ControlFlowAnalysis(m);
+            var mb = new Backend.Transformations.Disassembler(Host, m, PdbReader).Execute();
+            var cfAnalysis = new ControlFlowAnalysis(mb);
             var cfg = cfAnalysis.GenerateNormalControlFlow();
-            
+            if (cfg is null)
+            {
+                Error("Could not get control-flow graph for method {0}.", m.Name);
+            }
+            else
+            {
+                state.Add(m.Name.Value, DOTSerializer.Serialize(cfg));
+            }
         };
-        analyzer.AnalyzeMethods(a);
+        return AnalyzeMethods(a);
     }
 }
 

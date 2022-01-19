@@ -3,10 +3,9 @@
 public class Visitor : MetadataTraverser 
 {
     #region Constructors
-    public Visitor(IMetadataHost host, ISourceLocationProvider? sourceLocationProvider, AnalyzerState state) 
+    public Visitor(AnalyzerState? state = null) : base()
 	{
-		this.host = host;
-		this.sourceLocationProvider = sourceLocationProvider;
+		
 		this.State = state ?? new();
 	}
     #endregion
@@ -16,26 +15,24 @@ public class Visitor : MetadataTraverser
 	#endregion
 
     #region Fields
-    private IMetadataHost host;
-	private ISourceLocationProvider? sourceLocationProvider;
+    
 	#endregion
 }
 
 public class MethodVisitor : Visitor
 {
     #region Constructors
-    public MethodVisitor(IMetadataHost host, ISourceLocationProvider? sourceLocationProvider, System.Action<IMethodDefinition, AnalyzerState> action, AnalyzerState state) :
-		base(host, sourceLocationProvider, state)
+    public MethodVisitor(System.Action<IMethodDefinition, AnalyzerState> action, AnalyzerState state) :
+		base(state)
     {
         this.action = action;
-        this.state = state;
     }
     #endregion
 
     #region Overriden members
     public override void TraverseChildren(ITypeDefinition typeDefinition)
     {
-        if (typeDefinition.IsSmartContract())
+        if (typeDefinition.IsSmartContract() || (bool) State["all"])
         {
             base.TraverseChildren(typeDefinition);
         }
@@ -49,13 +46,48 @@ public class MethodVisitor : Visitor
     public override void TraverseChildren(IMethodDefinition methodBody)
     {
         Runtime.Debug("Entering method {0}.", methodBody.Name);
-        action(methodBody, state);
+        action(methodBody, State);
+        base.TraverseChildren(methodBody);
     }
     #endregion
 
     #region Fields
-    AnalyzerState state;
     System.Action<IMethodDefinition, AnalyzerState> action;
+    #endregion
+}
+
+public class SummaryVisitor : Visitor
+{
+    #region Constructors
+    public SummaryVisitor(AnalyzerState? state = null) :
+        base(state)
+    {
+        State.Add("types", 0);
+        State.Add("methods", 0); 
+    }
+    #endregion
+
+    #region Overriden members
+   
+    public override void TraverseChildren(ITypeDefinition typeDefinition)
+    {
+        if (typeDefinition.IsSmartContract() || (bool) State["all"])
+        {
+            
+            State["types"] = (int) State["types"] + 1;
+            base.TraverseChildren(typeDefinition);
+        }
+        else
+        {
+            Runtime.Debug("Not traversing non-contract type {0}", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
+        }
+
+    }
+
+    public override void TraverseChildren(IMethodDefinition m)
+    {
+        State["methods"] = (int)State["methods"] + 1;
+    }
     #endregion
 }
 

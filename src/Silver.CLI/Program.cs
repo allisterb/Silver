@@ -134,7 +134,7 @@ class Program : Runtime
               ExitIfFileNotFound(o.File);
               if (o.PrintCFG)
               {
-                  ILCmd.PrintCFG(o.File);
+                  ILCmd.PrintCFG(o.File, o.All);
               }
           })
          .WithParsed<VerifyOptions>(o =>
