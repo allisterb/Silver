@@ -2,6 +2,12 @@
 
 using Backend.Analyses;
 
+#region Records
+public record Summary(
+	List<ITypeDefinition> Types, List<ITypeDefinition> Structs, List<ITypeDefinition> Enums, List<IMethodDefinition> Methods,
+	List<IPropertyDefinition> Properties, List<IFieldDefinition> Fields);
+#endregion
+
 public partial class Analyzer : Runtime
 {
     #region Constructors
@@ -11,19 +17,18 @@ public partial class Analyzer : Runtime
 		Host = new PeReader.DefaultHost();
 		Module = this.Host.LoadUnitFrom(fileName) as IModule;
 		State = state ?? new();
-		State.AddIfNotExists("all", all);
 		if (Module is null || Module == Dummy.Module || Module == Dummy.Assembly)
 		{
 			Error("The file {0} is not a valid CLR module or assembly.", fileName);
 			return;
 		}
+		State.AddIfNotExists("all", all);
 		var pdbFileName = Path.ChangeExtension(fileName, "pdb");
-
+		Types.Initialize(Host);
 		if (File.Exists(pdbFileName))
 		{
 			PdbReader = new PdbReader(fileName, pdbFileName, this.Host, true);
 		}
-		Types.Initialize(Host);
 		Initialized = true;
 	}
     #endregion
@@ -37,12 +42,12 @@ public partial class Analyzer : Runtime
 	#endregion
 
 	#region Methods
-	public (List<ITypeDefinition>, List<IMethodDefinition>) GetSummary()
+	public Summary GetSummary()
     {
 		FailIfNotInitialized();
 		var summary = new SummaryVisitor(this.State);
 		summary.Traverse(Module);
-		return (summary.types, summary.methods);
+		return new(summary.types, summary.structs, summary.enums, summary.methods, summary.properties, summary.fields);
     }
 	public AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
@@ -118,6 +123,6 @@ public partial class Analyzer : Runtime
 		analyzer.AnalyzeMethods(f);
 		Info("State:{0}", analyzer.State.Keys.JoinWithSpaces());
 	}
-	#endregion
+    #endregion
 }
 

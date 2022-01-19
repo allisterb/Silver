@@ -83,6 +83,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console.NET6", "..\ext\anal
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelloBlockchainContract", "..\ext\StratisSmartContractsSamples\src\HelloBlockchainContract\HelloBlockchainContract\HelloBlockchainContract.csproj", "{B355517C-9ACC-4BD8-91A7-009D3576B5E9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PingPongContract", "..\ext\StratisSmartContractsSamples\src\PingPongContract\PingPongContract\PingPongContract.csproj", "{C034AD8E-06E2-4C27-B49B-673BE3E39133}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -528,6 +530,20 @@ Global
 		{B355517C-9ACC-4BD8-91A7-009D3576B5E9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B355517C-9ACC-4BD8-91A7-009D3576B5E9}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
 		{B355517C-9ACC-4BD8-91A7-009D3576B5E9}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.DebugCommandLine|Any CPU.ActiveCfg = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.DebugCommandLine|Any CPU.Build.0 = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.DebugExp|Any CPU.ActiveCfg = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.DebugExp|Any CPU.Build.0 = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.DebugNoData|Any CPU.ActiveCfg = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.DebugNoData|Any CPU.Build.0 = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.NoExtendedRuntime|Any CPU.ActiveCfg = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.NoExtendedRuntime|Any CPU.Build.0 = Debug|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -570,6 +586,7 @@ Global
 		{1F54A802-2B46-4393-BCAE-83F7301E2AA8} = {C8724E43-3405-411C-BFB8-B4D459B3168A}
 		{DE004FB7-C80A-463E-9AFC-1CD0198977CC} = {74A0CFE7-1E03-4D1A-AB58-8F2A62B6F640}
 		{B355517C-9ACC-4BD8-91A7-009D3576B5E9} = {6205CADA-8311-4077-8971-116FC9E7C00A}
+		{C034AD8E-06E2-4C27-B49B-673BE3E39133} = {6205CADA-8311-4077-8971-116FC9E7C00A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}

@@ -41,7 +41,7 @@ namespace Silver.Core
         public static string? Disassemble(string fileName, bool boogie, bool noIL, bool noStack) =>
             boogie ? Translator.ToBoogie(FailIfFileNotFound(fileName)) : Disassembler.Run(FailIfFileNotFound(fileName), noIL, noStack);
 
-        public static void PrintCfg(string fileName, bool all)
+        public static void Summarize(string fileName, bool all)
         {
             var a = GetTargetAssembly(FailIfFileNotFound(fileName));
             if (a is null)
@@ -56,10 +56,10 @@ namespace Silver.Core
                 Error("Could not create an analyzer for {0}.", an);
                 return;
             }
-            (var types, var methods) = an.GetSummary();
-            foreach (var t in types)
+            else
             {
-                Con.WriteLine(t.GetName());
+                var s =  an.GetSummary();
+                Info("Structs:{0}.", s.Structs);
             }
             //var cfg = an.GetControlFlowGraphs();
                 

@@ -3,7 +3,7 @@ namespace Silver.Projects;
 using System.Reflection;
 
 using Buildalyzer;
-
+using Buildalyzer.Environment;
 using Silver.Metadata;
 
 public class MSBuildSpecSharpProject : SpecSharpProject
@@ -23,7 +23,9 @@ public class MSBuildSpecSharpProject : SpecSharpProject
             m.SetGlobalProperty("Configuration", RequestedBuildConfig);
             var a = m.GetProject(filePath);
             Debug("Performing a design-time build of {0} in configuration {1}.", ProjectFile.FullName, RequestedBuildConfig);
-            var _results = a.Build();
+            var envOptions = new EnvironmentOptions() { };
+            envOptions.TargetsToBuild.Remove("Clean") ;
+            var _results = a.Build(envOptions);
             foreach (var l in log.ToString().Split(Environment.NewLine))
             {
                 Debug(l);
@@ -53,7 +55,11 @@ public class MSBuildSpecSharpProject : SpecSharpProject
                 .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
             References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
-            BuildUpToDate = !string.IsNullOrEmpty(TargetPath) && File.Exists(TargetPath) && SourceFiles.All(f => File.GetLastWriteTime(TargetPath) <= File.GetLastWriteTime(TargetPath));
+            BuildUpToDate = 
+                !string.IsNullOrEmpty(TargetPath) && 
+                File.Exists(TargetPath) && 
+                SourceFiles.All(f => File.GetLastWriteTime(f) <= File.GetLastWriteTime(TargetPath)) &&
+                ProjectFile.LastWriteTime <= File.GetLastWriteTime(TargetPath);
             Initialized = true;
             op.Complete();
         }

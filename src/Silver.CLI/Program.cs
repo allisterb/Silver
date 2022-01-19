@@ -238,6 +238,15 @@ class Program : Runtime
         }
     }
 
+    public static void ExitIfNoTargetAssembly(string filePath)
+    {
+        ExitIfFileNotFound(filePath);
+        if (Core.IL.GetTargetAssembly(filePath) is null)
+        {
+            Error("Could not get target assembly {0}.", filePath);
+            Exit(ExitResult.NOT_FOUND);
+        }
+    }
     static HelpText GetAutoBuiltHelpText(ParserResult<object> result)
     {
         return HelpText.AutoBuild(result, h =>

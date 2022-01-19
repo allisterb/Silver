@@ -200,11 +200,6 @@ public abstract class Runtime
         }
     }
 
-    private static void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
-    {
-        throw new NotImplementedException();
-    }
-
     public static void DownloadFile(string name, Uri downloadUrl, string downloadPath)
     {
         #pragma warning disable SYSLIB0014 // Type or member is obsolete

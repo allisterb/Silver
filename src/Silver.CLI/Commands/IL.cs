@@ -22,13 +22,13 @@ internal class ILCmd : Command
     internal static void Summarize(string fileName, bool all)
     {
         ExitIfFileNotExists(fileName);
-        IL.PrintCfg(fileName, all);
+        IL.Summarize(fileName, all);
     }
 
     internal static void PrintCFG(string fileName, bool all)
     {
         ExitIfFileNotExists(fileName);
-        IL.PrintCfg(fileName, all);
+        IL.Summarize(fileName, all);
     }
 }
 

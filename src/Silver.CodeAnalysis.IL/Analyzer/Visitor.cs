@@ -60,6 +60,7 @@ public class SummaryVisitor : Visitor
         this.state.Add("summary", new Dictionary<string, object>());
         this.state.Add("types", new List<ITypeDefinition>());
         this.state.Add("structs", new List<ITypeDefinition>());
+        this.state.Add("enums", new List<ITypeDefinition>());
         this.state.Add("methods", new List<IMethodDefinition>()); 
     }
     #endregion
@@ -71,6 +72,7 @@ public class SummaryVisitor : Visitor
         {
             types.Add(typeDefinition);
             if (typeDefinition.IsStruct) structs.Add(typeDefinition); 
+            if(typeDefinition.IsEnum) enums.Add(typeDefinition);
             base.TraverseChildren(typeDefinition);
         }
         else
@@ -79,13 +81,31 @@ public class SummaryVisitor : Visitor
         }
     }
 
-    public override void TraverseChildren(IMethodDefinition m) => methods.Add(m);
+    public override void TraverseChildren(IMethodDefinition m)
+    {
+        methods.Add(m);
+        base.TraverseChildren(m);
+    }
+
+    public override void TraverseChildren(IPropertyDefinition p)
+    {
+        properties.Add(p);
+        base.TraverseChildren(p);
+    }
+    public override void TraverseChildren(IFieldDefinition f)
+    {
+        fields.Add(f);
+        base.TraverseChildren(f);
+    }
     #endregion
 
     #region Fields
     public List<ITypeDefinition> types = new();
     public List<ITypeDefinition> structs = new();
+    public List<ITypeDefinition> enums = new();
     public List<IMethodDefinition> methods = new();
+    public List<IPropertyDefinition> properties = new();
+    public List<IFieldDefinition> fields = new();
     #endregion
 }
 
