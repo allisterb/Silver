@@ -53,6 +53,7 @@ public class MSBuildSpecSharpProject : SpecSharpProject
                 .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
             References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
+            BuildUpToDate = !string.IsNullOrEmpty(TargetPath) && File.Exists(TargetPath) && SourceFiles.All(f => File.GetLastWriteTime(TargetPath) <= File.GetLastWriteTime(TargetPath));
             Initialized = true;
             op.Complete();
         }
@@ -66,6 +67,14 @@ public class MSBuildSpecSharpProject : SpecSharpProject
     public string? TargetFramework { get; init; }
 
     public List<AssemblyReference>? PackageReferences { get; init; }
+    #endregion
+
+    #region Overriden members
+    public override bool NativeBuild()
+    {
+        var r = RunCmd("dotnet", "build", this.ProjectFile.DirectoryName, checkExists: false);
+        return !string.IsNullOrWhiteSpace(r);
+    }
     #endregion
 }
 

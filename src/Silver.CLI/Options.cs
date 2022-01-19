@@ -8,7 +8,7 @@ namespace Silver.CLI
         [Option('d', "debug", Required = false, HelpText = "Enable debug mode.")]
         public bool Debug { get; set; }
 
-        [Option('s', "script", Required = false, HelpText = "Enable script(non-interactive) mode.")]
+        [Option('s', "script", Required = false, HelpText = "Enable script (non-interactive) mode.")]
         public bool Script { get; set; }
 
         [Option('o', "output", Required = false, HelpText = "The output file (if any) for the operation.")]
@@ -39,25 +39,17 @@ namespace Silver.CLI
         }
     }
 
-    [Verb("install", HelpText = "Install any required external tools.")]
-    public class InstallOptions : Options 
+    [Verb("analyze", HelpText = "Analyze a .NET bytecode assembly containing Stratis smart contracts..")]
+    public class AnalyzeOptions : Options
     {
-        [Option('i', "info", Required = false, HelpText = "Print version information for installed external tools.")]
-        public bool Info { get; set; }
-    }
+        [Value(0, Required = true, HelpText = "The file to analyze.")]
+        public string File { get; set; } = String.Empty;
 
-    [Verb("boogie", HelpText = "Execute the installed Boogie tool with the specified options.")]
-    public class BoogieOptions : Options
-    {
-        [Value(0, Required = true, HelpText = "The options to pass to Boogie.")]
-        public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
-    }
+        [Option('a', "all", Required = false, HelpText = "Analyze all classes in an assembly, not only contract classes.")]
+        public bool All { get; set; }
 
-    [Verb("ssc", HelpText = "Execute the installed Spec# compiler tool with the specified options.")]
-    public class SscOptions : Options
-    {
-        [Value(0, Required = true, HelpText = "The options to pass to Boogie.")]
-        public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
+        [Option("print-cfg", Required = false, HelpText = "Print the control-flow graphs for contract classes in the assembly.")]
+        public bool PrintCFG { get; set; }
     }
 
     [Verb("compile", HelpText = "Compile a .NET project or file using the Spec# compiler.")]
@@ -79,24 +71,14 @@ namespace Silver.CLI
         public string BuildConfig { get; set; } = string.Empty;
     }
 
-    [Verb("analyze", HelpText = "Analyze a .NET bytecode assembly.")]
-    public class AnalyzeOptions : Options 
-    {
-        [Value(0, Required = true, HelpText = "The file to analyze.")]
-        public string File { get; set; } = String.Empty;
-
-        [Option("print-cfg", Required = false, HelpText = "Print the control-flow graph for classes in the assembly.")]
-        public bool PrintCFG { get; set; }
-    }
-
-    [Verb("verify", HelpText = "Verify a .NET assembly using Boogie.")]
+    [Verb("verify", HelpText = "Verify a .NET assembly compiled with Spec#.")]
     public class VerifyOptions : Options
     {
-        [Value(0, Required = true, HelpText = "The .NET assembly file to translate.")]
+        [Value(0, Required = true, HelpText = "The .NET assembly or project file to translate.")]
         public string File { get; set; } = String.Empty;
     }
 
-    [Verb("assembly", HelpText = "Analyze a .NET bytecode assembly.")]
+    [Verb("metadata", HelpText = "Get metadata for a .NET bytecode assembly.")]
     public class AssemblyOptions : Options
     {
         [Value(0, Required = true, HelpText = "The assembly file (*.dll or *.exe) to analyze.")]
@@ -120,5 +102,26 @@ namespace Silver.CLI
 
         [Option('b', "boogie", Required = false, HelpText = "Translate the assembly bytecode to Boogie.")]
         public bool Boogie { get; set; }
+    }
+
+    [Verb("boogie", HelpText = "Execute the installed Boogie tool with the specified options.")]
+    public class BoogieOptions : Options
+    {
+        [Value(0, Required = true, HelpText = "The options to pass to Boogie.")]
+        public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
+    }
+
+    [Verb("ssc", HelpText = "Execute the installed Spec# compiler tool with the specified options.")]
+    public class SscOptions : Options
+    {
+        [Value(0, Required = true, HelpText = "The options to pass to Boogie.")]
+        public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
+    }
+
+    [Verb("install", HelpText = "Install any required external tools.")]
+    public class InstallOptions : Options
+    {
+        [Option('i', "info", Required = false, HelpText = "Print version information for installed external tools.")]
+        public bool Info { get; set; }
     }
 }

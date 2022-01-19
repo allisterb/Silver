@@ -23,5 +23,9 @@ namespace Silver.Projects
             ShadowedAssembly = settings.TryGet<string>("ShadowedAssembly") ?? "";
             Initialized = true;
         }
+
+        #region Overriden members
+        public override bool NativeBuild() => this.Compile().Succeded;
+        #endregion
     }
 }

@@ -54,7 +54,7 @@ namespace Silver.Projects
                                     op.Cancel();
                                     return;
                                 }
-                                if (!(File.Exists(pr.TargetPath)) || pr.ProjectFile.LastWriteTime > File.GetLastWriteTime(pr.TargetPath))
+                                if (!File.Exists(pr.TargetPath) || !pr.BuildUpToDate)
                                 {
                                     if(!pr.Compile().Succeded)
                                     {
@@ -105,6 +105,9 @@ namespace Silver.Projects
                             SourceFiles.Add(s);
                         }
                     }
+                    
+                    BuildUpToDate = string.IsNullOrEmpty(TargetPath) && File.Exists(TargetPath) && SourceFiles.All(f => File.GetLastWriteTime(f) <= File.GetLastWriteTime(TargetPath));
+                    
                     if (Model.XEN.Build.Settings.Config.Any(c => c.Name == RequestedBuildConfig))
                     {
                         BuildConfiguration = RequestedBuildConfig;
@@ -134,6 +137,10 @@ namespace Silver.Projects
 
         #region Properties
         protected Models.VisualStudioProject? Model { get; init; }
+        #endregion
+
+        #region Overriden members
+        public override bool NativeBuild() => this.Compile().Succeded;
         #endregion
     }
 }

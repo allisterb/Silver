@@ -2,7 +2,7 @@
 
 using Backend.Analyses;
 
-public class Analyzer : Runtime
+public partial class Analyzer : Runtime
 {
     #region Constructors
     public Analyzer(string fileName, AnalyzerState? state = null)

@@ -73,7 +73,11 @@ public abstract class SpecSharpProject : Runtime
 
     public string? BuildConfiguration { get; init; }
 
+    public bool BuildUpToDate { get; protected set; }
+
     public bool Verify { get; set; } = false;
+
+    
     public string CommandLine
     {
         get
@@ -129,6 +133,10 @@ public abstract class SpecSharpProject : Runtime
             !GACReferences.Any(gr => gr.Name == r && gr.isprivate)
         );
     }
+    #endregion
+
+    #region Abstract methods
+    public abstract bool NativeBuild();
     #endregion
 
     #region Methods
@@ -230,6 +238,18 @@ public abstract class SpecSharpProject : Runtime
         }
     }
 
+    public static bool HasProjectExtension(string f)
+    {
+        switch (Path.GetExtension(f))
+        {
+            case ".csproj":
+            case ".sscproj":
+            case ".cs":
+            case ".ssc":
+                return true;
+            default: return false;
+        }
+    }
     public static SpecSharpProject? GetProject(string filePath, string buildConfig, params string [] additionalFiles)
     {  
         var f = new FileInfo(FailIfFileNotFound(filePath));
@@ -239,6 +259,7 @@ public abstract class SpecSharpProject : Runtime
                 return new MSBuildSpecSharpProject(f.FullName, buildConfig);
             case ".sscproj":
                 return new XmlSpecSharpProject(f.FullName, buildConfig);
+            case ".cs":
             case ".ssc":
                 var sourceFiles = additionalFiles.ToList().Prepend(filePath).ToList();
                 var settings = new Dictionary<string, object> 
@@ -248,7 +269,7 @@ public abstract class SpecSharpProject : Runtime
                 };
                 return new AdHocSpecSharpProject(settings);
             default:
-                Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1}, {2}, and {3}.", f.FullName, ".csproj", ".sscproj", ".ssc");
+                Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1}, {2}, {3}, and {4}.", f.FullName, ".csproj", ".sscproj", ".cs", ".ssc");
                 return null;
         }
     }
