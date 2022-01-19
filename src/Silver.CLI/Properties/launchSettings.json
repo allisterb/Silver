@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "analyze C:\\Projects\\Silver\\tests\\TestProjects\\Silver.TestProject1\\Silver.TestProject1.csproj --print-cfg -a -d"
+      "commandLineArgs": "summarize C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\PingPongContract\\PingPongContract\\PingPongContract.csproj"
     }
   }
 }

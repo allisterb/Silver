@@ -6,17 +6,13 @@ public class Visitor : MetadataTraverser
     public Visitor(AnalyzerState? state = null) : base()
 	{
 		
-		this.State = state ?? new();
+		this.state = state ?? new();
 	}
     #endregion
 
-    #region Properties
-    public Dictionary<string, object> State { get; init; }
-	#endregion
-
     #region Fields
-    
-	#endregion
+    public Dictionary<string, object> state; 
+    #endregion
 }
 
 public class MethodVisitor : Visitor
@@ -32,21 +28,20 @@ public class MethodVisitor : Visitor
     #region Overriden members
     public override void TraverseChildren(ITypeDefinition typeDefinition)
     {
-        if (typeDefinition.IsSmartContract() || (bool) State["all"])
+        if (typeDefinition.IsSmartContract() || (bool) state["all"])
         {
             base.TraverseChildren(typeDefinition);
         }
         else
         {
-            Runtime.Debug("Not traversing non-contract type {0}", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
+            Runtime.Debug("Not traversing non-contract type {0}.", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
         }
-        
     }
 
     public override void TraverseChildren(IMethodDefinition methodBody)
     {
         Runtime.Debug("Entering method {0}.", methodBody.Name);
-        action(methodBody, State);
+        action(methodBody, state);
         base.TraverseChildren(methodBody);
     }
     #endregion
@@ -62,32 +57,35 @@ public class SummaryVisitor : Visitor
     public SummaryVisitor(AnalyzerState? state = null) :
         base(state)
     {
-        State.Add("types", 0);
-        State.Add("methods", 0); 
+        this.state.Add("summary", new Dictionary<string, object>());
+        this.state.Add("types", new List<ITypeDefinition>());
+        this.state.Add("structs", new List<ITypeDefinition>());
+        this.state.Add("methods", new List<IMethodDefinition>()); 
     }
     #endregion
 
     #region Overriden members
-   
     public override void TraverseChildren(ITypeDefinition typeDefinition)
     {
-        if (typeDefinition.IsSmartContract() || (bool) State["all"])
+        if (typeDefinition.IsSmartContract() || typeDefinition.IsStruct || typeDefinition.IsEnum || (bool) state["all"])
         {
-            
-            State["types"] = (int) State["types"] + 1;
+            types.Add(typeDefinition);
+            if (typeDefinition.IsStruct) structs.Add(typeDefinition); 
             base.TraverseChildren(typeDefinition);
         }
         else
         {
             Runtime.Debug("Not traversing non-contract type {0}", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
         }
-
     }
 
-    public override void TraverseChildren(IMethodDefinition m)
-    {
-        State["methods"] = (int)State["methods"] + 1;
-    }
+    public override void TraverseChildren(IMethodDefinition m) => methods.Add(m);
+    #endregion
+
+    #region Fields
+    public List<ITypeDefinition> types = new();
+    public List<ITypeDefinition> structs = new();
+    public List<IMethodDefinition> methods = new();
     #endregion
 }
 

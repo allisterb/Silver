@@ -1,5 +1,8 @@
-﻿using Silver.CodeAnalysis.IL;
+﻿using Microsoft.Cci;
+
+using Silver.CodeAnalysis.IL;
 using Silver.Projects;
+
 namespace Silver.Core
 {
     public class IL : Runtime
@@ -46,18 +49,21 @@ namespace Silver.Core
                 Error("Could not get target assembly to analyze.");
                 return;
             }
-            else
+            
+            var an = new Analyzer(a, all);
+            if (!an.Initialized)
             {
-                var an = new Analyzer(a, all);
-                if (!an.Initialized)
-                {
-                    Error("Could not create an analyzer for {0}.", an);
-                    return;
-                }
-                (int c, int d) = an.GetSummary();
-                var cfg = an.GetControlFlowGraphs();
-                
+                Error("Could not create an analyzer for {0}.", an);
+                return;
             }
+            (var types, var methods) = an.GetSummary();
+            foreach (var t in types)
+            {
+                Con.WriteLine(t.GetName());
+            }
+            //var cfg = an.GetControlFlowGraphs();
+                
+            
         }
             
     }

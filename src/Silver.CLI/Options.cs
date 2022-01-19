@@ -39,7 +39,6 @@ namespace Silver.CLI
         }
     }
 
-    [Verb("analyze", HelpText = "Analyze a .NET bytecode assembly containing Stratis smart contracts..")]
     public class AnalyzeOptions : Options
     {
         [Value(0, Required = true, HelpText = "The file to analyze.")]
@@ -51,6 +50,11 @@ namespace Silver.CLI
         [Option("print-cfg", Required = false, HelpText = "Print the control-flow graphs for contract classes in the assembly.")]
         public bool PrintCFG { get; set; }
     }
+
+    #region Analyzer
+    [Verb("summarize", HelpText = "Summarize Stratis smart contracts in a .NET project or bytecode assembly.")]
+    public class SummarizeOptions : AnalyzeOptions { }
+    #endregion
 
     [Verb("compile", HelpText = "Compile a .NET project or file using the Spec# compiler.")]
     public class CompileOptions : Options

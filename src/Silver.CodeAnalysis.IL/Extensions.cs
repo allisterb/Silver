@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Silver.CodeAnalysis.IL
+﻿namespace Silver.CodeAnalysis.IL
 {
-    internal static class Extensions
+    public static class Extensions
     {
-        public static bool HaseBaseClass(this ITypeDefinition t) => TypeHelper.BaseClass(t) is not null;
+        public static bool HaseBaseClass(this ITypeDefinition t) => t.BaseClasses is not null && t.BaseClasses.Any();
 
         public static string GetName(this ITypeDefinition t) => TypeHelper.GetTypeName(t.ResolvedType);
-        
-        public static bool IsSmartContract(this ITypeDefinition t) => 
-            t.HaseBaseClass() && TypeHelper.BaseClass(t).GetName() == "Stratis.SmartContract";
+
+        public static bool IsSmartContract(this ITypeDefinition t)
+        {
+            return t.HaseBaseClass() && t.BaseClasses.Any(t => t.ToString() == "Stratis.SmartContracts.SmartContract");
+        }
     }
 }

@@ -55,7 +55,7 @@ class Program : Runtime
 
         #region Parse options
         ParserResult<object> result = new Parser().ParseArguments<Options, 
-            InstallOptions, AssemblyOptions, DisassemblerOptions, BoogieOptions, SscOptions, CompileOptions, VerifyOptions, AnalyzeOptions>(args);
+            InstallOptions, AssemblyOptions, DisassemblerOptions, BoogieOptions, SscOptions, CompileOptions, VerifyOptions, SummarizeOptions>(args);
         result.WithParsed<Options>(o =>
         {
             Interactive = !o.Script;
@@ -129,13 +129,11 @@ class Program : Runtime
                  CompilerCmd.Compile(file, buildConfig, o.Verify, additionalFiles);
              }
          })
-          .WithParsed<AnalyzeOptions>(o =>
+          .WithParsed<SummarizeOptions>(o =>
           {
-              ExitIfFileNotFound(o.File);
-              if (o.PrintCFG)
-              {
-                  ILCmd.PrintCFG(o.File, o.All);
-              }
+              ExitIfFileNotFound(o.File);   
+              ILCmd.PrintCFG(o.File, o.All);
+              
           })
          .WithParsed<VerifyOptions>(o =>
          {
@@ -239,6 +237,7 @@ class Program : Runtime
             Exit(ExitResult.NOT_FOUND);
         }
     }
+
     static HelpText GetAutoBuiltHelpText(ParserResult<object> result)
     {
         return HelpText.AutoBuild(result, h =>
@@ -274,7 +273,7 @@ class Program : Runtime
     static object uilock = new object();
     static Type[] optionTypes = 
     { 
-        typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(DisassemblerOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(CompileOptions), typeof(AnalyzeOptions),
+        typeof(Options), typeof(InstallOptions), typeof(AssemblyOptions), typeof(DisassemblerOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(CompileOptions), typeof(SummarizeOptions),
         typeof(VerifyOptions)
     };
     static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));

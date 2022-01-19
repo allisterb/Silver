@@ -2,10 +2,6 @@
 
 using Backend.Analyses;
 
-public enum Analysis
-{
-	Cfg
-}
 public partial class Analyzer : Runtime
 {
     #region Constructors
@@ -41,12 +37,12 @@ public partial class Analyzer : Runtime
 	#endregion
 
 	#region Methods
-	public (int, int) GetSummary()
+	public (List<ITypeDefinition>, List<IMethodDefinition>) GetSummary()
     {
 		FailIfNotInitialized();
-		var visitor = new SummaryVisitor(this.State);
-		visitor.Traverse(Module);
-		return ((int)State["types"], (int)State["methods"]);
+		var summary = new SummaryVisitor(this.State);
+		summary.Traverse(Module);
+		return (summary.types, summary.methods);
     }
 	public AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
@@ -116,7 +112,7 @@ public partial class Analyzer : Runtime
 
 			methodBody.UpdateVariables();
 
-			////var dot = DOTSerializer.Serialize(cfg);
+			//var dot = DOTSerializer.Serialize(cfg);
 			//var dgml = DGMLSerializer.Serialize(cfg)
 		};
 		analyzer.AnalyzeMethods(f);
