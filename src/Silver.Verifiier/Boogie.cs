@@ -3,8 +3,6 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-using Spectre.Console;
-
 using Silver.Verifier.Models;
 public class Boogie : Runtime
 {

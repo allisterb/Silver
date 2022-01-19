@@ -1,7 +1,5 @@
 namespace Silver;
 
-using Spectre.Console;
-
 public static class StringExtensions
 {
     public static bool IsEmpty(this string s) => s == "";
@@ -54,8 +52,6 @@ public static class StringExtensions
     {"thousand",1000},{"million",1000000}};
 
     public static Version? ToVersion(this string s) => Version.TryParse(s, out var v) ? v : null;
-
-    public static Markup ToMarkup(this string s) => new Markup(s);
 
     public static string NormalizeFilePath(this string s) => s.Replace('\\', Path.DirectorySeparatorChar).Replace('/', Path.DirectorySeparatorChar);
 

@@ -12,7 +12,9 @@ global using System.Text.RegularExpressions;
 global using System.Threading;
 global using System.Threading.Tasks;
 
+global using static Silver.Utils;
 global using static Silver.CollectionUtils;
+
 
 global using Spectre.Console;
 global using Con = Spectre.Console.AnsiConsole;

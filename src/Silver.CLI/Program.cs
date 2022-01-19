@@ -28,7 +28,7 @@ class Program : Runtime
     static Program()
     {
         AppDomain.CurrentDomain.UnhandledException += Program_UnhandledException;
-        Interactive = true;
+        InteractiveConsole = true;
         Console.CancelKeyPress += Console_CancelKeyPress;
         Console.OutputEncoding = Encoding.UTF8;
         foreach (var t in optionTypes)
@@ -58,7 +58,7 @@ class Program : Runtime
             InstallOptions, AssemblyOptions, DisassemblerOptions, BoogieOptions, SscOptions, CompileOptions, VerifyOptions, SummarizeOptions>(args);
         result.WithParsed<Options>(o =>
         {
-            Interactive = !o.Script;
+            InteractiveConsole = !o.Script;
         })
         .WithParsed<InstallOptions>(o =>
         {
@@ -85,31 +85,26 @@ class Program : Runtime
         })
         .WithParsed<BoogieOptions>(o =>
         {
-            var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie"), o.Options.Aggregate((a, b) => a + " " + b));
-            if (ret is not null)
+            if (Core.Tools.Boogie(o.Options.ToArray()))
             {
-                Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
+                Exit(ExitResult.SUCCESS);
             }
             else
             {
-                Error("Error executing Boogie.");
+                Exit(ExitResult.ERROR_IN_RESULTS);
             }
         })
         .WithParsed<SscOptions>(o =>
         {
-            var ret = RunCmd(
-                    Path.Combine(AssemblyLocation, "ssc", "ssc"),
-                    o.Options.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "-") : a).JoinWithSpaces(),
-                    Path.Combine(AssemblyLocation, "ssc")
-                );
-            if (ret is not null)
+            if (Core.Tools.Boogie(o.Options.ToArray()))
             {
-                Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
+                Exit(ExitResult.SUCCESS);
             }
             else
             {
-                Error("Error executing ssc.");
+                Exit(ExitResult.ERROR_IN_RESULTS);
             }
+
         })
          .WithParsed<CompileOptions>(o =>
          {

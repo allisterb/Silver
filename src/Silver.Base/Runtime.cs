@@ -1,10 +1,8 @@
 namespace Silver;
 
-using System.Net;
 using System.Reflection;
 
 using Microsoft.Extensions.Configuration;
-using Spectre.Console;
 
 public abstract class Runtime
 {
@@ -54,7 +52,7 @@ public abstract class Runtime
 
     public static string Config(string i) => Configuration[i];
 
-    public static bool Interactive { get; set; } = false;
+    public static bool InteractiveConsole { get; set; } = false;
 
     public static bool IsKubernetesPod { get; }
 
@@ -119,18 +117,6 @@ public abstract class Runtime
 
     [DebuggerStepThrough]
     public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
-
-    [DebuggerStepThrough]
-    public static T GetTimed<T>(Func<T> p, string status, string messageTemplate, params object[] o)
-    {
-        T ret;
-        using (var op = Begin(messageTemplate, o))
-        {
-            ret = Interactive ? AnsiConsole.Status().Spinner(Spinner.Known.Dots).Start($"{status}...", ctx => p()) : p();
-            op.Complete();
-        }
-        return ret;
-    }
 
     public void FailIfNotInitialized()
     {
@@ -200,41 +186,7 @@ public abstract class Runtime
         }
     }
 
-    public static void DownloadFile(string name, Uri downloadUrl, string downloadPath)
-    {
-        #pragma warning disable SYSLIB0014 // Type or member is obsolete
-        using (var op = Begin("Downloading {0} from {1} to {2}", name, downloadUrl, downloadPath))
-        {
-            using (var client = new WebClient())
-            {
-                if (Interactive)
-                {
-                    AnsiConsole.Progress().Start(ctx =>
-                    {
-                        var task = ctx.AddTask($"[bold white]Download[/] [bold cyan]{downloadUrl}[/]");
-                        client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
-                        {
-                            task.Value = 100.0 * ((double) e.BytesReceived / (double) e.TotalBytesToReceive);
-                        };
-                        client.DownloadDataCompleted += (object sender, DownloadDataCompletedEventArgs e) =>
-                        {
-                            task.StopTask();
-                        };
-                        client.DownloadFileAsync(downloadUrl, downloadPath);
-                        while (!task.IsFinished);
-                    });
-                    op.Complete();
-                }
-                else
-                {
-                    client.DownloadFile(downloadUrl, downloadPath);
-                    op.Complete();
-                }
-            }
-           
-        }
-        #pragma warning restore SYSLIB0014 // Type or member is obsolete
-    }
+    
 
     [DebuggerStepThrough]
     public static void SetProps<T>(T o, Dictionary<string, object> setprops)
