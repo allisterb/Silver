@@ -13,3 +13,6 @@
 [submodule "ext/AGL"]
 	path = ext/AGL
 	url = https://github.com/allisterb/AGL.git
+[submodule "ext/StratisSmartContractsSamples"]
+	path = ext/StratisSmartContractsSamples
+	url = https://github.com/stratisproject/StratisSmartContractsSamples.git
