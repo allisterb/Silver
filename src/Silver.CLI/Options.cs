@@ -3,6 +3,7 @@ using CommandLine.Text;
 
 namespace Silver.CLI
 {
+    #region Base classes
     public class Options
     {
         [Option('d', "debug", Required = false, HelpText = "Enable debug mode.")]
@@ -50,10 +51,14 @@ namespace Silver.CLI
         [Option("print-cfg", Required = false, HelpText = "Print the control-flow graphs for contract classes in the assembly.")]
         public bool PrintCFG { get; set; }
     }
+    #endregion
 
     #region Analyzer
     [Verb("summarize", HelpText = "Summarize Stratis smart contracts in a .NET project or bytecode assembly.")]
     public class SummarizeOptions : AnalyzeOptions { }
+
+    [Verb("cfg", HelpText = "Get the control-flow graphs for Stratis smart contract methods in a .NET project or bytecode assembly.")]
+    public class ControlFlowGraphOptions : AnalyzeOptions { }
     #endregion
 
     [Verb("compile", HelpText = "Compile a .NET project or file using the Spec# compiler.")]

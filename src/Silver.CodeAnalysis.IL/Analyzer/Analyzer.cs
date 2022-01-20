@@ -49,7 +49,23 @@ public partial class Analyzer : Runtime
 		summary.Traverse(Module);
 		return new(summary.types, summary.structs, summary.enums, summary.methods, summary.properties, summary.fields);
     }
-	public AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
+
+	public AnalyzerState GetControlFlow()
+	{
+		FailIfNotInitialized();
+		State.Add("cfg", new List<ControlFlowAnalysis>());
+		System.Action<IMethodDefinition, AnalyzerState> analyzer = (m, state) =>
+		{
+			var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
+			var methodBody = disassembler.Execute();
+			var cfg = new ControlFlowAnalysis(methodBody);
+			state["cfg"] = cfg;
+		};
+		var visitor = new MethodVisitor(analyzer, State);
+		visitor.Traverse(Module);
+		return State;
+	}
+	internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
 		FailIfNotInitialized();
 		var visitor = new MethodVisitor(action, State);
