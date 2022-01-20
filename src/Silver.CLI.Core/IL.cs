@@ -75,6 +75,31 @@ namespace Silver.CLI.Core
                 
             
         }
+        public static bool PrintCallGraphs(string fileName, bool all)
+        {
+            var analyzer = GetAnalyzer(fileName, all);
+            if (analyzer is null) return false;
+            var cfg = analyzer.GetControlFlow();
+            return true;
+        }
             
+
+        internal static Analyzer? GetAnalyzer(string fileName, bool all)
+        {
+            var a = GetTargetAssembly(FailIfFileNotFound(fileName));
+            if (a is null)
+            {
+                Error("Could not get target assembly to analyze.");
+                return null;
+            }
+
+            var an = new Analyzer(a, all);
+            if (!an.Initialized)
+            {
+                Error("Could not create an analyzer for {0}.", an);
+                return null;
+            }
+            else return an;
+        }
     }
 }

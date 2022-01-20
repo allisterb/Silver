@@ -25,6 +25,8 @@ public static class CollectionUtils
 
     public static T? TryGet<T>(this Dictionary<string, object> d, string k) => d.ContainsKey(k) ? (T)d[k] : default(T);
 
+    public static T Get<T>(this Dictionary<string, object> d, string k) => d.ContainsKey(k) ? (T)d[k] : throw new KeyNotFoundException();
+
     public static void AddIfNotExists<K, V>(this Dictionary<K, V> d, K k, V v) where K:notnull
     {
         if (!d.ContainsKey(k))
@@ -32,4 +34,8 @@ public static class CollectionUtils
             d.Add(k, v);
         }
     }
+
+
+
+
 }

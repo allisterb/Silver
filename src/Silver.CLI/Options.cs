@@ -57,8 +57,8 @@ namespace Silver.CLI
     [Verb("summarize", HelpText = "Summarize Stratis smart contracts in a .NET project or bytecode assembly.")]
     public class SummarizeOptions : AnalyzeOptions { }
 
-    [Verb("cfg", HelpText = "Get the control-flow graphs for Stratis smart contract methods in a .NET project or bytecode assembly.")]
-    public class ControlFlowGraphOptions : AnalyzeOptions { }
+    [Verb("call-graph", HelpText = "Get the call graph for Stratis smart contracts in a .NET project or bytecode assembly.")]
+    public class CallGraphOptions : AnalyzeOptions { }
     #endregion
 
     [Verb("compile", HelpText = "Compile a .NET project or file using the Spec# compiler.")]

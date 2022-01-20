@@ -34,7 +34,6 @@ public class Verifier : Runtime
             if (m.Errors is not null && m.Errors.Any())
             {
                 var errors = method.AddNode("[red]Errors[/]");
-                int i = 0;
                 foreach (var error in m.Errors)
                 {
                     var e = errors.AddNode(error.Message);

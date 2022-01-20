@@ -1,6 +1,7 @@
 ﻿namespace Silver.CodeAnalysis.IL;
 
 using Backend.Analyses;
+using Backend.Model;
 
 #region Records
 public record Summary(
@@ -50,22 +51,30 @@ public partial class Analyzer : Runtime
 		return new(summary.types, summary.structs, summary.enums, summary.methods, summary.properties, summary.fields);
     }
 
-	public AnalyzerState GetControlFlow()
+	public CallGraph GetCallGraph()
+    {
+		var cha = new ClassHierarchyCallGraphAnalysis(Host);
+		return cha.Analyze();
+    }
+	public List<ControlFlowGraph> GetControlFlow()
 	{
 		FailIfNotInitialized();
-		State.Add("cfg", new List<ControlFlowAnalysis>());
+		State.Add("cfg", new List<ControlFlowGraph>());
 		System.Action<IMethodDefinition, AnalyzerState> analyzer = (m, state) =>
 		{
 			var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
 			var methodBody = disassembler.Execute();
-			var cfg = new ControlFlowAnalysis(methodBody);
-			state["cfg"] = cfg;
+			var cfg = new ControlFlowGraph();//(methodBody);
+			cfg = new ControlFlowAnalysis(methodBody).GenerateNormalControlFlow();
+			var container = state.Get<List<ControlFlowGraph>>("cfg");
+			container.Add(cfg);
 		};
 		var visitor = new MethodVisitor(analyzer, State);
 		visitor.Traverse(Module);
-		return State;
-	}
-	internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
+        return State.Get<List<ControlFlowGraph>>("cfg");
+
+    }
+    internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
 		FailIfNotInitialized();
 		var visitor = new MethodVisitor(action, State);

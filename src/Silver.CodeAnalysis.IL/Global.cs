@@ -16,5 +16,4 @@ global using static Silver.CollectionUtils;
 
 global using Microsoft.Cci;
 global using Backend;
-
 global using AnalyzerState = System.Collections.Generic.Dictionary<string, object>;

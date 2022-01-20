@@ -55,7 +55,8 @@ class Program : Runtime
 
         #region Parse options
         ParserResult<object> result = new Parser().ParseArguments<Options, CompileOptions, DisassemblerOptions, VerifyOptions, AssemblyOptions,
-            SummarizeOptions,
+            AnalyzeOptions, 
+            SummarizeOptions, CallGraphOptions,
             BoogieOptions, SscOptions, InstallOptions>(args);
         result.WithParsed<Options>(o =>
         {
@@ -128,8 +129,14 @@ class Program : Runtime
           .WithParsed<SummarizeOptions>(o =>
           {
               ExitIfFileNotFound(o.File);   
-              ILCmd.PrintCFG(o.File, o.All);
+              ILCmd.Summarize(o.File, o.All);
               
+          })
+          .WithParsed<CallGraphOptions>(o =>
+          {
+              ExitIfFileNotFound(o.File);
+              ILCmd.PrintCallGraph(o.File, o.All);
+
           })
          .WithParsed<VerifyOptions>(o =>
          {
@@ -280,7 +287,7 @@ class Program : Runtime
     { 
         typeof(Options), typeof(CompileOptions), typeof(DisassemblerOptions),
         typeof(AnalyzeOptions), 
-        typeof(SummarizeOptions), 
+        typeof(SummarizeOptions), typeof(CallGraphOptions),
         typeof(VerifyOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(InstallOptions)
 
     };
