@@ -1,17 +1,19 @@
 ﻿namespace Silver.CLI.Commands;
 
 using Silver.Core;
-internal class VerifierCmd : Runtime
+using static Program;
+internal class VerifierCmd : Command
 {
     public static void Verify(string path)
     {
+        ExitIfFileNotExists(path);
         if (!Verifier.Verify(path))
         {
-            Program.Exit(ExitResult.NOT_FOUND);
+            Exit(ExitResult.NOT_FOUND);
         }
         else
         {
-            Program.Exit(ExitResult.SUCCESS);
+            Exit(ExitResult.SUCCESS);
         }
     }
 }

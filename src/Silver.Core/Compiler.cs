@@ -7,7 +7,7 @@ namespace Silver.Core
        public static bool PrintProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
         {
           
-            var p = SpecSharpProject.GetProperty(filePath, buildConfig, prop, additionalFiles);
+            var p = SpecSharpProject.GetProperty(FailIfFileNotFound(filePath), buildConfig, prop, additionalFiles);
             if (p is null)
             {
                 Error("The property {0} does not exist or is null for the project file {1}.", prop, filePath);

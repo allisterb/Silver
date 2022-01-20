@@ -1,6 +1,7 @@
 ﻿namespace Silver.CLI.Commands;
 
 using Silver.Core;
+using static Program;
 internal class ILCmd : Command
 {
     internal static void Dissassemble(string fileName, bool boogie, bool noIL, bool noStack)
@@ -8,7 +9,7 @@ internal class ILCmd : Command
         ExitIfFileNotExists(fileName);
         if (!IL.Disassemble(fileName, boogie, noIL, noStack))
         {
-            Program.Exit(ExitResult.ERROR_IN_RESULTS);
+            Exit(ExitResult.ERROR_IN_RESULTS);
         }
         else
         {
@@ -19,10 +20,9 @@ internal class ILCmd : Command
     internal static void Summarize(string fileName, bool all)
     {
         ExitIfFileNotExists(fileName);
-
         if (!IL.Summarize(fileName, all))
         {
-            Program.Exit(ExitResult.ERROR_IN_RESULTS);
+            Exit(ExitResult.ERROR_IN_RESULTS);
         }
         else
         {

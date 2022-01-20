@@ -1,6 +1,7 @@
 namespace Silver.CLI;
 
 using Silver.Core;
+using static Program;
 internal class AssemblyCmd : Command
 {
     internal static void References(string path)
@@ -8,7 +9,7 @@ internal class AssemblyCmd : Command
         ExitIfFileNotExists(path);
         if(!Metadata.GetReferences(path))
         {
-            Program.Exit(ExitResult.ERROR_IN_RESULTS);
+            Exit(ExitResult.ERROR_IN_RESULTS);
         }
         else
         {
