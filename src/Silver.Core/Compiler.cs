@@ -4,40 +4,37 @@ namespace Silver.Core
 {
     public class Compiler : Runtime
     {
-        public static object? GetProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
+       public static bool PrintProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
         {
-            var file = new FileInfo(FailIfFileNotFound(filePath));
-            if(file.Extension == ".csproj")
+          
+            var p = SpecSharpProject.GetProperty(filePath, buildConfig, prop, additionalFiles);
+            if (p is null)
             {
-                var proj = new MSBuildSpecSharpProject(filePath, buildConfig);
-                return proj.Initialized ? GetProp(proj, prop) : null;
-            }
-            else if (file.Extension == ".sscproj")
-            {
-                var proj = new XmlSpecSharpProject(filePath, buildConfig);
-                return proj.Initialized ? GetProp(proj, prop) : null;
-            }
-            else if (file.Extension == ".ssc")
-            {
-                var sourceFiles = additionalFiles.Prepend(filePath).ToList();
-                var settings = new Dictionary<string, object>
-                {
-                    { "BuildConfig", "Debug" },
-                    { "SourceFiles", sourceFiles }
-                };
-                var proj = new AdHocSpecSharpProject(settings);
-                return proj.Initialized ? GetProp(proj, prop) : null;
+                Error("The property {0} does not exist or is null for the project file {1}.", prop, filePath);
+                return false;
             }
             else
             {
-                Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1} and {2}.", filePath, ".csproj", ".sscproj");
-                return null;
+                Info("The compile-time value of property {0} in build configuration {1} is {2}.", prop, buildConfig, p);
+                return true;
             }
         }
 
-        public static string? GetCommandLine(string filePath, string buildConfig, params string [] additionalFiles)
+        public static bool GetCommandLine(string filePath, string buildConfig, params string [] additionalFiles)
         {
-            return SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles)?.CommandLine;
+            var l = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles)?.CommandLine;
+            {
+                if (l is null)
+                {
+                    Error("Could not get command line for project file {0}.", filePath);
+                    return false;
+                }
+                else
+                {
+                    Info("Spec# compiler command-line is {0}.", "ssc " + l);
+                    return true;
+                }
+            }
         }
 
         public static bool Compile(string filePath, string buildConfig, bool verify = false, params string[] additionalFiles)
