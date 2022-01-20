@@ -54,24 +54,34 @@ public partial class Analyzer : Runtime
 	public CallGraph GetCallGraph()
     {
 		var cha = new ClassHierarchyCallGraphAnalysis(Host);
-		return cha.Analyze();
-    }
-	public List<ControlFlowGraph> GetControlFlow()
-	{
-		FailIfNotInitialized();
-		State.Add("cfg", new List<ControlFlowGraph>());
-		System.Action<IMethodDefinition, AnalyzerState> analyzer = (m, state) =>
+		cha.OnNewMethodFound = (m =>
 		{
 			var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
 			var methodBody = disassembler.Execute();
-			var cfg = new ControlFlowGraph();//(methodBody);
-			cfg = new ControlFlowAnalysis(methodBody).GenerateNormalControlFlow();
-			var container = state.Get<List<ControlFlowGraph>>("cfg");
-			container.Add(cfg);
+			MethodBodyProvider.Instance.AddBody(m, methodBody);
+			return true;
+		});
+		//var op = Begin("Analyzing call graph");
+		var methods = GetContractMethods();
+		var cg = cha.Analyze();
+		//op.Complete();
+		return cg;
+    }
+	public Dictionary<IMethodDefinition, ControlFlowGraph> GetControlFlow()
+	{
+		FailIfNotInitialized();
+		State.Add("cfg", new Dictionary<IMethodDefinition, ControlFlowGraph>());
+		System.Action<IMethodDefinition, AnalyzerState> analyzer = (m, state) =>
+		{
+			var container = state.Get<Dictionary<IMethodDefinition, ControlFlowGraph>>("cfg");
+			var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
+			var methodBody = disassembler.Execute();
+			var cfg = new ControlFlowAnalysis(methodBody).GenerateNormalControlFlow();
+			container.Add(m, cfg);
 		};
 		var visitor = new MethodVisitor(analyzer, State);
 		visitor.Traverse(Module);
-        return State.Get<List<ControlFlowGraph>>("cfg");
+        return State.Get<Dictionary<IMethodDefinition, ControlFlowGraph>>("cfg");
 
     }
     internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
@@ -79,7 +89,28 @@ public partial class Analyzer : Runtime
 		FailIfNotInitialized();
 		var visitor = new MethodVisitor(action, State);
 		visitor.Traverse(Module);
-		return State;
+		return visitor.state;
+	}
+
+	internal List<IMethodDefinition> GetContractMethods()
+    {
+		if (State.ContainsKey("methods"))
+        {
+			return State.Get<List<IMethodDefinition>>("methods");
+        }
+
+		System.Action<IMethodDefinition, AnalyzerState> analyzer = (m, state) =>
+		{
+			var container = state.Get<List<IMethodDefinition>>("methods");
+			container.Add(m);
+
+		};
+		using var op = Begin("Get contract methods");
+		State.Add("methods", new List<IMethodDefinition>());
+		var visitor = new MethodVisitor(analyzer, State);
+		visitor.Traverse(Module);
+		op.Complete();
+		return visitor.state.Get<List<IMethodDefinition>>("methods");
 	}
 
 	public static void Test(string fileName)

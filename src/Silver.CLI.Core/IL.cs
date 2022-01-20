@@ -79,7 +79,7 @@ namespace Silver.CLI.Core
         {
             var analyzer = GetAnalyzer(fileName, all);
             if (analyzer is null) return false;
-            var cfg = analyzer.GetControlFlow();
+            var cg = analyzer.GetCallGraph();
             return true;
         }
             
