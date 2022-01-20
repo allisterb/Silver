@@ -1,6 +1,6 @@
-namespace Silver.CLI;
+namespace Silver.CLI.Commands;
 
-using Silver.Core;
+using Silver.CLI.Core;
 using static Program;
 internal class AssemblyCmd : Command
 {

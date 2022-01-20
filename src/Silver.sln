@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "cci", "cci", "{97B84996-DCE
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.DiaSymReader.Converter", "..\ext\cci\NET6\ext\symreader-converter\src\Microsoft.DiaSymReader.Converter\Microsoft.DiaSymReader.Converter.csproj", "{924EFAC3-8EE8-4B89-BC37-678E2D47C216}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Core", "Silver.Core\Silver.Core.csproj", "{C9209A62-8645-44B7-8F7D-B7902EF28EFA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CLI.Core", "Silver.CLI.Core\Silver.CLI.Core.csproj", "{C9209A62-8645-44B7-8F7D-B7902EF28EFA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CLI", "Silver.CLI\Silver.CLI.csproj", "{C3470CEA-A6AB-4D35-8252-296641558163}"
 EndProject

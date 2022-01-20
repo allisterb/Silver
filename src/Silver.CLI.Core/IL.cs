@@ -1,9 +1,7 @@
-﻿using Microsoft.Cci;
-
-using Silver.CodeAnalysis.IL;
+﻿using Silver.CodeAnalysis.IL;
 using Silver.Projects;
 
-namespace Silver.Core
+namespace Silver.CLI.Core
 {
     public class IL : Runtime
     {
@@ -40,7 +38,7 @@ namespace Silver.Core
         }
         public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack)
         {
-            var output =  boogie? Translator.ToBoogie(FailIfFileNotFound(fileName)) : Disassembler.Run(FailIfFileNotFound(fileName), noIL, noStack);
+            var output =  boogie ? Translator.ToBoogie(FailIfFileNotFound(fileName)) : Disassembler.Run(FailIfFileNotFound(fileName), noIL, noStack);
             if (output is null)
             {
                 Error("Could not disassemble {0}.", fileName);
@@ -49,7 +47,7 @@ namespace Silver.Core
             else
             {
                 Con.WriteLine(output);
-                return true; ;
+                return true;
             }
         }
         public static bool Summarize(string fileName, bool all)
@@ -70,7 +68,7 @@ namespace Silver.Core
             else
             {
                 var s =  an.GetSummary();
-                Info("Structs:{0}.", s.Structs);
+                Info("Structs:{0}.", s.Fields);
                 return true;
             }
             //var cfg = an.GetControlFlowGraphs();

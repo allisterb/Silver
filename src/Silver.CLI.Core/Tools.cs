@@ -1,4 +1,4 @@
-﻿namespace Silver.Core;
+﻿namespace Silver.CLI.Core;
 
 public class Tools : Runtime
 {

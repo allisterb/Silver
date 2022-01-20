@@ -1,6 +1,6 @@
 ﻿using Silver.Projects;
 
-namespace Silver.Core
+namespace Silver.CLI.Core
 {
     public class Compiler : Runtime
     {

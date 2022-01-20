@@ -1,4 +1,4 @@
-namespace Silver.Core;
+namespace Silver.CLI.Core;
 
 using Silver.Metadata;
 public class Metadata : Runtime

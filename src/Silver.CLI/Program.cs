@@ -284,4 +284,3 @@ class Program : Runtime
     static Dictionary<string, Type> optionTypesMap = new Dictionary<string, Type>();
     #endregion
 }
-

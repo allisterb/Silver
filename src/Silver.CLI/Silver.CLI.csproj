@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
-    <ProjectReference Include="..\Silver.Core\Silver.Core.csproj" />
+    <ProjectReference Include="..\Silver.CLI.Core\Silver.CLI.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

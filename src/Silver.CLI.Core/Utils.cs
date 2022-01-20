@@ -1,7 +1,7 @@
 ﻿using static Silver.Runtime;
 using System.Net;
 
-namespace Silver
+namespace Silver.CLI.Core
 {
     internal static class Utils 
     {

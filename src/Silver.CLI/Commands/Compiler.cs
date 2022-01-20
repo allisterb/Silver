@@ -1,7 +1,7 @@
 namespace Silver.CLI.Commands;
 
+using Silver.CLI.Core;
 using static Program;
-using Silver.Core;
 
 internal class CompilerCmd : Command
 {
