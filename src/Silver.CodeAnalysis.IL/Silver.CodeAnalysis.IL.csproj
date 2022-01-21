@@ -7,10 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.NETStandard\AGL.Drawing.NETStandard.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\AGL.NETStandard\AGL.NETStandard.csproj" />
     <ProjectReference Include="..\..\ext\analysis-net\Backend\Backend.NET6.csproj" />
     <ProjectReference Include="..\..\ext\analysis-net\cci\NET6\Microsoft.Cci\Microsoft.Cci.NET6.csproj" />
     <ProjectReference Include="..\..\ext\TinyBCT\TinyBCT\TinyBCT.NET6.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
+    <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,14 +2,17 @@
 
 using System.DrawingCore;
 using System.DrawingCore.Imaging;
-using Microsoft.Msagl;
+using Microsoft.Msagl.Core.Geometry.Curves;
+using Microsoft.Msagl.Core.Layout;
+using Microsoft.Msagl.Core.Routing;
+using Microsoft.Msagl.Layout.Layered;
 using Microsoft.Msagl.Drawing;
 using AGL.Drawing.Gdi;
-public class Graph : Runtime
+public static class Graph 
 {
-    public Microsoft.Msagl.Drawing.Graph FromDot(string dot) => Dot2Graph.Parser.Parse(dot.ToStream(), out var line, out var col, out var msg);
+    public static Microsoft.Msagl.Drawing.Graph FromDot(string dot) => Dot2Graph.Parser.Parse(dot.ToStream(), out var line, out var col, out var msg);
 
-    public void ToBmp(Microsoft.Msagl.Drawing.Graph graph)
+    public static void ToBmp(Microsoft.Msagl.Drawing.Graph graph)
     {
         using (Bitmap bmp = new Bitmap(400, 400))
         using (Graphics g = Graphics.FromImage(bmp))
@@ -21,5 +24,23 @@ public class Graph : Runtime
             GdiUtils.DrawFromGraph(rect, graph.GeometryGraph, g);
             bmp.Save("graph.bmp", ImageFormat.Bmp);
         }
+    }
+
+    public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeHeight = 10, int minNodeWidth = 20)
+    {
+        SugiyamaLayoutSettings sugiyamaSettings = new SugiyamaLayoutSettings
+        {
+            Transformation = PlaneTransformation.Rotation(Math.PI / 2),
+            EdgeRoutingSettings = { EdgeRoutingMode = EdgeRoutingMode.Spline },
+            MinNodeHeight = minNodeHeight,
+            MinNodeWidth = minNodeWidth
+
+        };
+        return sugiyamaSettings;
+    }
+
+    public static DrawGraph(Microsoft.Msagl.Drawing.Graph graph)
+    {
+
     }
 }

@@ -9,3 +9,5 @@ global using System.Text.RegularExpressions;
 
 
 global using static Silver.CollectionUtils;
+
+using MSGraph = Microsoft.Msagl.Drawing.Graph;

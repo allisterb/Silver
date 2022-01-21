@@ -2,6 +2,8 @@
 
 using Backend.Analyses;
 using Backend.Model;
+using Microsoft.Msagl;
+using Microsoft.Msagl.Drawing;
 
 #region Records
 public record Summary(
@@ -51,8 +53,9 @@ public partial class Analyzer : Runtime
 		return new(summary.types, summary.structs, summary.enums, summary.methods, summary.properties, summary.fields);
     }
 
-	public CallGraph GetCallGraph()
+	public Graph GetCallGraph()
     {
+		using var op = Begin("Analyzing call graph");
 		var cha = new ClassHierarchyCallGraphAnalysis(Host);
 		cha.OnNewMethodFound = (m =>
 		{
@@ -61,11 +64,42 @@ public partial class Analyzer : Runtime
 			MethodBodyProvider.Instance.AddBody(m, methodBody);
 			return true;
 		});
-		//var op = Begin("Analyzing call graph");
 		var methods = GetContractMethods();
 		var cg = cha.Analyze();
-		//op.Complete();
-		return cg;
+		var g = new Graph();
+		g.LayoutAlgorithmSettings = Drawing.Graph.GetSugiyamaLayout(); 
+		if (g is null) throw new InvalidOperationException();
+		foreach(var method in cg.Roots)
+        {
+			Node? rootNode = null;
+			var calllsites = cg.GetCallSites(method);
+			var i = cg.GetInvocations(method);
+			var nid = MemberHelper.GetMethodSignature(method);
+			if (!g.Nodes.Any(n => n.Id == nid))
+            {
+				rootNode = g.AddNode(nid);
+				rootNode.Label = new Label(method.Name.Value);
+            }
+			else
+            {
+				rootNode = g.FindNode(nid);
+            }
+			foreach(var cs in calllsites)
+            {
+				Node? csNode = null;
+				var csid = MemberHelper.GetMethodSignature(cs.Caller);
+				if (!g.Nodes.Any(n => nid == csid))
+                {
+					csNode = g.AddNode(csid);
+                }
+				else
+                {
+					csNode = g.FindNode(csid);
+                }
+				g.AddEdge(csNode.Id, rootNode.Id);
+            }
+        }
+		return g;
     }
 	public Dictionary<IMethodDefinition, ControlFlowGraph> GetControlFlow()
 	{
