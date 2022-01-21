@@ -117,16 +117,16 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AnalyzerDescription" xml:space="preserve">
-    <value>Type names should be all uppercase.</value>
+  <data name="SC0001_Description" xml:space="preserve">
+    <value>.NET code must be deterministic. See https://academy.stratisplatform.com/Architecture%20Reference/SmartContracts/smart-contracts-basic-theory.html#using-net-for-smart-contracts .</value>
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
-  <data name="AnalyzerMessageFormat" xml:space="preserve">
-    <value>Type name '{0}' contains lowercase letters</value>
-    <comment>The format-able message the diagnostic displays.</comment>
-  </data>
-  <data name="AnalyzerTitle" xml:space="preserve">
-    <value>Type name contains lowercase letters</value>
+  <data name="SC0001_Title" xml:space="preserve">
+    <value>Type not allowed</value>
     <comment>The title of the diagnostic.</comment>
+  </data>
+  <data name="SC001_MessageFormat" xml:space="preserve">
+    <value>Type '{0}' cannot be used in smart contract code</value>
+    <comment>The format-able message the diagnostic displays.</comment>
   </data>
 </root>

@@ -5,5 +5,5 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-SilverCodeAnalysisVs |  Naming  |  Warning |
+SC0001  | Naming   | Error    | SmartContractSyntaxValidator
 

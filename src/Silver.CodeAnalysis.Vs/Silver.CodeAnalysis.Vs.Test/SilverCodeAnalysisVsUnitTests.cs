@@ -1,7 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using VerifyCS = Silver.CodeAnalysis.Vs.Test.CSharpCodeFixVerifier<
-    Silver.CodeAnalysis.Vs.SilverCodeAnalysisVsAnalyzer,
+    Silver.CodeAnalysis.Vs.SmartContractSyntaxValidator,
     Silver.CodeAnalysis.Vs.SilverCodeAnalysisVsCodeFixProvider>;
 
 namespace Silver.CodeAnalysis.Vs.Test
