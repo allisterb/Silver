@@ -16,3 +16,6 @@
 [submodule "ext/StratisSmartContractsSamples"]
 	path = ext/StratisSmartContractsSamples
 	url = https://github.com/stratisproject/StratisSmartContractsSamples.git
+[submodule "ext/SharpSyntaxRewriter"]
+	path = ext/SharpSyntaxRewriter
+	url = https://github.com/allisterb/SharpSyntaxRewriter.git
