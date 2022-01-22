@@ -35,6 +35,8 @@
                 SyntaxKind.UsingDirective);
             context.RegisterSyntaxNodeAction(ctx => AnalyzeNamespaceDecl((NamespaceDeclarationSyntax) ctx.Node, ctx), 
                 SyntaxKind.NamespaceDeclaration);
+            context.RegisterSyntaxNodeAction(ctx => AnalyzeClassDecl((ClassDeclarationSyntax) ctx.Node, ctx), 
+                SyntaxKind.ClassDeclaration); 
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
         }
         #endregion

@@ -141,4 +141,13 @@
     <value>Namespace declaration not allowed</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="SC0003_Description" xml:space="preserve">
+    <value>Classes in smart contract code must inherit from Stratis.SmartContrsct</value>
+  </data>
+  <data name="SC0003_MessageFormat" xml:space="preserve">
+    <value>Class {0} must inherit from class Stratis.SmartContracts.SmartContract</value>
+  </data>
+  <data name="SC0003_Title" xml:space="preserve">
+    <value>Class must inherit from SmartContract class</value>
+  </data>
 </root>

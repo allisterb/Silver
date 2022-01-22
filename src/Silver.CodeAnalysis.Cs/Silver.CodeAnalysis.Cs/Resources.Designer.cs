@@ -113,5 +113,32 @@ namespace Silver.CodeAnalysis.Cs {
                 return ResourceManager.GetString("SC0002_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Classes in smart contract code must inherit from Stratis.SmartContrsct.
+        /// </summary>
+        internal static string SC0003_Description {
+            get {
+                return ResourceManager.GetString("SC0003_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Class {0} must inherit from class Stratis.SmartContracts.SmartContract.
+        /// </summary>
+        internal static string SC0003_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0003_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Class must inherit from SmartContract class.
+        /// </summary>
+        internal static string SC0003_Title {
+            get {
+                return ResourceManager.GetString("SC0003_Title", resourceCulture);
+            }
+        }
     }
 }
