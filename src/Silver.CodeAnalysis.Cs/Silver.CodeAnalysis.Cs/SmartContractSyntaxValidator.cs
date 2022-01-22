@@ -10,6 +10,7 @@ using System.Threading;
 
 namespace Silver.CodeAnalysis.Cs
 {
+    using static SyntaxAnalyzer;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SmartContractSyntaxValidator : DiagnosticAnalyzer
@@ -26,50 +27,16 @@ namespace Silver.CodeAnalysis.Cs
 
         public override void Initialize(AnalysisContext context)
         {
+            if (!System.Diagnostics.Debugger.IsAttached) context.EnableConcurrentExecution();
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
-            context.EnableConcurrentExecution();
-            context.RegisterSyntaxNodeAction(ctx => {
-
-                var g = (UsingDirectiveSyntax)ctx.Node;
-                var xx = g.DescendantNodes().First();
-                if (xx.ToFullString() != "Stratis.SmartContracts")
-                {
-                    var diagnostic = Diagnostic.Create(GetErrorDescriptor("SC0001"), g.GetLocation(), xx.ToFullString());
-
-                    ctx.ReportDiagnostic(diagnostic);
-                }
-            }, SyntaxKind.UsingDirective);
+            context.RegisterSyntaxNodeAction(ctx => AnalyzeUsingDirective((UsingDirectiveSyntax) ctx.Node, ctx), 
+                SyntaxKind.UsingDirective);
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
         }
         #endregion
 
         #region Methods
-        static void AnalyzeSymbol(SymbolAnalysisContext context)
-        {
-            // TODO: Replace the following code with your own analysis, generating Diagnostic objects for any issues you find
-            if (true)
-            {
-                /*
-                if (ns.Name != "Stratis.SmartContracts")
-                {
-                    var diagnostic = Diagnostic.Create(Rule, ns.Locations[0], ns.Name);
-
-                    context.ReportDiagnostic(diagnostic);
-                }
-                */
-            }
-
-            // Find just those named type symbols with names containing lowercase letters.
-            //if (namedTypeSymbol.Name.ToCharArray().Any(char.IsLower))
-            //{
-            // For all such symbols, produce a diagnostic.
-            //    var diagnostic = Diagnostic.Create(Rule, namedTypeSymbol.Locations[0], namedTypeSymbol.Name);
-
-            //context.ReportDiagnostic(diagnostic);
-            //}
-        }
-
-        static DiagnosticDescriptor GetErrorDescriptor(string id) =>
+        public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
             new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,
                 DiagnosticSeverity.Error, true, RM.GetString($"{id}_Description"));
         #endregion
