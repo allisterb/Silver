@@ -5,5 +5,5 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-SC0001  | Naming   | Error    | SmartContractSyntaxValidator
+SC0001  | Smart Contracts | Error | SmartContractSyntaxValidator
 

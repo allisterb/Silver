@@ -52,8 +52,10 @@ namespace Silver.CodeAnalysis.Vs.Test
         }
     }";
 
-            var expected = VerifyCS.Diagnostic("SilverCodeAnalysisVs").WithLocation(0).WithArguments("TypeName");
-            await VerifyCS.VerifyCodeFixAsync(test, expected, fixtest);
+            var expected = VerifyCS.Diagnostic("SC0001");
+            var ff = new Microsoft.CodeAnalysis.Testing.DiagnosticResult[6];
+            System.Array.Fill(ff, expected);
+            await VerifyCS.VerifyCodeFixAsync(test, ff, fixtest);
         }
     }
 }

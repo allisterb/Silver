@@ -20,7 +20,7 @@ namespace Silver.CodeAnalysis.Vs
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create(SmartContractSyntaxValidator.DiagnosticId); }
+            get { return ImmutableArray.Create("SC0001"); }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
