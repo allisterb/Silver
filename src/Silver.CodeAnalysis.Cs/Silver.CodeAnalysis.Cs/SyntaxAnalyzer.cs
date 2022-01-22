@@ -20,7 +20,7 @@ namespace Silver.CodeAnalysis.Cs
             var xx = node.DescendantNodes().First();
             if (xx.ToFullString() != "Stratis.SmartContracts")
             {
-                var diagnostic = Diagnostic.Create(Validator.GetErrorDescriptor("SC0001"), node.GetLocation(), xx.ToFullString());
+                var diagnostic = Diagnostic.Create(GetErrorDescriptor("SC0001"), node.GetLocation(), xx.ToFullString());
                 ctx?.ReportDiagnostic(diagnostic);
                 return diagnostic;
             }
@@ -31,7 +31,18 @@ namespace Silver.CodeAnalysis.Cs
         }
 
         public static Diagnostic GetDiagnostic(string id, CSharpSyntaxTree syntaxTree, int line, int col, params object[] args) =>
-            Diagnostic.Create(Validator.GetErrorDescriptor(id), Location.Create(syntaxTree, TextSpan.FromBounds(0, 10)), args);
+            Diagnostic.Create(GetErrorDescriptor(id), Location.Create(syntaxTree, TextSpan.FromBounds(0, 10)), args);
+      
+        public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
+            new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,
+                DiagnosticSeverity.Error, true, RM.GetString($"{id}_Description"));
+        #endregion
+
+        #region Fields
+        internal static string[] DiagnosticIds = { "SC0001" };
+        internal static ImmutableArray<DiagnosticDescriptor> Errors;
+        internal static string Category = "Smart Contract";
+        internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
         #endregion
     }
 }

@@ -24,7 +24,7 @@
         }
         #endregion
         #region Overriden members
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = Errors;
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = SyntaxAnalyzer.Errors;
 
         public override void Initialize(AnalysisContext context)
         {
@@ -36,21 +36,6 @@
         }
         #endregion
 
-        #region Methods
-        public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
-            new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,
-                DiagnosticSeverity.Error, true, RM.GetString($"{id}_Description"));
-        #endregion
-
-        #region Fields
-        static string[] DiagnosticIds = { "SC0001" };
-
-        static ImmutableArray<DiagnosticDescriptor> Errors;
-
-        private const string Category = "Smart Contract";
-        private static System.Resources.ResourceManager RM = Resources.ResourceManager;
-
-
-        #endregion
+       
     }
 }

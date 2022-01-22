@@ -59,8 +59,8 @@ namespace Silver.CodeAnalysis.Cs
                 }";
             */
             var syntaxTree = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(test);
-            var expected = new[] { VerifyCS.Diagnostic(SmartContractSyntaxValidator.GetErrorDescriptor("SC0001"))
-                .WithSpan(2, 17, 2, 30).WithArguments("System"), VerifyCS.Diagnostic(SmartContractSyntaxValidator.GetErrorDescriptor("SC0001"))
+            var expected = new[] { VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0001"))
+                .WithSpan(2, 17, 2, 30).WithArguments("System"), VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0001"))
                 .WithSpan(3, 17, 3, 50).WithArguments("System.Collections.Generic")};
             await VerifyCS.VerifyAnalyzerAsync(test, expected);
         }
