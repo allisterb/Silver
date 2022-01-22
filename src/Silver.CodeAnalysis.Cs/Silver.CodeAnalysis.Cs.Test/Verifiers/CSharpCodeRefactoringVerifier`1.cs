@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.Testing;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Silver.CodeAnalysis.Cs.Test
+namespace Silver.CodeAnalysis.Cs.Tests
 {
     public static partial class CSharpCodeRefactoringVerifier<TCodeRefactoring>
         where TCodeRefactoring : CodeRefactoringProvider, new()

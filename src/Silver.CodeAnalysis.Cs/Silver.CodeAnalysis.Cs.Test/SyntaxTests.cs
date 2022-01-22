@@ -1,20 +1,28 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
-using VerifyCS = Silver.CodeAnalysis.Cs.Test.CSharpCodeFixVerifier<
-    Silver.CodeAnalysis.Cs.SmartContractSyntaxValidator,
+﻿using System.Threading.Tasks;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Silver.CodeAnalysis.Cs;
+using VerifyCS = Silver.CodeAnalysis.Cs.Tests.CSharpCodeFixVerifier<Silver.CodeAnalysis.Cs.SmartContractSyntaxValidator,
     Silver.CodeAnalysis.Cs.SilverCodeAnalysisCsCodeFixProvider>;
 
-namespace Silver.CodeAnalysis.Cs.Test
+namespace Silver.CodeAnalysis.Cs
 {
     [TestClass]
-    public class SilverCodeAnalysisVsUnitTest
+    public class SyntaxTests
     {
         //No diagnostics expected to show up
         [TestMethod]
-        public async Task TestMethod1()
+        public async Task UsingDirectiveNullTest()
         {
-            var test = @"";
-
+            var test = @"
+                using Stratis.SmartContracts;
+                namespace ConsoleApplication1
+                {
+                    class {|#0:TypeName|}
+                    {   
+                    }
+                }"; 
             await VerifyCS.VerifyAnalyzerAsync(test);
         }
 

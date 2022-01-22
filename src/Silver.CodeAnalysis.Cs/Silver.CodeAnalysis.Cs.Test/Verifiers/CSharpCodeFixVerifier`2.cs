@@ -4,10 +4,12 @@ using Microsoft.CodeAnalysis.CSharp.Testing;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Testing;
 using Microsoft.CodeAnalysis.Testing.Verifiers;
+
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Silver.CodeAnalysis.Cs.Test
+namespace Silver.CodeAnalysis.Cs.Tests
 {
     public static partial class CSharpCodeFixVerifier<TAnalyzer, TCodeFix>
         where TAnalyzer : DiagnosticAnalyzer, new()
@@ -28,9 +30,15 @@ namespace Silver.CodeAnalysis.Cs.Test
         /// <inheritdoc cref="CodeFixVerifier{TAnalyzer, TCodeFix, TTest, TVerifier}.VerifyAnalyzerAsync(string, DiagnosticResult[])"/>
         public static async Task VerifyAnalyzerAsync(string source, params DiagnosticResult[] expected)
         {
+            var referenceAssemblies = ReferenceAssemblies.Default
+                .AddPackages(ImmutableArray.Create(
+                    new PackageIdentity("Stratis.SmartContracts", "2.0.0")
+                ));
+    
             var test = new Test
             {
                 TestCode = source,
+                ReferenceAssemblies = referenceAssemblies,
             };
 
             test.ExpectedDiagnostics.AddRange(expected);

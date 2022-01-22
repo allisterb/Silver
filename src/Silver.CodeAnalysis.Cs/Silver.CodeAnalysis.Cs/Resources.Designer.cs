@@ -61,7 +61,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .NET code must be deterministic. See https://academy.stratisplatform.com/Architecture%20Reference/SmartContracts/smart-contracts-basic-theory.html#using-net-for-smart-contracts ..
+        ///   Looks up a localized string similar to Smart contract code must be deterministic. See https://academy.stratisplatform.com/Architecture%20Reference/SmartContracts/smart-contracts-basic-theory.html#using-net-for-smart-contracts ..
         /// </summary>
         internal static string SC0001_Description {
             get {

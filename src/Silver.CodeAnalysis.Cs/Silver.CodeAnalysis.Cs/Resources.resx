@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="SC0001_Description" xml:space="preserve">
-    <value>.NET code must be deterministic. See https://academy.stratisplatform.com/Architecture%20Reference/SmartContracts/smart-contracts-basic-theory.html#using-net-for-smart-contracts .</value>
+    <value>Smart contract code must be deterministic. See https://academy.stratisplatform.com/Architecture%20Reference/SmartContracts/smart-contracts-basic-theory.html#using-net-for-smart-contracts .</value>
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
   <data name="SC0001_MessageFormat" xml:space="preserve">
