@@ -9,7 +9,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
-using Validator = Silver.CodeAnalysis.Cs.SmartContractDiagnosticAnalyzer;
 namespace Silver.CodeAnalysis.Cs
 {
     public class SyntaxAnalyzer
@@ -30,16 +29,21 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        public static Diagnostic GetDiagnostic(string id, CSharpSyntaxTree syntaxTree, int line, int col, params object[] args) =>
-            Diagnostic.Create(GetErrorDescriptor(id), Location.Create(syntaxTree, TextSpan.FromBounds(0, 10)), args);
-      
+        public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SyntaxNodeAnalysisContext? ctx = null)
+        {
+            var n = node.DescendantNodes().First();
+            var diagnostic = Diagnostic.Create(GetErrorDescriptor("SC0002"), n.GetLocation(), n.ToFullString());
+            ctx?.ReportDiagnostic(diagnostic);
+            return diagnostic;
+        }
+
         public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
             new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,
                 DiagnosticSeverity.Error, true, RM.GetString($"{id}_Description"));
         #endregion
 
         #region Fields
-        internal static string[] DiagnosticIds = { "SC0001" };
+        internal static string[] DiagnosticIds = { "SC0001", "SC0002" };
         internal static ImmutableArray<DiagnosticDescriptor> Errors;
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;

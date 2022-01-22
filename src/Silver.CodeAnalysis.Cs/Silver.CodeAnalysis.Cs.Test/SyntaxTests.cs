@@ -1,13 +1,11 @@
-﻿using System.Threading.Tasks;
-
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-using Silver.CodeAnalysis.Cs;
-using VerifyCS = Silver.CodeAnalysis.Cs.Tests.CSharpCodeFixVerifier<Silver.CodeAnalysis.Cs.SmartContractDiagnosticAnalyzer,
-    Silver.CodeAnalysis.Cs.SilverCodeAnalysisCsCodeFixProvider>;
-
-namespace Silver.CodeAnalysis.Cs
+﻿namespace Silver.CodeAnalysis.Cs
 {
+    using System.Threading.Tasks;
+
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    using VerifyCS = Tests.CSharpCodeFixVerifier<SmartContractDiagnosticAnalyzer, SilverCodeAnalysisCsCodeFixProvider>;
+
     [TestClass]
     public class SyntaxTests
     {
@@ -42,26 +40,33 @@ namespace Silver.CodeAnalysis.Cs
                     }
                 }";
 
-            /*
-            var fixtest = @"
-                using System;
-                using System.Collections.Generic;
-                using System.Linq;
-                using System.Text;
-                using System.Threading.Tasks;
-                using System.Diagnostics;
+            var expected = new[] 
+            { 
+                VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0001")).WithSpan(2, 17, 2, 30).WithArguments("System"), 
+                VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0001")).WithSpan(3, 17, 3, 50).WithArguments("System.Collections.Generic")
+            };
+            await VerifyCS.VerifyAnalyzerAsync(test, expected);
+        }
+
+        [TestMethod]
+        public async Task NamespaceDeclTest()
+        {
+            var test = @"
+                // using System;
+                // using System.Collections.Generic;
+                // using Stratis.SmartContracts;
 
                 namespace ConsoleApplication1
                 {
-                    class TYPENAME
+                    class {|#0:TypeName|}
                     {   
                     }
                 }";
-            */
-            var syntaxTree = Microsoft.CodeAnalysis.CSharp.CSharpSyntaxTree.ParseText(test);
-            var expected = new[] { VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0001"))
-                .WithSpan(2, 17, 2, 30).WithArguments("System"), VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0001"))
-                .WithSpan(3, 17, 3, 50).WithArguments("System.Collections.Generic")};
+
+            var expected = new[]
+            {
+                VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0002")).WithSpan(6, 7, 11, 18).WithArguments("ConsoleApplication1")
+            };
             await VerifyCS.VerifyAnalyzerAsync(test, expected);
         }
     }

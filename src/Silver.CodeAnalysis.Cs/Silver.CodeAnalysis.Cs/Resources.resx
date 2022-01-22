@@ -129,4 +129,16 @@
     <value>Type not allowed</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="SC0002_Description" xml:space="preserve">
+    <value>Smart contract code must not be inside a namespace. See https://academy.stratisplatform.com/Architecture%20Reference/SmartContracts/smart-contracts-basic-theory.html#using-net-for-smart-contracts .</value>
+    <comment>An optional longer localizable description of the diagnostic.</comment>
+  </data>
+  <data name="SC0002_MessageFormat" xml:space="preserve">
+    <value>Namespace declaration not allowed in smart contract code</value>
+    <comment>The format-able message the diagnostic displays.</comment>
+  </data>
+  <data name="SC0002_Title" xml:space="preserve">
+    <value>Namespace declaration not allowed</value>
+    <comment>The title of the diagnostic.</comment>
+  </data>
 </root>

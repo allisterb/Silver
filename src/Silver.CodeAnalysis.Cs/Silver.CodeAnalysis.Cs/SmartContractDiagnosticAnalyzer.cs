@@ -30,8 +30,11 @@
         {
             if (!System.Diagnostics.Debugger.IsAttached) context.EnableConcurrentExecution();
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+            
             context.RegisterSyntaxNodeAction(ctx => AnalyzeUsingDirective((UsingDirectiveSyntax) ctx.Node, ctx), 
                 SyntaxKind.UsingDirective);
+            context.RegisterSyntaxNodeAction(ctx => AnalyzeNamespaceDecl((NamespaceDeclarationSyntax) ctx.Node, ctx), 
+                SyntaxKind.NamespaceDeclaration);
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
         }
         #endregion

@@ -86,5 +86,32 @@ namespace Silver.CodeAnalysis.Cs {
                 return ResourceManager.GetString("SC0001_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smart contract code must not be inside a namespace. See https://academy.stratisplatform.com/Architecture%20Reference/SmartContracts/smart-contracts-basic-theory.html#using-net-for-smart-contracts ..
+        /// </summary>
+        internal static string SC0002_Description {
+            get {
+                return ResourceManager.GetString("SC0002_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Namespace declaration not allowed in smart contract code.
+        /// </summary>
+        internal static string SC0002_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0002_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Namespace declaration not allowed.
+        /// </summary>
+        internal static string SC0002_Title {
+            get {
+                return ResourceManager.GetString("SC0002_Title", resourceCulture);
+            }
+        }
     }
 }
