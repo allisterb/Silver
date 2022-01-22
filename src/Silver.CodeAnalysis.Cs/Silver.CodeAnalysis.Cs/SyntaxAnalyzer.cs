@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,9 @@ namespace Silver.CodeAnalysis.Cs
                 return null;
             }
         }
+
+        public static Diagnostic GetDiagnostic(string id, CSharpSyntaxTree syntaxTree, int line, int col, params object[] args) =>
+            Diagnostic.Create(Validator.GetErrorDescriptor(id), Location.Create(syntaxTree, TextSpan.FromBounds(0, 10)), args);
         #endregion
     }
 }
