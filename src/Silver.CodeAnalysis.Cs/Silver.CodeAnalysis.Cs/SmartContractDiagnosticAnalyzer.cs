@@ -14,15 +14,15 @@
     using static SyntaxAnalyzer;
 
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class SmartContractSyntaxValidator : DiagnosticAnalyzer
+    public class SmartContractDiagnosticAnalyzer : DiagnosticAnalyzer
     {
         #region Constructors
-        static SmartContractSyntaxValidator()
+        static SmartContractDiagnosticAnalyzer()
         {
             Errors = ImmutableArray.Create(DiagnosticIds.Select(i => GetErrorDescriptor(i)).ToArray());
-
         }
         #endregion
+
         #region Overriden members
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = SyntaxAnalyzer.Errors;
 

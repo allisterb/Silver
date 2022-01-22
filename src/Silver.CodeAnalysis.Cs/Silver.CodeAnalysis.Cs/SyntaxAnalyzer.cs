@@ -9,7 +9,7 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 
-using Validator = Silver.CodeAnalysis.Cs.SmartContractSyntaxValidator;
+using Validator = Silver.CodeAnalysis.Cs.SmartContractDiagnosticAnalyzer;
 namespace Silver.CodeAnalysis.Cs
 {
     public class SyntaxAnalyzer

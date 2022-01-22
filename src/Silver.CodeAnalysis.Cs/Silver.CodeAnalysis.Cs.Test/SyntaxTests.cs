@@ -3,7 +3,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Silver.CodeAnalysis.Cs;
-using VerifyCS = Silver.CodeAnalysis.Cs.Tests.CSharpCodeFixVerifier<Silver.CodeAnalysis.Cs.SmartContractSyntaxValidator,
+using VerifyCS = Silver.CodeAnalysis.Cs.Tests.CSharpCodeFixVerifier<Silver.CodeAnalysis.Cs.SmartContractDiagnosticAnalyzer,
     Silver.CodeAnalysis.Cs.SilverCodeAnalysisCsCodeFixProvider>;
 
 namespace Silver.CodeAnalysis.Cs
