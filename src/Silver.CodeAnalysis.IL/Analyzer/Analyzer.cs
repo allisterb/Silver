@@ -78,8 +78,10 @@ public partial class Analyzer : Runtime
 			if (!g.Nodes.Any(n => n.Id == nid))
             {
 				rootNode = g.AddNode(nid);
-				rootNode.Label = new Label(method.Name.Value);
-            }
+				//rootNode.LabelText = method.Name.Value;
+				//rootNode.Label.FontSize *= 2;
+				//rootNode.Label.FontColor = Color.Red;
+			}
 			else
             {
 				rootNode = g.FindNode(nid);
@@ -91,15 +93,20 @@ public partial class Analyzer : Runtime
 				if (!g.Nodes.Any(n => nid == csid))
                 {
 					csNode = g.AddNode(csid);
-                }
+					//csNode.LabelText = "f"; // method.Name.Value;
+					//csNode.Label.FontSize *= 2;
+					//csNode.Label.FontColor = Color.Red;
+				}
 				else
                 {
 					csNode = g.FindNode(csid);
                 }
+
 				g.AddEdge(csNode.Id, rootNode.Id);
             }
         }
 		Silver.Drawing.Graph.Draw(g);
+		
 		return g;
     }
 	public Dictionary<IMethodDefinition, ControlFlowGraph> GetControlFlow()
