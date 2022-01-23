@@ -99,6 +99,7 @@ public partial class Analyzer : Runtime
 				g.AddEdge(csNode.Id, rootNode.Id);
             }
         }
+		Silver.Drawing.Graph.Draw(g);
 		return g;
     }
 	public Dictionary<IMethodDefinition, ControlFlowGraph> GetControlFlow()
