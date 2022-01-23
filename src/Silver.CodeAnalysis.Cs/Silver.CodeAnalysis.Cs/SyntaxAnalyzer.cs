@@ -10,20 +10,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-
 namespace Silver.CodeAnalysis.Cs
 {
     public class SyntaxAnalyzer
     {
         #region Methods
-        public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SyntaxNodeAnalysisContext? ctx = null)
+        public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
-            var ns = node.DescendantNodes().OfType<IdentifierNameSyntax>().First();
+            var ns = node.DescendantNodes().OfType<QualifiedNameSyntax>().First();
             if (ns.ToFullString() != "Stratis.SmartContracts")
             {
-                var diagnostic = Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
-                ctx?.ReportDiagnostic(diagnostic);
-                return diagnostic;
+                return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
+                
             }
             else
             {
@@ -31,18 +29,18 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SyntaxNodeAnalysisContext? ctx = null)
+        public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SyntaxNodeAnalysisContext ctx) =>
+           AnalyzeUsingDirective(node, ctx.SemanticModel)?.Report(ctx);
+
+        public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().First();
-            var diagnostic = Diagnostic.Create(GetErrorDescriptor("SC0002"), ns.GetLocation(), ns.ToFullString());
-            ctx?.ReportDiagnostic(diagnostic);
-            return diagnostic;
+            return Diagnostic.Create(GetErrorDescriptor("SC0002"), ns.GetLocation(), ns.ToFullString());
         }
 
-        public static Diagnostic AnalyzeClassDecl(ClassDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
-            AnalyzeClassDecl(node, ctx.SemanticModel).Report(ctx);
-
-        
+        public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
+            AnalyzeNamespaceDecl(node, ctx.SemanticModel)?.Report(ctx);
+ 
         public static Diagnostic AnalyzeClassDecl(ClassDeclarationSyntax node, SemanticModel model)
         {
             var classSymbol = model.GetDeclaredSymbol(node) as ITypeSymbol;
@@ -55,14 +53,9 @@ namespace Silver.CodeAnalysis.Cs
                 return null;
             }
         }
-        public static Diagnostic ReportSyntaxNodeDiagnostic(SyntaxNodeAnalysisContext ctx, Diagnostic diagnostic)
-        {
-            if (diagnostic != null)
-            {
-                ctx.ReportDiagnostic(diagnostic);
-            }
-            return diagnostic;
-        }
+
+        public static Diagnostic AnalyzeClassDecl(ClassDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
+           AnalyzeClassDecl(node, ctx.SemanticModel)?.Report(ctx);
 
         public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
             new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,

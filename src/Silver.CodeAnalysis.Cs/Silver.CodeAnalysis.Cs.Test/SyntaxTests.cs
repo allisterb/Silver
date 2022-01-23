@@ -4,7 +4,7 @@
 
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    using VerifyCS = Tests.CSharpCodeFixVerifier<SmartContractDiagnosticAnalyzer, SilverCodeAnalysisCsCodeFixProvider>;
+    using VerifyCS = Tests.CSharpCodeFixVerifier<SmartContractAnalyzer, SilverCodeAnalysisCsCodeFixProvider>;
 
     [TestClass]
     public class SyntaxTests
