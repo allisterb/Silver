@@ -16,33 +16,28 @@ using GeometryPoint = Microsoft.Msagl.Core.Geometry.Point;
 using AGL.Drawing.Gdi;
 public static class Graph 
 {
-    public static void Draw(Microsoft.Msagl.Drawing.Graph graph, int width = 1000, int height = 1000)
+    public static void Draw(Microsoft.Msagl.Drawing.Graph graph, int width = 2000, int height = 1000)
     {
-        //Microsoft.Msagl.Drawing.Graph graph = new Microsoft.Msagl.Drawing.Graph();
         graph.GeometryGraph = new GeometryGraph(); 
-        var layout = GetSugiyamaLayout();
+        var layout = GetSugiyamaLayout(5, 10);
         graph.LayoutAlgorithmSettings = layout;
-          foreach (Node n in graph.Nodes)
+        foreach (Node n in graph.Nodes)
         {
             var gn = new GeometryNode(CurveFactory.CreateRectangle(200, 40, new GeometryPoint()), n);
             graph.GeometryGraph.Nodes.Add(gn);
             n.GeometryNode = gn;
         }
-        //graph.AddEdge(graph.Nodes.First().Id, "foo", graph.Nodes.Last().Id);
-
-
-        GeometryNode source = graph.FindGeometryNode(graph.Nodes.First().Id);
-        GeometryNode target = graph.FindGeometryNode(graph.Nodes.Last().Id);
-        var e = new GeometryEdge(source, target);
-        e.UserData = graph.Edges.First();
-        graph.Edges.First().GeometryEdge = e;
-        //e.Label = new Microsoft.Msagl.Core.Layout.Label() ;
-        graph.GeometryGraph.Edges.Add(e);
-        
+        foreach (Edge edge in graph.Edges)
+        {
+            var sn = graph.FindGeometryNode(edge.Source);
+            var tn = graph.FindGeometryNode(edge.Target);
+            var ge = new GeometryEdge(sn, tn);
+            ge.UserData = edge;
+            ge.EdgeGeometry.TargetArrowhead = new Arrowhead();
+            graph.GeometryGraph.Edges.Add(ge);
+            edge.GeometryEdge = ge;
+        }
         graph.GeometryGraph.UpdateBoundingBox();
-        //Microsoft.Msagl.Drawing.SvgGraphWriter.Write(graph, "graph.svg");
-
-
         using Bitmap bmp = new Bitmap(width, height);
         using Graphics g = Graphics.FromImage(bmp);
         g.Clear(System.DrawingCore.Color.White);
@@ -55,7 +50,7 @@ public static class Graph
         
     }
 
-    public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeHeight = 10, int minNodeWidth = 20)
+    public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeWidth = 20, int minNodeHeight = 10)
     {
         SugiyamaLayoutSettings sugiyamaSettings = new SugiyamaLayoutSettings
         {
