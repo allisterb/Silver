@@ -7,17 +7,24 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
 using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Silver.CodeAnalysis.Cs
 {
-    public class SyntaxAnalyzer
+    public class Validator
     {
+        #region Constructors
+        static Validator()
+        {
+            Errors = ImmutableArray.Create(DiagnosticIds.Select(i => GetErrorDescriptor(i)).ToArray());
+        }
+        #endregion
+
         #region Methods
 
-        // Only allow using Stratis.SmartContracts namespace in smart contract code.
-        // https://github.com/stratisproject/StratisFullNode/blob/bf69e03cc4b4d5d7bf072d05283d7a0e4f0074d7/src/Stratis.SmartContracts.CLR.Validation/DeterminismPolicy.cs#L14
+        // Only allow using Stratis.SmartContracts namespace in smart contract code
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().OfType<QualifiedNameSyntax>().First();
@@ -32,7 +39,7 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        // Namespace declarations not allowed
+        // Namespace declarations not allowed in smart contract code
         public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().First();
@@ -52,6 +59,7 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
+        // Constructor must have ISmartContractState as first parameter.
         public static Diagnostic AnalyzeConstructorDecl(ConstructorDeclarationSyntax node, SemanticModel model)
         {
             var fp = node
@@ -72,6 +80,7 @@ namespace Silver.CodeAnalysis.Cs
                 .OfType<ParameterSyntax>()
                 .FirstOrDefault()?
                 .Type;
+            
             var fpn = node
                 .DescendantNodes()
                 .OfType<ParameterListSyntax>()
@@ -92,6 +101,11 @@ namespace Silver.CodeAnalysis.Cs
                 return null;
             }
             
+        }
+
+        public static void Analyze(IObjectCreationOperation objectCreation)
+        {
+            //objectCreation.Kind.HasFlag
         }
 
         #region Overloads
