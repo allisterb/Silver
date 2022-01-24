@@ -19,3 +19,6 @@
 [submodule "ext/SharpSyntaxRewriter"]
 	path = ext/SharpSyntaxRewriter
 	url = https://github.com/allisterb/SharpSyntaxRewriter.git
+[submodule "ext/Stratis.SmartContracts.Tools.Sct"]
+	path = ext/Stratis.SmartContracts.Tools.Sct
+	url = https://github.com/stratisproject/Stratis.SmartContracts.Tools.Sct.git
