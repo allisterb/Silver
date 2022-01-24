@@ -2,7 +2,7 @@
 
 using Backend.Analyses;
 using Backend.Model;
-using Microsoft.Msagl;
+
 using Microsoft.Msagl.Drawing;
 
 #region Records
@@ -73,7 +73,7 @@ public partial class Analyzer : Runtime
         {
 			Node? rootNode = null;
 			var calllsites = cg.GetCallSites(method);
-			var i = cg.GetInvocations(method);
+			var inv = cg.GetInvocations(method);
 			var nid = MemberHelper.GetMethodSignature(method);
 			if (!g.Nodes.Any(n => n.Id == nid))
             {
@@ -98,8 +98,10 @@ public partial class Analyzer : Runtime
 
 				g.AddEdge(csNode.Id, rootNode.Id);
             }
-        }
-		Silver.Drawing.Graph.Draw(g);
+
+			
+		}
+		Drawing.Graph.Draw(g);
 		
 		return g;
     }

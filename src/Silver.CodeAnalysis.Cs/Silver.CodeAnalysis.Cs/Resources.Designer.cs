@@ -140,5 +140,23 @@ namespace Silver.CodeAnalysis.Cs {
                 return ResourceManager.GetString("SC0003_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Parameter {0} must be of type ISmartContractState..
+        /// </summary>
+        internal static string SC0004_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0004_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first parameter in a smart constructor must be of type ISmartContractState.
+        /// </summary>
+        internal static string SC0004_Title {
+            get {
+                return ResourceManager.GetString("SC0004_Title", resourceCulture);
+            }
+        }
     }
 }

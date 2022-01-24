@@ -150,4 +150,10 @@
   <data name="SC0003_Title" xml:space="preserve">
     <value>Class must inherit from SmartContract class</value>
   </data>
+  <data name="SC0004_MessageFormat" xml:space="preserve">
+    <value>Parameter {0} must be of type ISmartContractState.</value>
+  </data>
+  <data name="SC0004_Title" xml:space="preserve">
+    <value>The first parameter in a smart constructor must be of type ISmartContractState</value>
+  </data>
 </root>

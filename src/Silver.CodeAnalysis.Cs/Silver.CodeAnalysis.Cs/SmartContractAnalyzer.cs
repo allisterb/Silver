@@ -35,7 +35,8 @@
             context.RegisterSyntaxNodeAction(ctx => AnalyzeUsingDirective((UsingDirectiveSyntax)ctx.Node, ctx), SyntaxKind.UsingDirective);
             context.RegisterSyntaxNodeAction(ctx => AnalyzeNamespaceDecl((NamespaceDeclarationSyntax)ctx.Node, ctx), SyntaxKind.NamespaceDeclaration);
             context.RegisterSyntaxNodeAction(ctx => AnalyzeClassDecl((ClassDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ClassDeclaration);
-            
+            context.RegisterSyntaxNodeAction(ctx => AnalyzeConstructor((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
+
             context.RegisterOperationAction(
                 ctx =>
                 {
@@ -47,7 +48,7 @@
                             //objectCreation.Constructor.ty
 
                     }
-                }, OperationKind.ObjectCreation);
+                }, OperationKind.ConstructorBody);
             //context.RegisterCompilationStartAction(OnCompilationStart);
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
             //context.re

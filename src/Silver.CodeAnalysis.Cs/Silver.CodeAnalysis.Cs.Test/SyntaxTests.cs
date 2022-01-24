@@ -104,10 +104,40 @@
             var expected = new[]
             {
                 VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0003"))
-                .WithSpan(4, 17, 6, 18).WithArguments("TypeName")
+                .WithSpan(4, 23, 4, 31).WithArguments("TypeName")
             };
             await VerifyCS.VerifyAnalyzerAsync(nulltest);
             await VerifyCS.VerifyAnalyzerAsync(test, expected);
+        }
+
+        [TestMethod]
+        public async Task ConstructorDeclTest()
+        {
+            var nulltest = @"
+                using Stratis.SmartContracts;
+                
+                class Foo : SmartContract
+                {   
+                    public Foo(ISmartContractState state) : base(state) { }
+
+                }
+                ";
+
+            var test = @"
+                using Stratis.SmartContracts;
+                
+                class {|#0:TypeName|}
+                {   
+                }
+                ";
+
+            var expected = new[]
+            {
+                VerifyCS.Diagnostic(SyntaxAnalyzer.GetErrorDescriptor("SC0003"))
+                .WithSpan(4, 23, 4, 31).WithArguments("TypeName")
+            };
+            await VerifyCS.VerifyAnalyzerAsync(nulltest);
+            //await VerifyCS.VerifyAnalyzerAsync(test, expected);
         }
     }
 }

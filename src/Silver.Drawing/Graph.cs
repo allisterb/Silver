@@ -16,7 +16,7 @@ using GeometryPoint = Microsoft.Msagl.Core.Geometry.Point;
 using AGL.Drawing.Gdi;
 public static class Graph 
 {
-    public static void Draw(Microsoft.Msagl.Drawing.Graph graph, int width = 2000, int height = 1000)
+    public static void Draw(Microsoft.Msagl.Drawing.Graph graph, int width = 2000, int height = 2000)
     {
         graph.GeometryGraph = new GeometryGraph(); 
         var layout = GetSugiyamaLayout(5, 10);
@@ -47,7 +47,6 @@ public static class Graph
         GdiUtils.SetGraphTransform(graph.GeometryGraph, rect, g);
         GdiUtils.Draw2(rect, graph, graph.GeometryGraph, g);
         bmp.Save("graph.bmp", ImageFormat.Bmp);
-        
     }
 
     public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeWidth = 20, int minNodeHeight = 10)
@@ -55,7 +54,7 @@ public static class Graph
         SugiyamaLayoutSettings sugiyamaSettings = new SugiyamaLayoutSettings
         {
             Transformation = PlaneTransformation.Rotation(Math.PI / 2),
-            EdgeRoutingSettings = { EdgeRoutingMode = EdgeRoutingMode.Spline },
+            EdgeRoutingSettings = { EdgeRoutingMode = EdgeRoutingMode.SugiyamaSplines },
             MinNodeHeight = minNodeHeight,
             MinNodeWidth = minNodeWidth
 
