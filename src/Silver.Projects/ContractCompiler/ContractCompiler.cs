@@ -73,9 +73,10 @@ namespace Stratis.SmartContracts.CLR.Compilation
                     checkOverflow: true,
                     optimizationLevel: optimizationLevel,
                     deterministic: true)
+
                 );
 
-
+            //compilation.se
             using (var dllStream = new MemoryStream())
             {
                 EmitResult emitResult = compilation.Emit(dllStream);

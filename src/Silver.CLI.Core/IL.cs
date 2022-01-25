@@ -11,9 +11,9 @@ namespace Silver.CLI.Core
             {
                 return f;
             }
-            else if (SpecSharpProject.HasProjectExtension(f))
+            else if (SilverProject.HasProjectExtension(f))
             {
-                var proj = SpecSharpProject.GetProject(f, "Debug");
+                var proj = SilverProject.GetProject(f, "Debug");
                 if (proj is null || !proj.Initialized)
                 {
                     Error("Could not load project {0}.", f);

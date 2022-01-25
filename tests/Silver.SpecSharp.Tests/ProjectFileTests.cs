@@ -12,15 +12,15 @@ public class ProjectFileTests
         
         var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test1.sscproj");
         Assert.True(File.Exists(path));
-        var proj = new XmlSpecSharpProject(path, "Debug");
+        var proj = new XmlSilverProject(path, "Debug");
         Assert.NotNull(proj);
         Assert.False(proj.Initialized);
         path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test2.sscproj");
         Assert.True(File.Exists(path));
-        proj = new XmlSpecSharpProject(path, "Debug");
+        proj = new XmlSilverProject(path, "Debug");
         var path2 = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "..", "ext", "specsharp", "Boogie", "Core", "Core.sscproj");
         Assert.True(File.Exists(path2));
-        proj = new XmlSpecSharpProject(path2, "Debug");
+        proj = new XmlSilverProject(path2, "Debug");
         Assert.True(proj.Initialized);
     }
 
@@ -29,11 +29,11 @@ public class ProjectFileTests
     {
         var path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "files", "Test2.csproj");
         Assert.True(File.Exists(path));
-        var proj = new MSBuildSpecSharpProject(path, "Debug");
+        var proj = new MSBuildSilverProject(path, "Debug");
         Assert.False(proj.Initialized);
         path = Path.Combine(Runtime.AssemblyLocation, "..", "..", "..", "..", "Silver.SpecSharp.Tests", "Silver.SpecSharp.Tests.csproj");
         Assert.True(File.Exists(path));
-        proj = new MSBuildSpecSharpProject(path, "Debug");
+        proj = new MSBuildSilverProject(path, "Debug");
         Assert.True(proj.Initialized);
     }
 }

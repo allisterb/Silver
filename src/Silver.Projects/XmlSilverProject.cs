@@ -3,10 +3,10 @@ using System.Xml;
 
 namespace Silver.Projects
 {
-    public class XmlSpecSharpProject : SpecSharpProject
+    public class XmlSilverProject : SilverProject
     {
         #region Constructor
-        public XmlSpecSharpProject(string filePath, string buildConfig, XmlSpecSharpProject? parent = null) : base(filePath, buildConfig, parent)
+        public XmlSilverProject(string filePath, string buildConfig, XmlSilverProject? parent = null) : base(filePath, buildConfig, parent)
         {
             using (var op = Begin("Loading XML Spec# project {0}", filePath))
             {
@@ -47,7 +47,7 @@ namespace Silver.Projects
                                     op.Cancel();
                                     return;
                                 }
-                                var pr = new XmlSpecSharpProject(prf, buildConfig, this);
+                                var pr = new XmlSilverProject(prf, buildConfig, this);
                                 if (!pr.Initialized)
                                 {
                                     Fatal("The project reference {0} could not be loaded.", pr.ProjectFile.FullName);

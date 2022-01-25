@@ -1,4 +1,5 @@
 ﻿using Silver.Projects;
+using Stratis.SmartContracts.CLR.Compilation;
 
 namespace Silver.CLI.Core
 {
@@ -7,7 +8,7 @@ namespace Silver.CLI.Core
        public static bool PrintProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
         {
           
-            var p = SpecSharpProject.GetProperty(FailIfFileNotFound(filePath), buildConfig, prop, additionalFiles);
+            var p = SilverProject.GetProperty(FailIfFileNotFound(filePath), buildConfig, prop, additionalFiles);
             if (p is null)
             {
                 Error("The property {0} does not exist or is null for the project file {1}.", prop, filePath);
@@ -22,7 +23,7 @@ namespace Silver.CLI.Core
 
         public static bool GetCommandLine(string filePath, string buildConfig, params string [] additionalFiles)
         {
-            var l = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles)?.CommandLine;
+            var l = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles)?.CommandLine;
             {
                 if (l is null)
                 {
@@ -39,7 +40,7 @@ namespace Silver.CLI.Core
 
         public static bool Compile(string filePath, string buildConfig, bool verify = false, params string[] additionalFiles)
         {
-            var proj = SpecSharpProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
+            var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
                 proj.Verify = verify;

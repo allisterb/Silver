@@ -1,16 +1,18 @@
 namespace Silver.Projects;
 
 using System.Reflection;
+using Roslyn = Microsoft.CodeAnalysis;
 
 using Buildalyzer;
 using Buildalyzer.Environment;
+using Buildalyzer.Workspaces;
 using Silver.Metadata;
 
-public class MSBuildSpecSharpProject : SpecSharpProject
+public class MSBuildSilverProject : SilverProject
 {
     #region Constructors
-    static MSBuildSpecSharpProject() { }
-    public MSBuildSpecSharpProject(string filePath, string buildConfig) : base(filePath, buildConfig)
+    static MSBuildSilverProject() { }
+    public MSBuildSilverProject(string filePath, string buildConfig) : base(filePath, buildConfig)
     {
         using (var op = Begin("Loading MSBuild Spec# project {0}", filePath))
         {
@@ -60,6 +62,7 @@ public class MSBuildSpecSharpProject : SpecSharpProject
                 File.Exists(TargetPath) && 
                 SourceFiles.All(f => File.GetLastWriteTime(f) <= File.GetLastWriteTime(TargetPath)) &&
                 ProjectFile.LastWriteTime <= File.GetLastWriteTime(TargetPath);
+            MsBuildProject.AddToWorkspace(RoslynWorkspace);
             Initialized = true;
             op.Complete();
         }
@@ -73,6 +76,8 @@ public class MSBuildSpecSharpProject : SpecSharpProject
     public string? TargetFramework { get; init; }
 
     public List<AssemblyReference>? PackageReferences { get; init; }
+
+    public Roslyn.Workspace RoslynWorkspace { get; } = new Roslyn.AdhocWorkspace();
     #endregion
 
     #region Overriden members

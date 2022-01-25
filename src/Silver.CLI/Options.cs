@@ -61,11 +61,14 @@ namespace Silver.CLI
     public class CallGraphOptions : AnalyzeOptions { }
     #endregion
 
-    [Verb("compile", HelpText = "Compile a .NET project or file using the Spec# compiler.")]
+    [Verb("compile", HelpText = "Compile a C# source code project or files.")]
     public class CompileOptions : Options
     {
-        [Value(0, Required = true, HelpText = "The source files or project file to compile.")]
+        [Value(0, Required = true, HelpText = "The project file or source files to compile.")]
         public IEnumerable<string> Files { get; set; } = Array.Empty<string>();
+
+        [Option("sc", Required = false, HelpText = "Compile as a smart contract.")]
+        public bool SmartContract { get; set; }
 
         [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file after compilation.")]
         public bool Verify { get; set; } 

@@ -10,11 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.9.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\Silver.Base\Silver.Base.csproj" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0" />
   </ItemGroup>
 
   <ItemGroup>

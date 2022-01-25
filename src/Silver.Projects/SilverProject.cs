@@ -3,15 +3,15 @@ namespace Silver.Projects;
 #region Records
 internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
 
-internal readonly record struct AssemblyProjectReference(string Name, SpecSharpProject Project, bool isprivate);
+internal readonly record struct AssemblyProjectReference(string Name, SilverProject Project, bool isprivate);
 
 internal readonly record struct AssemblyGACReference(string Name, bool isprivate);
 #endregion
 
-public abstract class SpecSharpProject : Runtime
+public abstract class SilverProject : Runtime
 {
     #region Constructors
-    public SpecSharpProject(string filePath, string buildConfig, SpecSharpProject? parent = null) :base() 
+    public SilverProject(string filePath, string buildConfig, SilverProject? parent = null) :base() 
     {
         ProjectFile = new FileInfo(FailIfFileNotFound(filePath));
         Parent = parent;
@@ -24,7 +24,7 @@ public abstract class SpecSharpProject : Runtime
     #region Properties
     public FileInfo ProjectFile { get; init; }
 
-    protected SpecSharpProject? Parent { get; init; }
+    protected SilverProject? Parent { get; init; }
 
     public string RequestedBuildConfig { get; init; }
 
@@ -140,7 +140,7 @@ public abstract class SpecSharpProject : Runtime
     #endregion
 
     #region Methods
-    public SpecSharpCompilation Compile()
+    public SilverProjectCompilation Compile()
     {
         FailIfNotInitialized();
         using (var op = Parent is null ?  
@@ -189,7 +189,7 @@ public abstract class SpecSharpProject : Runtime
             {
                 Error("Compile failed.");
                 op.Cancel();
-                return new SpecSharpCompilation(this, false, Verify, compilerErrors, compilerWarnings);
+                return new SilverProjectCompilation(this, false, Verify, compilerErrors, compilerWarnings);
             }
             else
             {
@@ -233,7 +233,7 @@ public abstract class SpecSharpProject : Runtime
                         Info("Verification succeded. Target assembly not retained");
                     }
                 }
-                return new SpecSharpCompilation(this, true, Verify, compilerErrors, compilerWarnings);
+                return new SilverProjectCompilation(this, true, Verify, compilerErrors, compilerWarnings);
             }
         }
     }
@@ -250,15 +250,15 @@ public abstract class SpecSharpProject : Runtime
             default: return false;
         }
     }
-    public static SpecSharpProject? GetProject(string filePath, string buildConfig, params string [] additionalFiles)
+    public static SilverProject? GetProject(string filePath, string buildConfig, params string [] additionalFiles)
     {  
         var f = new FileInfo(FailIfFileNotFound(filePath));
         switch(f.Extension)
         {
             case ".csproj":
-                return new MSBuildSpecSharpProject(f.FullName, buildConfig);
+                return new MSBuildSilverProject(f.FullName, buildConfig);
             case ".sscproj":
-                return new XmlSpecSharpProject(f.FullName, buildConfig);
+                return new XmlSilverProject(f.FullName, buildConfig);
             case ".cs":
             case ".ssc":
                 var sourceFiles = additionalFiles.ToList().Prepend(filePath).ToList();
@@ -267,7 +267,7 @@ public abstract class SpecSharpProject : Runtime
                     { "BuildConfig", "Debug" },
                     { "SourceFiles", sourceFiles } 
                 };
-                return new AdHocSpecSharpProject(settings);
+                return new AdhocSilverProject(settings);
             default:
                 Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1}, {2}, {3}, and {4}.", f.FullName, ".csproj", ".sscproj", ".cs", ".ssc");
                 return null;
@@ -279,12 +279,12 @@ public abstract class SpecSharpProject : Runtime
         var file = new FileInfo(FailIfFileNotFound(filePath));
         if (file.Extension == ".csproj")
         {
-            var proj = new MSBuildSpecSharpProject(filePath, buildConfig);
+            var proj = new MSBuildSilverProject(filePath, buildConfig);
             return proj.Initialized ? GetProp(proj, prop) : null;
         }
         else if (file.Extension == ".sscproj")
         {
-            var proj = new XmlSpecSharpProject(filePath, buildConfig);
+            var proj = new XmlSilverProject(filePath, buildConfig);
             return proj.Initialized ? GetProp(proj, prop) : null;
         }
         else if (file.Extension == ".ssc")
@@ -295,7 +295,7 @@ public abstract class SpecSharpProject : Runtime
                     { "BuildConfig", "Debug" },
                     { "SourceFiles", sourceFiles }
                 };
-            var proj = new AdHocSpecSharpProject(settings);
+            var proj = new AdhocSilverProject(settings);
             return proj.Initialized ? GetProp(proj, prop) : null;
         }
         else
