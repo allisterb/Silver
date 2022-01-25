@@ -24,8 +24,11 @@ public class AnalyzerAssemblyLoader : Roslyn.IAnalyzerAssemblyLoader
     }
 
     public Dictionary<string, Assembly> assemblyReferences = new();
-    public void AddDependencyLocation(string path) => assemblyReferences.AddIfNotExists(path, Assembly.LoadFrom(path));
-
+    public void AddDependencyLocation(string path)
+    {
+        if (!File.Exists(path)) throw new FileNotFoundException(path);
+        assemblyReferences.AddIfNotExists(path, Assembly.LoadFrom(path));
+    }
     public static AnalyzerAssemblyLoader Instance = new();
 
 

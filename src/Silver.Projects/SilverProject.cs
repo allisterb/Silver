@@ -1,12 +1,13 @@
 namespace Silver.Projects;
 
-using System.Reflection;
+using System.Collections.Immutable;
 
 using Roslyn = Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 
+using Silver.CodeAnalysis.Cs;
 #region Records
 internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
 
@@ -148,21 +149,73 @@ public abstract class SilverProject : Runtime
     #endregion
 
     #region Methods
-    public virtual EmitResult? Compile()
+    public virtual bool Compile()
     {
         FailIfNotInitialized();
-        var c = RoslynWorkspace.CurrentSolution.Projects.First()
-            .AddAnalyzerReference(new AnalyzerFileReference(Path.Combine(AssemblyLocation, "Silver.CodeAnalysis.Cs.dll"), AnalyzerAssemblyLoader.Instance))
-            .GetCompilationAsync(Ct)
-            .Result;
-        if (c is null) return null;
+        var op = Begin("Compiling");
+        var a = new AnalyzerFileReference(Path.Combine(AssemblyLocation, "Silver.CodeAnalysis.Cs.dll"), AnalyzerAssemblyLoader.Instance);
+        a.AnalyzerLoadFailed += (sender, e) =>
+        {
+            Error(e.Message);
+        };
+        var c = RoslynWorkspace.CurrentSolution
+            .AddAnalyzerReference(a)
+            .Projects.First()
+            .GetCompilationAsync(Ct).Result;
+        if (c is null)
+        {
+            op.Cancel();
+            return false;
+        }
+        var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
+            new CompilationWithAnalyzersOptions(null, null, true, false, false, null));
+        var diags = ca.GetAllDiagnosticsAsync(Ct).Result;
+        
+        foreach (var d in diags)
+        {
+            if (d.WarningLevel == 0)
+            {
+                Error("Id: {0}\n               Msg: {1}\n               Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
+            }
+            else
+            {
+                Warn("Id: {0}\n               Msg: {1}\n               Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
+            }
+
+        }
         var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
         if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting.", TargetPath);
         using FileStream pestream = File.OpenWrite(TargetPath);
         using FileStream pdbstream = File.OpenWrite(Path.ChangeExtension(TargetPath, ".pdb")); 
-        return c.Emit(pestream, pdbstream, options: emitOptions);
+        var res = c.Emit(pestream, pdbstream, options: emitOptions);
+        if(res is not null)
+        {
+            if (res.Success)
+            {
+                op.Complete();
+                Info("Compilation succeded.");
+                Info("Assembly is at {0}", TargetPath);
+            }
+            else
+            {
+                op.Cancel();
+                Error("Compilation failed.");
+            }
+            return res.Success;
+        }
+        else
+        {
+            op.Cancel();
+            return false;
+        }
+        
     }
-   
+
+    private void A_AnalyzerLoadFailed(object? sender, AnalyzerLoadFailureEventArgs e)
+    {
+        throw new NotImplementedException();
+    }
+
     public SscCompilation SscCompile()
     {
         FailIfNotInitialized();

@@ -109,6 +109,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stratis", "stratis", "{6F26
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stratis.SmartContracts.Tools.Sct", "..\ext\Stratis.SmartContracts.Tools.Sct\Stratis.SmartContracts.Tools.Sct\Stratis.SmartContracts.Tools.Sct.csproj", "{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeAnalysisApp1", "..\tests\CodeAnalysisApp1\CodeAnalysisApp1.csproj", "{52D1997F-E92E-4004-B2F8-3C09FE8C7081}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -666,6 +668,20 @@ Global
 		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
 		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.DebugCommandLine|Any CPU.ActiveCfg = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.DebugCommandLine|Any CPU.Build.0 = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.DebugExp|Any CPU.ActiveCfg = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.DebugExp|Any CPU.Build.0 = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.DebugNoData|Any CPU.ActiveCfg = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.DebugNoData|Any CPU.Build.0 = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.NoExtendedRuntime|Any CPU.ActiveCfg = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.NoExtendedRuntime|Any CPU.Build.0 = Debug|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.Release|Any CPU.Build.0 = Release|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -719,6 +735,7 @@ Global
 		{14865257-D293-4C74-AE80-A6E7D3D6DA02} = {2B3C8FF5-A5FA-499C-9AE1-480CD6884D3A}
 		{6F26C6D2-5658-43F2-9D39-A68C108A01ED} = {2B3C8FF5-A5FA-499C-9AE1-480CD6884D3A}
 		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54} = {6F26C6D2-5658-43F2-9D39-A68C108A01ED}
+		{52D1997F-E92E-4004-B2F8-3C09FE8C7081} = {06B8E793-CBA6-4C1A-ABBB-4031911FAB1E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}
