@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-//using Stratis.SmartContracts.Standards;
+using Stratis.SmartContracts.Standards;
 
 namespace Stratis.SmartContracts.CLR.Compilation
 {
@@ -21,9 +21,9 @@ namespace Stratis.SmartContracts.CLR.Compilation
         public static HashSet<Assembly> AllowedAssemblies = new HashSet<Assembly> {
                 Runtime, 
                 Core, 
-                //typeof(SmartContract).Assembly, 
+                typeof(SmartContract).Assembly, 
                 typeof(Enumerable).Assembly,
-                //typeof(IStandardToken).Assembly
+                typeof(IStandardToken).Assembly
             };
     }
 }
