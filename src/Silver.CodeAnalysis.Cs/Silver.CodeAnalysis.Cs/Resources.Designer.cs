@@ -79,7 +79,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type not allowed.
+        ///   Looks up a localized string similar to Type cannot be used.
         /// </summary>
         internal static string SC0001_Title {
             get {
@@ -142,6 +142,15 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The first parameter in a smart constructor must be of type ISmartContractState..
+        /// </summary>
+        internal static string SC0004_Description {
+            get {
+                return ResourceManager.GetString("SC0004_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Parameter {0} must be of type ISmartContractState..
         /// </summary>
         internal static string SC0004_MessageFormat {
@@ -151,11 +160,38 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The first parameter in a smart constructor must be of type ISmartContractState.
+        ///   Looks up a localized string similar to Parameter type not allowed.
         /// </summary>
         internal static string SC0004_Title {
             get {
                 return ResourceManager.GetString("SC0004_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New object creation is not allowed in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
+        /// </summary>
+        internal static string SC0005_Description {
+            get {
+                return ResourceManager.GetString("SC0005_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A new object cannot be created here.
+        /// </summary>
+        internal static string SC0005_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0005_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New object creation not allowed.
+        /// </summary>
+        internal static string SC0005_Title {
+            get {
+                return ResourceManager.GetString("SC0005_Title", resourceCulture);
             }
         }
     }

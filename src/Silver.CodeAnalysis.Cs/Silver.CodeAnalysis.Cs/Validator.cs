@@ -7,9 +7,9 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace Silver.CodeAnalysis.Cs
 {
@@ -46,6 +46,7 @@ namespace Silver.CodeAnalysis.Cs
             return Diagnostic.Create(GetErrorDescriptor("SC0002"), ns.GetLocation(), ns.ToFullString());
         }
 
+        // Declared classes must inherit from Stratis.SmartContracts.SmartContract
         public static Diagnostic AnalyzeClassDecl(ClassDeclarationSyntax node, SemanticModel model)
         {
             var classSymbol = model.GetDeclaredSymbol(node) as ITypeSymbol;
@@ -59,7 +60,7 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        // Constructor must have ISmartContractState as first parameter.
+        // Class constructor must have a ISmartContractState as first parameter.
         public static Diagnostic AnalyzeConstructorDecl(ConstructorDeclarationSyntax node, SemanticModel model)
         {
             var fp = node
@@ -72,29 +73,16 @@ namespace Silver.CodeAnalysis.Cs
 
             if (fp == null) return null;
 
-            var fpt = node
-                .DescendantNodes()
-                .OfType<ParameterListSyntax>()
-                .FirstOrDefault()?
-                .DescendantNodes()
-                .OfType<ParameterSyntax>()
-                .FirstOrDefault()?
-                .Type;
+            var fpt = fp.Type;
             
-            var fpn = node
-                .DescendantNodes()
-                .OfType<ParameterListSyntax>()
-                .FirstOrDefault()?
-                .DescendantNodes()
-                .OfType<ParameterSyntax>()
-                .FirstOrDefault()?
+            var fpn = fp
                 .ChildTokens()
                 .First(t => t.IsKind(SyntaxKind.IdentifierToken));
             
             var classSymbol = model.GetSymbolInfo(fpt).Symbol as ITypeSymbol;
             if (classSymbol.ToDisplayString() != "Stratis.SmartContracts.ISmartContractState")
             {
-                return Diagnostic.Create(GetErrorDescriptor("SC0004"), fp.GetLocation(), classSymbol.Name);
+                return Diagnostic.Create(GetErrorDescriptor("SC0004"), fpn.GetLocation(), classSymbol.Name);
             }
             else
             {
@@ -103,9 +91,11 @@ namespace Silver.CodeAnalysis.Cs
             
         }
 
-        public static void Analyze(IObjectCreationOperation objectCreation)
+        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {
-            //objectCreation.Kind.HasFlag
+            var t = objectCreation.Type.ToDisplayString();
+            return Diagnostic.Create(GetErrorDescriptor("SC0005"), objectCreation.Syntax.GetLocation());
+            
         }
 
         #region Overloads
@@ -134,6 +124,35 @@ namespace Silver.CodeAnalysis.Cs
         internal static ImmutableArray<DiagnosticDescriptor> Errors;
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
+
+
+        public static Type[] WhitelistedTypes =
+        {
+            typeof(void),
+            typeof(System.Boolean),
+            typeof(System.Byte),
+            typeof(System.Char),
+            typeof(System.Int32),
+            typeof(System.UInt32),
+            typeof(System.Int64),
+            typeof(System.UInt64),
+            typeof(System.String),
+            typeof(System.Boolean[]),
+            typeof(System.Byte[]),
+            typeof(System.Char[]),
+            typeof(System.Int32[]),
+            typeof(System.UInt32[]),
+            typeof(System.Int64[]),
+            typeof(System.UInt64[]),
+            typeof(System.String[])
+        };
+        public static string[] WhiteListedTypeNames = WhitelistedTypes.Select(t => t.Name).ToArray();
+        
+        public static Dictionary<string, string[]> WhiteListedMemberNames = new Dictionary<string, string[]>
+        {
+            {typeof(System.Array).Name, new[] { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" } },
+            {typeof(string[]).Name, new[] { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" } },
+        };
         #endregion
     }
 }

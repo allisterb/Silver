@@ -35,12 +35,12 @@
                     switch (ctx.Operation)
                     {
                         case IObjectCreationOperation objectCreation:
-                            Validator.Analyze(objectCreation);
+                            Validator.AnalyzeObjectCreation(objectCreation);
                             break;
                             //objectCreation.Constructor.ty
 
                     }
-                }, OperationKind.ConstructorBody);
+                }, OperationKind.ObjectCreation);
             //context.RegisterCompilationStartAction(OnCompilationStart);
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
             //context.re

@@ -93,17 +93,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sharpsyntaxrewriter", "shar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpSyntaxRewriter", "..\ext\SharpSyntaxRewriter\src\SharpSyntaxRewriter\SharpSyntaxRewriter.csproj", "{3B59AF24-0370-4FEB-922B-906B49EA3999}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.CodeAnalysis.Cs", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.csproj", "{7FD5D3F6-81F0-47D3-A6EC-AFDE9C8EC66A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.csproj", "{7FD5D3F6-81F0-47D3-A6EC-AFDE9C8EC66A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.CodeAnalysis.Cs.CodeFixes", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.CodeFixes\Silver.CodeAnalysis.Cs.CodeFixes.csproj", "{75CBCE08-E9CC-4CC4-B29A-248A402AD2C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.CodeFixes", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.CodeFixes\Silver.CodeAnalysis.Cs.CodeFixes.csproj", "{75CBCE08-E9CC-4CC4-B29A-248A402AD2C7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.CodeAnalysis.Cs.Package", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Package\Silver.CodeAnalysis.Cs.Package.csproj", "{B716D692-D69D-47E8-AEDD-C1D2CFB506E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Package", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Package\Silver.CodeAnalysis.Cs.Package.csproj", "{B716D692-D69D-47E8-AEDD-C1D2CFB506E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.CodeAnalysis.Cs.Test", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Test\Silver.CodeAnalysis.Cs.Test.csproj", "{EFB70574-78DC-413B-8FE0-ABB448C463EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Test", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Test\Silver.CodeAnalysis.Cs.Test.csproj", "{EFB70574-78DC-413B-8FE0-ABB448C463EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.CodeAnalysis.Cs.Vsix", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Vsix\Silver.CodeAnalysis.Cs.Vsix.csproj", "{5B8714AB-3A06-431D-8BF4-3BF79FE93ECF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Vsix", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Vsix\Silver.CodeAnalysis.Cs.Vsix.csproj", "{5B8714AB-3A06-431D-8BF4-3BF79FE93ECF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "nuclear", "nuclear", "{14865257-D293-4C74-AE80-A6E7D3D6DA02}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "stratis", "stratis", "{6F26C6D2-5658-43F2-9D39-A68C108A01ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stratis.SmartContracts.Tools.Sct", "..\ext\Stratis.SmartContracts.Tools.Sct\Stratis.SmartContracts.Tools.Sct\Stratis.SmartContracts.Tools.Sct.csproj", "{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -648,6 +652,20 @@ Global
 		{5B8714AB-3A06-431D-8BF4-3BF79FE93ECF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5B8714AB-3A06-431D-8BF4-3BF79FE93ECF}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
 		{5B8714AB-3A06-431D-8BF4-3BF79FE93ECF}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.DebugCommandLine|Any CPU.ActiveCfg = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.DebugCommandLine|Any CPU.Build.0 = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.DebugExp|Any CPU.ActiveCfg = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.DebugExp|Any CPU.Build.0 = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.DebugNoData|Any CPU.ActiveCfg = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.DebugNoData|Any CPU.Build.0 = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.NoExtendedRuntime|Any CPU.ActiveCfg = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.NoExtendedRuntime|Any CPU.Build.0 = Debug|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -699,6 +717,8 @@ Global
 		{EFB70574-78DC-413B-8FE0-ABB448C463EE} = {06B8E793-CBA6-4C1A-ABBB-4031911FAB1E}
 		{5B8714AB-3A06-431D-8BF4-3BF79FE93ECF} = {0910A51A-7A85-4A7A-A466-42C7ADF21BC5}
 		{14865257-D293-4C74-AE80-A6E7D3D6DA02} = {2B3C8FF5-A5FA-499C-9AE1-480CD6884D3A}
+		{6F26C6D2-5658-43F2-9D39-A68C108A01ED} = {2B3C8FF5-A5FA-499C-9AE1-480CD6884D3A}
+		{E29DF2AC-4F8B-4F30-9241-28F5B3848F54} = {6F26C6D2-5658-43F2-9D39-A68C108A01ED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}

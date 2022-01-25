@@ -126,7 +126,7 @@
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
   <data name="SC0001_Title" xml:space="preserve">
-    <value>Type not allowed</value>
+    <value>Type cannot be used</value>
     <comment>The title of the diagnostic.</comment>
   </data>
   <data name="SC0002_Description" xml:space="preserve">
@@ -150,10 +150,22 @@
   <data name="SC0003_Title" xml:space="preserve">
     <value>Class must inherit from SmartContract class</value>
   </data>
+  <data name="SC0004_Description" xml:space="preserve">
+    <value>The first parameter in a smart constructor must be of type ISmartContractState.</value>
+  </data>
   <data name="SC0004_MessageFormat" xml:space="preserve">
     <value>Parameter {0} must be of type ISmartContractState.</value>
   </data>
   <data name="SC0004_Title" xml:space="preserve">
-    <value>The first parameter in a smart constructor must be of type ISmartContractState</value>
+    <value>Parameter type not allowed</value>
+  </data>
+  <data name="SC0005_Description" xml:space="preserve">
+    <value>New object creation is not allowed in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md</value>
+  </data>
+  <data name="SC0005_MessageFormat" xml:space="preserve">
+    <value>A new object cannot be created here</value>
+  </data>
+  <data name="SC0005_Title" xml:space="preserve">
+    <value>New object creation not allowed</value>
   </data>
 </root>
