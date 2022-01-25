@@ -21,4 +21,10 @@
     <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="BlockchainContractProj.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -1,5 +1,7 @@
 namespace Silver.Projects;
 
+using System.Reflection;
+
 using Roslyn = Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
@@ -84,7 +86,6 @@ public abstract class SilverProject : Runtime
 
     public bool Verify { get; set; } = false;
 
-    
     public string CommandLine
     {
         get

@@ -35,5 +35,24 @@ public class Tools : Runtime
             return false;
         }
     }
+
+    public static bool Sct(params string[] args)
+    {
+        var ret = RunCmd(
+                   Path.Combine(AssemblyLocation, "sct", "Stratis.SmartContracts.Tools.Sct.exe"),
+                   args.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "--") : a).JoinWithSpaces(),
+                   Path.Combine(AssemblyLocation, "sct")
+               );
+        if (ret is not null)
+        {
+            Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
+            return true;
+        }
+        else
+        {
+            Error("Error executing sct.");
+            return false;
+        }
+    }
 }
 

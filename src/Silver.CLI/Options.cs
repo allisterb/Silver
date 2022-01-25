@@ -130,6 +130,13 @@ namespace Silver.CLI
         public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
     }
 
+    [Verb("sct", HelpText = "Execute the installed Stratis smart contract tool with the specified options.")]
+    public class SctOptions : Options
+    {
+        [Value(0, Required = true, HelpText = "The options to pass to Sct.")]
+        public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
+    }
+
     [Verb("install", HelpText = "Install any required external tools.")]
     public class InstallOptions : Options
     {

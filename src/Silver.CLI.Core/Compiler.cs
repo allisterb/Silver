@@ -43,8 +43,38 @@ namespace Silver.CLI.Core
             if (proj is not null && proj.Initialized)
             {
                 proj.Verify = verify;
-                var r = proj.Compile() is not null;
-                return r;
+                var r = proj.Compile();
+                if (r is not null)
+                {
+                    foreach (var d in r.Diagnostics)
+                    {
+                        if (d.WarningLevel == 0)
+                        {
+                            Error("[{0}]: {1} Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
+                        }
+                        else
+                        {
+                            Warn("[{0}]: {1} Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
+                        }
+                        
+                    }
+                    if (r.Success)
+                    {
+                        Info("Compilation succeded.");
+                        Info("Assembly is at {0}", proj.TargetPath);
+
+                    }
+                    else
+                    {
+                        Error("Compilation failed.");
+                    }
+                    return r.Success;
+                }
+                else
+                {
+                    return false;
+                }
+                
             }
             else
             {

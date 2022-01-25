@@ -57,7 +57,7 @@ class Program : Runtime
         ParserResult<object> result = new Parser().ParseArguments<Options, CompileOptions, DisassemblerOptions, VerifyOptions, AssemblyOptions,
             AnalyzeOptions, 
             SummarizeOptions, CallGraphOptions,
-            BoogieOptions, SscOptions, InstallOptions>(args);
+            BoogieOptions, SscOptions, SctOptions, InstallOptions>(args);
         result.WithParsed<Options>(o =>
         {
             InteractiveConsole = !o.Script;
@@ -99,6 +99,18 @@ class Program : Runtime
         .WithParsed<SscOptions>(o =>
         {
             if (Core.Tools.Boogie(o.Options.ToArray()))
+            {
+                Exit(ExitResult.SUCCESS);
+            }
+            else
+            {
+                Exit(ExitResult.ERROR_IN_RESULTS);
+            }
+
+        })
+        .WithParsed<SctOptions>(o =>
+        {
+            if (Core.Tools.Sct(o.Options.ToArray()))
             {
                 Exit(ExitResult.SUCCESS);
             }
@@ -288,7 +300,7 @@ class Program : Runtime
         typeof(Options), typeof(CompileOptions), typeof(DisassemblerOptions),
         typeof(AnalyzeOptions), 
         typeof(SummarizeOptions), typeof(CallGraphOptions),
-        typeof(VerifyOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(InstallOptions)
+        typeof(VerifyOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(SctOptions), typeof(InstallOptions)
 
     };
     static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
