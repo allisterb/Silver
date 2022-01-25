@@ -23,6 +23,7 @@ namespace Stratis.SmartContracts.CLR.Compilation
         private ContractCompilationResult(IEnumerable<Diagnostic> emitResultDiagnostics)
         {
             this.Success = false;
+            this.Compilation = Array.Empty<byte>();
             this.Diagnostics = emitResultDiagnostics ?? Enumerable.Empty<Diagnostic>();
         }
 

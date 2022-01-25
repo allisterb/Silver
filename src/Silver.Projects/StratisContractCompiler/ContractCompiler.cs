@@ -28,7 +28,7 @@ namespace Stratis.SmartContracts.CLR.Compilation
         /// <summary>
         /// Compile all of the files in a directory, with the option of compiling a certain namespace.
         /// </summary>
-        public static ContractCompilationResult CompileDirectory(string path, string selectedNamespace = null, OptimizationLevel optimizationLevel = OptimizationLevel.Release)
+        public static ContractCompilationResult CompileDirectory(string path, string? selectedNamespace = null, OptimizationLevel optimizationLevel = OptimizationLevel.Release)
         {
             // Get the syntax tree for every file in the given path.
             string[] files = Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories);
