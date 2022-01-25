@@ -65,8 +65,7 @@ public class MSBuildSilverProject : SilverProject
             MsBuildProject.AddToWorkspace(RoslynWorkspace);
             Initialized = true;
             op.Complete();
-        }
-             
+        }    
     }
     #endregion
 
@@ -76,8 +75,6 @@ public class MSBuildSilverProject : SilverProject
     public string? TargetFramework { get; init; }
 
     public List<AssemblyReference>? PackageReferences { get; init; }
-
-    public Roslyn.Workspace RoslynWorkspace { get; } = new Roslyn.AdhocWorkspace();
     #endregion
 
     #region Overriden members

@@ -44,7 +44,7 @@ namespace Silver.CLI.Core
             if (proj is not null && proj.Initialized)
             {
                 proj.Verify = verify;
-                return proj.Compile().Succeded;
+                return proj.SscCompile().Succeded;
             }
             else
             {

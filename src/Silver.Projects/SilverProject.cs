@@ -1,5 +1,7 @@
 namespace Silver.Projects;
 
+using Roslyn = Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 #region Records
 internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
 
@@ -25,6 +27,8 @@ public abstract class SilverProject : Runtime
     public FileInfo ProjectFile { get; init; }
 
     protected SilverProject? Parent { get; init; }
+
+    public Roslyn.AdhocWorkspace RoslynWorkspace { get; } = new Roslyn.AdhocWorkspace();
 
     public string RequestedBuildConfig { get; init; }
 
@@ -140,14 +144,16 @@ public abstract class SilverProject : Runtime
     #endregion
 
     #region Methods
-    public SilverProjectCompilation Compile()
+    public virtual Roslyn.Compilation? Compile() => RoslynWorkspace.CurrentSolution.Projects.First().GetCompilationAsync(Ct).Result;
+   
+    public SscCompilation SscCompile()
     {
         FailIfNotInitialized();
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
-            var compilerErrors = new List<CompilerError>();
-            var compilerWarnings = new List<CompilerWarning>();
+            var compilerErrors = new List<SscCompilerError>();
+            var compilerWarnings = new List<SscCompilerWarning>();
 
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => 
@@ -189,7 +195,7 @@ public abstract class SilverProject : Runtime
             {
                 Error("Compile failed.");
                 op.Cancel();
-                return new SilverProjectCompilation(this, false, Verify, compilerErrors, compilerWarnings);
+                return new SscCompilation(this, false, Verify, compilerErrors, compilerWarnings);
             }
             else
             {
@@ -233,7 +239,7 @@ public abstract class SilverProject : Runtime
                         Info("Verification succeded. Target assembly not retained");
                     }
                 }
-                return new SilverProjectCompilation(this, true, Verify, compilerErrors, compilerWarnings);
+                return new SscCompilation(this, true, Verify, compilerErrors, compilerWarnings);
             }
         }
     }

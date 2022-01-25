@@ -56,7 +56,7 @@ namespace Silver.Projects
                                 }
                                 if (!File.Exists(pr.TargetPath) || !pr.BuildUpToDate)
                                 {
-                                    if(!pr.Compile().Succeded)
+                                    if(!pr.SscCompile().Succeded)
                                     {
                                         Fatal("The project reference {0} could not be built and is not up-to-date.", pr.ProjectFile.FullName);
                                         op.Cancel();
@@ -140,7 +140,7 @@ namespace Silver.Projects
         #endregion
 
         #region Overriden members
-        public override bool NativeBuild() => this.Compile().Succeded;
+        public override bool NativeBuild() => this.SscCompile().Succeded;
         #endregion
     }
 }

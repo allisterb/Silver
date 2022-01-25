@@ -22,7 +22,7 @@ public class AdhocSilverProject : SilverProject
     }
 
     #region Overriden members
-    public override bool NativeBuild() => this.Compile().Succeded;
+    public override bool NativeBuild() => this.SscCompile().Succeded;
     #endregion
 }
 
