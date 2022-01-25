@@ -1,7 +1,10 @@
 namespace Silver.Projects;
 
 using Roslyn = Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Emit;
+
 #region Records
 internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
 
@@ -144,7 +147,20 @@ public abstract class SilverProject : Runtime
     #endregion
 
     #region Methods
-    public virtual Roslyn.Compilation? Compile() => RoslynWorkspace.CurrentSolution.Projects.First().GetCompilationAsync(Ct).Result;
+    public virtual EmitResult? Compile()
+    {
+        FailIfNotInitialized();
+        var c = RoslynWorkspace.CurrentSolution.Projects.First()
+            .AddAnalyzerReference(new AnalyzerFileReference(Path.Combine(AssemblyLocation, "Silver.CodeAnalysis.Cs.dll"), AnalyzerAssemblyLoader.Instance))
+            .GetCompilationAsync(Ct)
+            .Result;
+        if (c is null) return null;
+        var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
+        if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting.", TargetPath);
+        using FileStream pestream = File.OpenWrite(TargetPath);
+        using FileStream pdbstream = File.OpenWrite(Path.ChangeExtension(TargetPath, ".pdb")); 
+        return c.Emit(pestream, pdbstream, options: emitOptions);
+    }
    
     public SscCompilation SscCompile()
     {

@@ -7,7 +7,6 @@ namespace Silver.CLI.Core
     {
        public static bool PrintProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
         {
-          
             var p = SilverProject.GetProperty(FailIfFileNotFound(filePath), buildConfig, prop, additionalFiles);
             if (p is null)
             {
@@ -27,7 +26,7 @@ namespace Silver.CLI.Core
             {
                 if (l is null)
                 {
-                    Error("Could not get command line for project file {0}.", filePath);
+                    Error("Could not get Spec# command line for project file {0}.", filePath);
                     return false;
                 }
                 else
@@ -44,7 +43,8 @@ namespace Silver.CLI.Core
             if (proj is not null && proj.Initialized)
             {
                 proj.Verify = verify;
-                return proj.SscCompile().Succeded;
+                var r = proj.Compile() is not null;
+                return r;
             }
             else
             {

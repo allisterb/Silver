@@ -186,8 +186,6 @@ public abstract class Runtime
         }
     }
 
-    
-
     [DebuggerStepThrough]
     public static void SetProps<T>(T o, Dictionary<string, object> setprops)
     {

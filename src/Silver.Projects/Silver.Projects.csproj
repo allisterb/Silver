@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
+    <ProjectReference Include="..\Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.csproj" />
     <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
   </ItemGroup>
 

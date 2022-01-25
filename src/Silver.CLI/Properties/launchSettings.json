@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "call-graph  C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\PingPongContract\\PingPongContract\\bin\\Debug\\netcoreapp2.2\\PingPongContract.dll"
+      "commandLineArgs": "compile  C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\HelloBlockchainContract\\HelloBlockchainContract\\HelloBlockchainContract.csproj"
     }
   }
 }

@@ -3,6 +3,7 @@
 using Microsoft.CodeAnalysis;
 public class AdhocSilverProject : SilverProject
 {
+    #region Constructirs
     public AdhocSilverProject(Dictionary<string, object> settings) : base(settings.FailIfKeyNotPresent<IEnumerable<string>> ("SourceFiles").First(), settings.FailIfKeyNotPresent<string>("BuildConfig"))
     {
         BuildConfiguration = settings.TryGet<string>("BuildConfiguration") ?? "Debug";
@@ -16,10 +17,17 @@ public class AdhocSilverProject : SilverProject
         StandardLibraryLocation = settings.TryGet<string>("StandardLibraryLocation") ?? "";
         TargetPlatformLocation = settings.TryGet<string>("TargetPlatformLocation") ?? "";
         ShadowedAssembly = settings.TryGet<string>("ShadowedAssembly") ?? "";
+        string projectName = "SmartContract";
+        ProjectId projectId = ProjectId.CreateNewId();
+        VersionStamp versionStamp = VersionStamp.Create();
+        var docs = SourceFiles.Select(f => DocumentInfo.Create(DocumentId.CreateNewId(projectId), Path.GetFileName(f), sourceCodeKind: SourceCodeKind.Regular, filePath: f));
+        ProjectInfo project = 
+            ProjectInfo
+            .Create(projectId, versionStamp, projectName, projectName, LanguageNames.CSharp, documents: docs);
+        RoslynWorkspace.AddProject(project);
         Initialized = true;
-        //AdhocWorkspace w = new AdhocWorkspace();
-        //w.
     }
+    #endregion
 
     #region Overriden members
     public override bool NativeBuild() => this.SscCompile().Succeded;

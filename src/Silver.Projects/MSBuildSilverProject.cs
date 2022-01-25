@@ -14,7 +14,7 @@ public class MSBuildSilverProject : SilverProject
     static MSBuildSilverProject() { }
     public MSBuildSilverProject(string filePath, string buildConfig) : base(filePath, buildConfig)
     {
-        using (var op = Begin("Loading MSBuild Spec# project {0}", filePath))
+        using (var op = Begin("Loading MSBuild C# project {0}", filePath))
         {
             StringWriter log = new StringWriter();
             AnalyzerManagerOptions options = new AnalyzerManagerOptions
