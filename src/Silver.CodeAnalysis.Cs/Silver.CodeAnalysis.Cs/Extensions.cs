@@ -10,13 +10,13 @@ namespace Silver.CodeAnalysis.Cs
     {
         public static Diagnostic Report(this Diagnostic diagnostic, SyntaxNodeAnalysisContext ctx)
         {
-            ctx.ReportDiagnostic(diagnostic);
+            if (diagnostic != null) ctx.ReportDiagnostic(diagnostic);
             return diagnostic;
         }
 
         public static Diagnostic Report(this Diagnostic diagnostic, OperationAnalysisContext ctx)
         {
-            ctx.ReportDiagnostic(diagnostic);
+            if (diagnostic != null) ctx.ReportDiagnostic(diagnostic);
             return diagnostic;
         }
     }

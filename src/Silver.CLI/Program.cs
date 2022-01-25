@@ -43,6 +43,7 @@ class Program : Runtime
     {
         if (args.Contains("--debug") || args.Contains("-d"))
         {
+            DebugEnabled = true;
             SetLogger(new SerilogLogger(console: true, debug: true));
             Info("Debug mode set.");
         }

@@ -178,7 +178,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A new object cannot be created here.
+        ///   Looks up a localized string similar to A new {0} object cannot be created here.
         /// </summary>
         internal static string SC0005_MessageFormat {
             get {

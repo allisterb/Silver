@@ -52,6 +52,8 @@ public abstract class Runtime
 
     public static string Config(string i) => Configuration[i];
 
+    public static bool DebugEnabled { get; set; }
+
     public static bool InteractiveConsole { get; set; } = false;
 
     public static bool IsKubernetesPod { get; }

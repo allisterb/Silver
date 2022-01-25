@@ -44,7 +44,7 @@ public abstract class SilverProject : Runtime
 
     public string OutputType { get; protected set; } = string.Empty;
 
-    public bool DebugEnabled 
+    public bool DebugConfig
     {
         get => RequestedBuildConfig.StartsWith("Debug") || RequestedBuildConfig.EndsWith("Debug"); 
     } 
@@ -105,7 +105,7 @@ public abstract class SilverProject : Runtime
             {
                 sb.AppendFormat("/define:{0} ", DefineConstants);
             }
-            if (DebugEnabled)
+            if (DebugConfig)
             {
                 sb.Append("/debug+ /debug:pdbonly ");
             }
@@ -153,13 +153,7 @@ public abstract class SilverProject : Runtime
     {
         FailIfNotInitialized();
         var op = Begin("Compiling");
-        var a = new AnalyzerFileReference(Path.Combine(AssemblyLocation, "Silver.CodeAnalysis.Cs.dll"), AnalyzerAssemblyLoader.Instance);
-        a.AnalyzerLoadFailed += (sender, e) =>
-        {
-            Error(e.Message);
-        };
         var c = RoslynWorkspace.CurrentSolution
-            .AddAnalyzerReference(a)
             .Projects.First()
             .GetCompilationAsync(Ct).Result;
         if (c is null)
@@ -167,16 +161,22 @@ public abstract class SilverProject : Runtime
             op.Cancel();
             return false;
         }
+        Action<Exception, DiagnosticAnalyzer, Roslyn.Diagnostic> errorHandler = (e, da, d) =>
+        {
+            Error(e, "Analyzer {0} threw an exception when reporting diagnostic {1}:", da.GetType().Name, d.Id);
+            
+        };
         var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
-            new CompilationWithAnalyzersOptions(null, null, true, false, false, null));
+            new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
         var diags = ca.GetAllDiagnosticsAsync(Ct).Result;
+        Info("Printing diagnostics...");
         foreach (var d in diags)
         {
             if (d.WarningLevel == 0)
             {
                 Error("Id: {0}\n               Msg: {1}\n               Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
             }
-            else
+            else if(DebugEnabled)
             {
                 Warn("Id: {0}\n               Msg: {1}\n               Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
             }
@@ -206,12 +206,6 @@ public abstract class SilverProject : Runtime
             op.Cancel();
             return false;
         }
-        
-    }
-
-    private void A_AnalyzerLoadFailed(object? sender, AnalyzerLoadFailureEventArgs e)
-    {
-        throw new NotImplementedException();
     }
 
     public SscCompilation SscCompile()

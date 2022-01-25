@@ -163,7 +163,7 @@
     <value>New object creation is not allowed in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md</value>
   </data>
   <data name="SC0005_MessageFormat" xml:space="preserve">
-    <value>A new object cannot be created here</value>
+    <value>A new {0} object cannot be created here</value>
   </data>
   <data name="SC0005_Title" xml:space="preserve">
     <value>New object creation not allowed</value>

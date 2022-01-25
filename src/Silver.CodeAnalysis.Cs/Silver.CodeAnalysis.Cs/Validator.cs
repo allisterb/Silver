@@ -31,7 +31,6 @@ namespace Silver.CodeAnalysis.Cs
             if (ns.ToFullString() != "Stratis.SmartContracts")
             {
                 return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
-                
             }
             else
             {
@@ -91,11 +90,12 @@ namespace Silver.CodeAnalysis.Cs
             
         }
 
+        // New object creation not allowed
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {
-            var t = objectCreation.Type.ToDisplayString();
-            return Diagnostic.Create(GetErrorDescriptor("SC0005"), objectCreation.Syntax.GetLocation());
-            
+            var t = objectCreation.Type;
+            if (t.IsValueType) return null;
+            return Diagnostic.Create(GetErrorDescriptor("SC0005"), objectCreation.Syntax.GetLocation(), t.ToDisplayString());
         }
 
         #region Overloads
@@ -114,7 +114,6 @@ namespace Silver.CodeAnalysis.Cs
             AnalyzeObjectCreation(objectCreation).Report(ctx);
         #endregion
 
-
         public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
             new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,
                 DiagnosticSeverity.Error, true, RM.GetString($"{id}_Description"));
@@ -122,7 +121,7 @@ namespace Silver.CodeAnalysis.Cs
         #endregion
 
         #region Fields
-        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003" };
+        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005"};
         internal static ImmutableArray<DiagnosticDescriptor> Errors;
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
