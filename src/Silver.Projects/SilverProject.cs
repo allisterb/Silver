@@ -170,7 +170,6 @@ public abstract class SilverProject : Runtime
         var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
             new CompilationWithAnalyzersOptions(null, null, true, false, false, null));
         var diags = ca.GetAllDiagnosticsAsync(Ct).Result;
-        
         foreach (var d in diags)
         {
             if (d.WarningLevel == 0)
@@ -181,7 +180,6 @@ public abstract class SilverProject : Runtime
             {
                 Warn("Id: {0}\n               Msg: {1}\n               Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
             }
-
         }
         var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
         if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting.", TargetPath);

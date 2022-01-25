@@ -27,7 +27,7 @@ namespace Silver.CodeAnalysis.Cs
         // Only allow using Stratis.SmartContracts namespace in smart contract code
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
-            var ns = node.DescendantNodes().OfType<QualifiedNameSyntax>().First();
+            var ns = node.DescendantNodes().OfType<NameSyntax>().FirstOrDefault();  
             if (ns.ToFullString() != "Stratis.SmartContracts")
             {
                 return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
@@ -110,6 +110,8 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeConstructor(ConstructorDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
             AnalyzeConstructorDecl(node, ctx.SemanticModel)?.Report(ctx);
 
+        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation, OperationAnalysisContext ctx) =>
+            AnalyzeObjectCreation(objectCreation).Report(ctx);
         #endregion
 
 

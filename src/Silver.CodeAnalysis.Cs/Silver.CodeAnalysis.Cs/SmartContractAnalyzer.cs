@@ -35,10 +35,8 @@
                     switch (ctx.Operation)
                     {
                         case IObjectCreationOperation objectCreation:
-                            Validator.AnalyzeObjectCreation(objectCreation);
+                            Validator.AnalyzeObjectCreation(objectCreation, ctx);
                             break;
-                            //objectCreation.Constructor.ty
-
                     }
                 }, OperationKind.ObjectCreation);
             //context.RegisterCompilationStartAction(OnCompilationStart);
@@ -49,7 +47,6 @@
 
             //}
             #endregion
-
 
         }
     }

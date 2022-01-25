@@ -13,5 +13,11 @@ namespace Silver.CodeAnalysis.Cs
             ctx.ReportDiagnostic(diagnostic);
             return diagnostic;
         }
+
+        public static Diagnostic Report(this Diagnostic diagnostic, OperationAnalysisContext ctx)
+        {
+            ctx.ReportDiagnostic(diagnostic);
+            return diagnostic;
+        }
     }
 }
