@@ -37,13 +37,20 @@ namespace Silver.CLI.Core
             }
         }
 
-        public static bool Compile(string filePath, string buildConfig, bool verify = false, params string[] additionalFiles)
+        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, params string[] additionalFiles)
         {
             var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
                 proj.Verify = verify;
-                return proj.Compile();
+                if (ssc)
+                {
+                    return proj.SscCompile().Succeded;
+                }
+                else
+                {
+                    return proj.Compile();
+                }
             }
             else
             {

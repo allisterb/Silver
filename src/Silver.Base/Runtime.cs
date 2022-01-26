@@ -120,6 +120,7 @@ public abstract class Runtime
     [DebuggerStepThrough]
     public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
 
+    [DebuggerStepThrough]
     public void FailIfNotInitialized()
     {
         if(!Initialized)
@@ -128,6 +129,7 @@ public abstract class Runtime
         }
     }
 
+    [DebuggerStepThrough]
     public T FailIfNotInitialized<T>(Func<T> r) => Initialized ? r() : throw new RuntimeNotInitializedException(this);
 
     public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler? errorHandler = null, bool checkExists = true)
@@ -211,6 +213,22 @@ public abstract class Runtime
     {
         if (!File.Exists(filePath)) throw new FileNotFoundException(filePath);
         return filePath;
+    }
+
+    public static string ViewFilePath(string path, string? relativeTo = null)
+    {
+        if (!DebugEnabled)
+        {
+            if (relativeTo is null)
+            {
+                return (Path.GetFileName(path) ?? path);
+            }
+            else
+            {
+                return (Path.GetRelativePath(relativeTo, path));
+            }
+        }
+        else return path;
     }
     #endregion
 }

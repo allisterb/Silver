@@ -32,10 +32,10 @@ internal class CompilerCmd : Command
         }
     }
 
-    internal static void Compile(string filePath, string buildConfig, bool verify, params string[] additionalFiles)
+    internal static void Compile(string filePath, string buildConfig, bool verify, bool ssc, params string[] additionalFiles)
     {
         ExitIfFileNotFound(filePath);
-        if (!Compiler.Compile(filePath, buildConfig, verify))
+        if (!Compiler.Compile(filePath, buildConfig, verify, ssc))
         {
             Exit(ExitResult.UNKNOWN_ERROR);
         }

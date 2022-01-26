@@ -164,7 +164,6 @@ public abstract class SilverProject : Runtime
         Action<Exception, DiagnosticAnalyzer, Roslyn.Diagnostic> errorHandler = (e, da, d) =>
         {
             Error(e, "Analyzer {0} threw an exception when reporting diagnostic {1}:", da.GetType().Name, d.Id);
-            
         };
         var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
             new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
@@ -172,17 +171,21 @@ public abstract class SilverProject : Runtime
         Info("Printing diagnostics...");
         foreach (var d in diags)
         {
+            var f = d.Location.GetLineSpan().Path;
+            var line = d.Location.GetLineSpan().StartLinePosition.Line;
+            var col = d.Location.GetLineSpan().StartLinePosition.Character;
+
             if (d.WarningLevel == 0)
             {
-                Error("Id: {0}\n               Msg: {1}\n               Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
+                Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, ProjectFile.Directory?.FullName), line, col);
             }
-            else if(DebugEnabled)
+            else if (DebugEnabled)
             {
-                Warn("Id: {0}\n               Msg: {1}\n               Location: {2}", d.Id, d.GetMessage(), d.Location.ToString());
+                Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, ProjectFile.Directory?.FullName), line, col);
             }
         }
         var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
-        if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting.", TargetPath);
+        if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting...", ViewFilePath(TargetPath));
         using FileStream pestream = File.OpenWrite(TargetPath);
         using FileStream pdbstream = File.OpenWrite(Path.ChangeExtension(TargetPath, ".pdb")); 
         var res = c.Emit(pestream, pdbstream, options: emitOptions);
@@ -192,7 +195,7 @@ public abstract class SilverProject : Runtime
             {
                 op.Complete();
                 Info("Compilation succeded.");
-                Info("Assembly is at {0}", TargetPath);
+                Info("Assembly is at {0}", ViewFilePath(TargetPath, ProjectFile.Directory?.FullName));
             }
             else
             {

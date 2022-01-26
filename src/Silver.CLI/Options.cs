@@ -67,8 +67,8 @@ namespace Silver.CLI
         [Value(0, Required = true, HelpText = "The project file or source files to compile.")]
         public IEnumerable<string> Files { get; set; } = Array.Empty<string>();
 
-        [Option("sc", Required = false, HelpText = "Compile as a smart contract.")]
-        public bool SmartContract { get; set; }
+        [Option("ssc", Required = false, HelpText = "Compile using the Spec# compiler.")]
+        public bool Ssc { get; set; }
 
         [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file after compilation.")]
         public bool Verify { get; set; } 

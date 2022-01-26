@@ -14,7 +14,7 @@ public class MSBuildSilverProject : SilverProject
     static MSBuildSilverProject() { }
     public MSBuildSilverProject(string filePath, string buildConfig) : base(filePath, buildConfig)
     {
-        using (var op = Begin("Loading MSBuild C# project {0}", filePath))
+        using (var op = Begin("Loading MSBuild C# project {0}", ViewFilePath(filePath)))
         {
             StringWriter log = new StringWriter();
             AnalyzerManagerOptions options = new AnalyzerManagerOptions
@@ -26,7 +26,7 @@ public class MSBuildSilverProject : SilverProject
             var a = m.GetProject(filePath);
             Debug("Performing a design-time build of {0} in configuration {1}.", ProjectFile.FullName, RequestedBuildConfig);
             var envOptions = new EnvironmentOptions() { };
-            envOptions.TargetsToBuild.Remove("Clean") ;
+            envOptions.TargetsToBuild.Remove("Clean");
             var _results = a.Build(envOptions);
             foreach (var l in log.ToString().Split(Environment.NewLine))
             {
@@ -57,9 +57,9 @@ public class MSBuildSilverProject : SilverProject
                 .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
             References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
-            BuildUpToDate = 
-                !string.IsNullOrEmpty(TargetPath) && 
-                File.Exists(TargetPath) && 
+            BuildUpToDate =
+                !string.IsNullOrEmpty(TargetPath) &&
+                File.Exists(TargetPath) &&
                 SourceFiles.All(f => File.GetLastWriteTime(f) <= File.GetLastWriteTime(TargetPath)) &&
                 ProjectFile.LastWriteTime <= File.GetLastWriteTime(TargetPath);
             MsBuildProject.AddToWorkspace(RoslynWorkspace);
