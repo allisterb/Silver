@@ -132,7 +132,7 @@ public abstract class Runtime
     [DebuggerStepThrough]
     public T FailIfNotInitialized<T>(Func<T> r) => Initialized ? r() : throw new RuntimeNotInitializedException(this);
 
-    public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler? errorHandler = null, bool checkExists = true)
+    public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler? errorHandler = null, bool checkExists = true, bool isNETFxTool = false)
     {
         if (checkExists && !(File.Exists(cmdName) || File.Exists(cmdName + ".exe")))
         {
@@ -148,8 +148,16 @@ public abstract class Runtime
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.CreateNoWindow = true;
-            p.StartInfo.FileName = cmdName;
-            p.StartInfo.Arguments = arguments;
+            if (isNETFxTool && System.Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                p.StartInfo.FileName = "mono";
+                p.StartInfo.Arguments = cmdName + " " + arguments;
+            }
+            else
+            {
+                p.StartInfo.FileName = cmdName;
+                p.StartInfo.Arguments = arguments;
+            }
             p.OutputDataReceived += (sender, e) => 
             { 
                 if (e.Data is not null) 
