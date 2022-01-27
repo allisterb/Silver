@@ -30,7 +30,7 @@ public class ExternalToolsManager : Runtime
     #region Methods
     public static void EnsureAllExists()
     {
-        //Z3.EnsureExists();
+        Z3.EnsureExists();
         SpecSharp.EnsureExists();
         ((DownloadedToolDirectoryManager) SpecSharp).EnsureLinkedToZ3(Z3);
         Info("All required external tools installed.");
