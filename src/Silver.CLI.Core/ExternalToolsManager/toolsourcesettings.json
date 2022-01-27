@@ -13,14 +13,20 @@
       "osx": "z3-4.8.14-x64-osx-10.16/bin/z3"
     }
   },
-  "Boogie": {
-    "Name": "boogie",
-    "Version": "2.11.1",
-    "DependencyRelativePath": ".store/boogie/2.11.1/boogie/2.11.1/tools/net6.0/any/"
-  },
-  "Corral": {
-    "Name": "corral",
-    "Version": "1.1.8",
-    "DependencyRelativePath": ".store/corral/1.1.8/corral/1.1.8/tools/net5.0/any/"
+  "specsharp": {
+    "Name": "ssc2",
+    "Version": "0.1",
+    "Directory":  "ssc2",
+    "DownloadURLs": {
+      "windows": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip",
+      "linux": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip",
+      "osx": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip"
+    },
+    "ExePathsWithinZip": {
+      "windows": "specsharp-1.0.21126-win\\*.*",
+      "linux": "z3-4.8.14-x64-glibc-2.31/bin/z3",
+      "osx": "z3-4.8.14-x64-osx-10.16/bin/z3"
+    }
   }
+
 }

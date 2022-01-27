@@ -65,10 +65,10 @@ class Program : Runtime
         })
         .WithParsed<InstallOptions>(o =>
         {
-            ExternalToolsManager.EnsureAllExists();
+            Core.ExternalToolsManager.EnsureAllExists();
             if(o.Info)
             {
-                foreach(var vi in ExternalToolsManager.GetVersionInfo())
+                foreach(var vi in Core.ExternalToolsManager.GetVersionInfo())
                 {
                     Con.WriteLine(vi);
                 }

@@ -17,17 +17,16 @@ internal class CompilerCmd : Command
             ExitWithSuccess();
         }
     }
+
     internal static void GetCommandLine(string filePath, string buildConfig, params string[] additionalFiles)
     {
         ExitIfFileNotFound(filePath);
         if (!Compiler.GetCommandLine(filePath, buildConfig))
         {
-            
             Exit(ExitResult.ERROR_IN_RESULTS);
         }
         else
-        {
-            
+        {   
             ExitWithSuccess();
         }
     }
@@ -44,5 +43,4 @@ internal class CompilerCmd : Command
             ExitWithSuccess();
         }
     }
-
 }

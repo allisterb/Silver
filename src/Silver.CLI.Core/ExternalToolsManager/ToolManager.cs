@@ -3,7 +3,6 @@ namespace Silver;
 using System.IO;
 using System.Runtime.InteropServices;
 
-
 public abstract class ToolManager : Runtime
 {
     #region Constructors
@@ -34,7 +33,7 @@ public abstract class ToolManager : Runtime
     }
     protected readonly ToolSourceSettings settings;
 
-    public string ExeName
+    public virtual string ExeName
     {
         get
         {
@@ -49,7 +48,7 @@ public abstract class ToolManager : Runtime
         }
     }
 
-    public string Command
+    public virtual string Command
     {
         get
         {
@@ -61,12 +60,12 @@ public abstract class ToolManager : Runtime
     #region Methods
     internal abstract void EnsureExists();
 
-    protected bool Exists()
+    protected virtual bool Exists()
     {
         return File.Exists(this.Command);
     }
 
-    protected void EnsureCommandPathExists()
+    protected virtual void EnsureCommandPathExists()
     {
         if (!Directory.Exists(this.settings.CommandPath))
         {

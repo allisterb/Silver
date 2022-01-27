@@ -78,6 +78,7 @@ public class SerilogOp : Logger.Op
         isCompleted = true;
     }
 
+    [DebuggerStepThrough]
     public override void Dispose()
     {
         if (!(isCancelled || isCompleted))

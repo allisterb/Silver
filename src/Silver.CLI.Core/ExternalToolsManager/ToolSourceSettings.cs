@@ -14,6 +14,8 @@ public class ToolSourceSettings
     public string DependencyRelativePath { get; set; } = String.Empty;
     public string CommandPath { get; set; } = GetDefaultPath();
 
+    public string Directory { get; set; } = string.Empty;
+    
     private static string GetDefaultPath()
     {
         var assemblyPath = Path.GetDirectoryName(Assembly.GetAssembly(typeof(ToolSourceSettings))!.Location);

@@ -9,7 +9,15 @@ namespace Silver
 
     internal class DownloadedToolManager : ToolManager
     {
-        private string DownloadURL
+        #region Constructors
+        internal DownloadedToolManager(ToolSourceSettings settings) : base(settings)
+        {
+            
+        }
+        #endregion
+
+        #region Properties
+        protected string DownloadURL
         {
             get
             {
@@ -17,7 +25,7 @@ namespace Silver
             }
         }
 
-        private string ExePathWithinZip
+        protected string ExePathWithinZip
         {
             get
             {
@@ -25,7 +33,7 @@ namespace Silver
             }
         }
 
-        private string ZipFileName
+        protected string ZipFileName
         {
             get
             {
@@ -33,7 +41,7 @@ namespace Silver
             }
         }
 
-        private string TempDirectory
+        protected string TempDirectory
         {
             get
             {
@@ -41,7 +49,7 @@ namespace Silver
             }
         }
 
-        private string ZipFilePath
+        protected string ZipFilePath
         {
             get
             {
@@ -49,7 +57,7 @@ namespace Silver
             }
         }
 
-        private string ExtractPath
+        protected string ExtractPath
         {
             get
             {
@@ -57,18 +65,16 @@ namespace Silver
             }
         }
 
-        private string ExeTempPath
+        protected string ExeTempPath
         {
             get
             {
                 return Path.Combine(this.ExtractPath, this.ExePathWithinZip);
             }
         }
+        #endregion
 
-        internal DownloadedToolManager(ToolSourceSettings settings) : base(settings)
-        {
-        }
-
+        #region Overriden members
         internal override void EnsureExists()
         {
             EnsureCommandPathExists();
@@ -83,8 +89,10 @@ namespace Silver
                 Info("{0} exists in {1}.", this.settings.Name, this.settings.CommandPath);
             }
         }
+        #endregion
 
-        private void ChangePermission()
+        #region Methods
+        protected virtual void ChangePermission()
         {
             if (OsName == "linux" || OsName == "osx")
             {
@@ -99,7 +107,7 @@ namespace Silver
             DownloadAndUnZip();
         }
 
-        protected void DownloadAndUnZip()
+        protected virtual void DownloadAndUnZip()
         {
             using (var op = Begin("Download and unzip {0} to {1}.", this.settings.Name, ExtractPath))
             {
@@ -113,7 +121,7 @@ namespace Silver
             }
         }
 
-        protected void DownloadAndCopy()
+        protected virtual void DownloadAndCopy()
         {
             PrepareTempDirectory();
             Download();
@@ -121,7 +129,7 @@ namespace Silver
             File.Delete(ZipFilePath);
         }
 
-        protected void CreateSymbolicLink()
+        protected virtual void CreateSymbolicLink()
         {
             if (OsName == "osx")
             {
@@ -129,7 +137,7 @@ namespace Silver
             }
         }
 
-        private void PrepareTempDirectory()
+        protected void PrepareTempDirectory()
         {
             if (!Directory.Exists(TempDirectory))
             {
@@ -152,13 +160,13 @@ namespace Silver
             }
         }
 
-        private void CopyToCommand(string exeTempPath)
+        protected virtual void CopyToCommand(string exeTempPath)
         {
             Debug("Copying {0} to {1}.", exeTempPath, Command);
             File.Copy(exeTempPath, Command);
         }
 
-        private void Download()
+        protected virtual void Download()
         {
 #pragma warning disable SYSLIB0014 // Type or member is obsolete
             //using (var op = Begin("Downloading {0} from {1} to {2}", this.settings.Name, DownloadURL, TempDirectory))
@@ -170,5 +178,6 @@ namespace Silver
             DownloadFile(this.settings.Name, new Uri(DownloadURL), ZipFilePath);
 #pragma warning restore SYSLIB0014 // Type or member is obsolete
         }
+        #endregion
     }
 }
