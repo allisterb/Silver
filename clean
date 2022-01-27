@@ -1,0 +1,2 @@
+#!/bin/bash
+dotnet clean src/Silver.CLI/Silver.CLI.csproj 
