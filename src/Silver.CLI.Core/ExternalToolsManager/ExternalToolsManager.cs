@@ -40,8 +40,8 @@ public class ExternalToolsManager : Runtime
     {
         return new string[] 
         { 
-            Runtime.RunCmd("z3", "/version") ?? "Error running z3 /version.", 
-            Runtime.RunCmd("ssc/ssc.exe", "/version") ?? "Error running boogie /version.", 
+            Runtime.RunCmd("z3.exe", "/version") ?? "Error running z3 /version.",
+            "Spec# 1.0.21126.1 (https://github.com/allisterb/specsharp-ms)", 
         };
     }
     #endregion

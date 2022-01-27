@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "install"
+      "commandLineArgs": "install --info"
     }
   }
 }

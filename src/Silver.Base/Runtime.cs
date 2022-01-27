@@ -134,7 +134,7 @@ public abstract class Runtime
 
     public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler? errorHandler = null, bool checkExists = true)
     {
-        if (checkExists && (!File.Exists(cmdName) && !File.Exists(cmdName + ".exe")))
+        if (checkExists && !(File.Exists(cmdName) || File.Exists(cmdName + ".exe")))
         {
             Error("The executable {0} does not exist.", cmdName);
             return null;

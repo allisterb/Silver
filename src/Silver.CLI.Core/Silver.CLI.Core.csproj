@@ -26,7 +26,7 @@
 
   <ItemGroup>
     <None Update="ExternalToolsManager\toolsourcesettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

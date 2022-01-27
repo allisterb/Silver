@@ -9,6 +9,9 @@ public abstract class ToolManager : Runtime
     internal ToolManager(ToolSourceSettings settings) : base()
     {
         this.settings = settings;
+        Debug("External tool {0} manager created.", settings.Name);
+        //Debug("{0} command is {1}.", settings.Name, this.Command);
+
     }
     #endregion
 

@@ -18,14 +18,14 @@
     "Version": "0.1",
     "Directory": "ssc",
     "DownloadURLs": {
-      "windows": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip",
-      "linux": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip",
-      "osx": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip"
+      "windows": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126.1/specsharp-ms-1.0.21126.1.zip",
+      "linux": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126.1/specsharp-ms-1.0.21126.1.zip",
+      "osx": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126.1/specsharp-ms-1.0.21126.1.zip"
     },
     "ExePathsWithinZip": {
-      "windows": "specsharp-1.0.21126-win\\*.*",
-      "linux": "specsharp-1.0.21126-win/*.*",
-      "osx": "specsharp-1.0.21126-win/*.*"
+      "windows": "specsharp-ms-1.0.21126.1\\*.*",
+      "linux": "specsharp-ms-1.0.21126.1/*.*",
+      "osx": "specsharp-ms-1.0.21126.1/*.*"
     },
     "DependencyRelativePath":  "."
   }
