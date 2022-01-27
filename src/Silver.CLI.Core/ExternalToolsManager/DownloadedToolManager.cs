@@ -96,7 +96,7 @@ namespace Silver
         {
             if (OsName == "linux" || OsName == "osx")
             {
-                RunCmd("chmod", $"+x {Command}", checkExists:false);
+                RunCmd("chmod", $"+x {Command + ".exe"}", checkExists:false);
             }
         }
 

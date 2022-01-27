@@ -1,2 +1,2 @@
 #!/bin/bash
-src/Grover.CLI/bin/Debug/net6.0/Grover.CLI $*
+src/Silver.CLI/bin/Debug/net6.0/Silver.CLI $*
