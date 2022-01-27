@@ -13,7 +13,7 @@ public class ExternalToolsManager : Runtime
 
         var specsharpSourceSettings = new ToolSourceSettings();
         ToolSourceConfig.GetSection("specsharp").Bind(specsharpSourceSettings);
-        SpecSharp = new DownloadedToolDirectoryManager(specsharpSourceSettings);
+        SpecSharp = new DownloadedDotNetToolManager(specsharpSourceSettings);
     }
     #endregion
 
@@ -32,7 +32,7 @@ public class ExternalToolsManager : Runtime
     {
         Z3.EnsureExists();
         SpecSharp.EnsureExists();
-        ((DownloadedToolDirectoryManager) SpecSharp).EnsureLinkedToZ3(Z3);
+        ((DownloadedDotNetToolManager) SpecSharp).EnsureLinkedToZ3(Z3);
         Info("All required external tools installed.");
     }
 

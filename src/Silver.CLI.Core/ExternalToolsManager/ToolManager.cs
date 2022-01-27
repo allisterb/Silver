@@ -62,7 +62,7 @@ public abstract class ToolManager : Runtime
 
     protected virtual bool Exists()
     {
-        return File.Exists(this.Command + ".exe");
+        return File.Exists(this.Command);
     }
 
     protected virtual void EnsureCommandPathExists()

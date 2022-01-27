@@ -7,10 +7,10 @@ using System.IO.Compression;
 using System.Net;
 using System.Runtime.InteropServices;
 
-internal class DownloadedToolDirectoryManager : DownloadedToolManager
+internal class DownloadedDotNetToolManager : DownloadedToolManager
 {
     #region Constructors
-    internal DownloadedToolDirectoryManager(ToolSourceSettings settings) : base(settings)
+    internal DownloadedDotNetToolManager(ToolSourceSettings settings) : base(settings)
     {
         this.Directory = settings.Directory;
     }
@@ -18,6 +18,8 @@ internal class DownloadedToolDirectoryManager : DownloadedToolManager
 
     #region Overriden members
     public override string Command => Path.Combine(this.settings.CommandPath, this.Directory, this.ExeName);
+
+    public override string ExeName => this.settings.Name + ".exe";
 
     internal override void EnsureExists()
     {
