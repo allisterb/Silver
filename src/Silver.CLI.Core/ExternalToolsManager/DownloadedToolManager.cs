@@ -100,8 +100,6 @@ namespace Silver
             }
         }
 
-        
-
         protected virtual void Install()
         {
             DownloadAndUnZip();

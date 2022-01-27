@@ -26,7 +26,7 @@ internal class DownloadedToolDirectoryManager : DownloadedToolManager
         if (!Exists())
         {
             Install();
-            //ChangePermission();
+            ChangePermission();
         }
         else
         {

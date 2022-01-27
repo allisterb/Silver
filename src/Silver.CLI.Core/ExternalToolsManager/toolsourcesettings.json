@@ -24,8 +24,8 @@
     },
     "ExePathsWithinZip": {
       "windows": "specsharp-1.0.21126-win\\*.*",
-      "linux": "z3-4.8.14-x64-glibc-2.31/bin/z3",
-      "osx": "z3-4.8.14-x64-osx-10.16/bin/z3"
+      "linux": "specsharp-1.0.21126-win/*.*",
+      "osx": "specsharp-1.0.21126-win/*.*"
     }
   }
 
