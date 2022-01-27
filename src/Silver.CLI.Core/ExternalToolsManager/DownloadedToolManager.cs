@@ -96,7 +96,7 @@ namespace Silver
         {
             if (OsName == "linux" || OsName == "osx")
             {
-                RunCmd("chmod", $"+x {Command}");
+                RunCmd("chmod", $"+x {Command}", checkExists:false);
             }
         }
 
@@ -175,6 +175,38 @@ namespace Silver
             //}
             DownloadFile(this.settings.Name, new Uri(DownloadURL), ZipFilePath);
 #pragma warning restore SYSLIB0014 // Type or member is obsolete
+        }
+
+        internal void EnsureLinkedToZ3(ToolManager z3)
+        {
+            var z3DependencyPath = GetZ3DependencyPath(z3);
+
+            // Workaround: Boogie and Corral are looking for z3.exe, even on linux/mac
+            if (!z3DependencyPath.EndsWith(".exe"))
+            {
+                z3DependencyPath += ".exe";
+            }
+
+            if (!File.Exists(z3DependencyPath))
+            {
+                Info("Copying {0} to {1}.", z3.Command, z3DependencyPath);
+                File.Copy(z3.Command, z3DependencyPath);
+            }
+            else
+            {
+                Info("Dependency {0} exists at {1}.", "z3", z3DependencyPath);
+            }
+        }
+
+        protected string GetZ3DependencyPath(ToolManager z3)
+        {
+            return Path.Combine(this.DependencyTargetPath.Replace("/", PathSeparator), z3.ExeName);
+
+        }
+
+        internal string DependencyTargetPath
+        {
+            get => Path.Combine(this.settings.CommandPath, this.settings.DependencyRelativePath);
         }
         #endregion
     }

@@ -32,7 +32,7 @@ public class ExternalToolsManager : Runtime
     {
         //Z3.EnsureExists();
         SpecSharp.EnsureExists();
-        ((DotnetCliToolManager) SpecSharp).EnsureLinkedToZ3(Z3);
+        ((DownloadedToolDirectoryManager) SpecSharp).EnsureLinkedToZ3(Z3);
         Info("All required external tools installed.");
     }
 

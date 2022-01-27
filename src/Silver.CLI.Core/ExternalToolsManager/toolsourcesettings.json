@@ -16,7 +16,7 @@
   "specsharp": {
     "Name": "ssc2",
     "Version": "0.1",
-    "Directory":  "ssc2",
+    "Directory": "ssc2",
     "DownloadURLs": {
       "windows": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip",
       "linux": "https://github.com/allisterb/specsharp-ms/releases/download/1.0.21126/specsharp-1.0.21126-win.zip",
@@ -26,7 +26,8 @@
       "windows": "specsharp-1.0.21126-win\\*.*",
       "linux": "specsharp-1.0.21126-win/*.*",
       "osx": "specsharp-1.0.21126-win/*.*"
-    }
+    },
+    "DependencyRelativePath":  "."
   }
 
 }
