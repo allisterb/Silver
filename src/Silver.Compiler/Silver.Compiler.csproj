@@ -27,18 +27,13 @@
     <None Update="BlockchainContractProj.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="../../lib/net461/Stratis.SmartContracts.NET4.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="../../lib/net461/Stratis.SmartContracts.NET4.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Stratis.SmartContracts.NET4.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Stratis.SmartContracts.NET4.pdb">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    
   </ItemGroup>
+  <Target Name="CopyDLLs" AfterTargets="Build">
+    <Copy
+      SourceFiles="$(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.dll;$(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.pdb"
+      DestinationFolder="$(TargetDir)" />
+    <Message Text="Copied $(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.dll;$(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.pdb to $(TargetDir)" Importance="High" />
+  </Target>
 
 </Project>

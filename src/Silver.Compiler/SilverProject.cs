@@ -445,7 +445,7 @@ public abstract class SilverProject : Runtime
     #region Fields
     private static CSharpSyntaxRewriter[] rewriters =
     {
-        new SharpSyntaxRewriter.Rewriters.BlockifyExpressionBody(),
+        new BlockifyExpressionBody(),
         //new SharpSyntaxRewriter.Rewriters.DeanonymizeType(),
         //new SharpSyntaxRewriter.Rewriters.EmplaceGlobalStatement(),
         //new SharpSyntaxRewriter.Rewriters.EnsureVisibleConstructor(),
@@ -455,9 +455,10 @@ public abstract class SilverProject : Runtime
         //new SharpSyntaxRewriter.Rewriters.InitializeOutArgument(),
         //new SharpSyntaxRewriter.Rewriters.ReplicateLocalInitialization(),
         //new SharpSyntaxRewriter.Rewriters.StoreObjectCreation(),
-        new SharpSyntaxRewriter.Rewriters.TranslateLinq(),
-        new SharpSyntaxRewriter.Rewriters.UncoalesceCoalescedNull(),
-        new SharpSyntaxRewriter.Rewriters.UninterpolateString(),
+        new TranslateLinq(),
+        new UncoalesceCoalescedNull(),
+        new UninterpolateString(),
+        new NoNameof()
         //new SharpSyntaxRewriter.Rewriters.UnparameterizeRecordDeclaration()
 
     };
