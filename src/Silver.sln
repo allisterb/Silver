@@ -29,7 +29,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.SpecSharp.Tests", ".
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestProjects", "TestProjects", "{6205CADA-8311-4077-8971-116FC9E7C00A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Projects", "Silver.Projects\Silver.Projects.csproj", "{C3C931F9-DD4A-4C71-844D-B7FA8481133F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Compiler", "Silver.Compiler\Silver.Compiler.csproj", "{C3C931F9-DD4A-4C71-844D-B7FA8481133F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SpecSharp", "SpecSharp", "{9A6DED94-0B62-42EA-8CA4-3A4BFEB3ED3F}"
 EndProject

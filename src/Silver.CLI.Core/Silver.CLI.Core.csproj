@@ -20,7 +20,7 @@
     <ProjectReference Include="..\Silver.CodeAnalysis.IL\Silver.CodeAnalysis.IL.csproj" />
     <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
     <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
-    <ProjectReference Include="..\Silver.Projects\Silver.Projects.csproj" />
+    <ProjectReference Include="..\Silver.Compiler\Silver.Compiler.csproj" />
     <ProjectReference Include="..\Silver.Verifiier\Silver.Verifiier.csproj" />
   </ItemGroup>
 

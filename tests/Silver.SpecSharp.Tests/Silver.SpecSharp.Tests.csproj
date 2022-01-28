@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Silver.Projects\Silver.Projects.csproj" />
+    <ProjectReference Include="..\..\src\Silver.Compiler\Silver.Compiler.csproj" />
   </ItemGroup>
 
 </Project>
