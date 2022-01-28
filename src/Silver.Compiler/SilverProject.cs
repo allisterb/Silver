@@ -227,10 +227,11 @@ public abstract class SilverProject : Runtime
                     {
                         if (string.IsNullOrEmpty(tc.NewText)) continue;
                         var flp = prevSt.GetLineSpan(tc.Span);
+                        Info("Rewriter: {0}.", rwn);
                         Info("File: {0}", ViewFilePath(flp.Path), ProjectFile.Directory!.FullName);
                         Info("Original: {0}", flp.ToString());
-                        Info("New: {0}", tc.NewText ?? "");
-                        Info("Rewriter: {0}.", rwn);
+                        Info("New: {0}", tc.NewText);
+                       
                         //Info("Rewrote: {0} in {1} to {2}.", st.getStc.Span.ToString(), st.FilePath, tc.NewText ?? "");
                     }
                     var rwtDiags = rwt.GetDiagnostics();
@@ -254,13 +255,13 @@ public abstract class SilverProject : Runtime
         SourceFiles = syntaxTrees.Select(st => Path.ChangeExtension(st.FilePath, ".ssc")).ToList();
 
         op2.Complete();
-
+        References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
             var compilerErrors = new List<SscCompilerError>();
             var compilerWarnings = new List<SscCompilerWarning>();
-
+            Debug("ssc command-line: {0}.", CommandLine);
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => 
                 {
@@ -446,18 +447,18 @@ public abstract class SilverProject : Runtime
     {
         new SharpSyntaxRewriter.Rewriters.BlockifyExpressionBody(),
         //new SharpSyntaxRewriter.Rewriters.DeanonymizeType(),
-        new SharpSyntaxRewriter.Rewriters.EmplaceGlobalStatement(),
-        new SharpSyntaxRewriter.Rewriters.EnsureVisibleConstructor(),
-        new SharpSyntaxRewriter.Rewriters.ExpandForeach(),
-        new SharpSyntaxRewriter.Rewriters.ImplementAutoProperty(),
-        new SharpSyntaxRewriter.Rewriters.ImposeThisPrefix(),
-        new SharpSyntaxRewriter.Rewriters.InitializeOutArgument(),
-        new SharpSyntaxRewriter.Rewriters.ReplicateLocalInitialization(),
+        //new SharpSyntaxRewriter.Rewriters.EmplaceGlobalStatement(),
+        //new SharpSyntaxRewriter.Rewriters.EnsureVisibleConstructor(),
+        //new SharpSyntaxRewriter.Rewriters.ExpandForeach(),
+        //new SharpSyntaxRewriter.Rewriters.ImplementAutoProperty(),
+        //new SharpSyntaxRewriter.Rewriters.ImposeThisPrefix(),
+        //new SharpSyntaxRewriter.Rewriters.InitializeOutArgument(),
+        //new SharpSyntaxRewriter.Rewriters.ReplicateLocalInitialization(),
         //new SharpSyntaxRewriter.Rewriters.StoreObjectCreation(),
         new SharpSyntaxRewriter.Rewriters.TranslateLinq(),
         new SharpSyntaxRewriter.Rewriters.UncoalesceCoalescedNull(),
         new SharpSyntaxRewriter.Rewriters.UninterpolateString(),
-        new SharpSyntaxRewriter.Rewriters.UnparameterizeRecordDeclaration()
+        //new SharpSyntaxRewriter.Rewriters.UnparameterizeRecordDeclaration()
 
     };
 
