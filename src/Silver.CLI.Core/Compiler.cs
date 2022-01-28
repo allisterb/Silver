@@ -49,7 +49,27 @@ namespace Silver.CLI.Core
                 }
                 else
                 {
-                    return proj.Compile();
+                    var c = proj.Compile(out var diags, out var result);
+                    if (diags.Count(d => d.WarningLevel == 0) > 0 || (DebugEnabled && diags.Count() > 0))
+                    {
+                        Info("Printing diagnostics...");
+                        foreach (var d in diags)
+                        {
+                            var f = d.Location.GetLineSpan().Path;
+                            var line = d.Location.GetLineSpan().StartLinePosition.Line;
+                            var col = d.Location.GetLineSpan().StartLinePosition.Character;
+
+                            if (d.WarningLevel == 0)
+                            {
+                                Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
+                            }
+                            else if (DebugEnabled)
+                            {
+                                Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
+                            }
+                        }
+                    }
+                    return c;
                 }
             }
             else

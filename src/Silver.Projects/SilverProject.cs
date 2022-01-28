@@ -149,7 +149,7 @@ public abstract class SilverProject : Runtime
     #endregion
 
     #region Methods
-    public virtual bool Compile()
+    public virtual bool Compile(out IEnumerable<Roslyn.Diagnostic> diags, out EmitResult? result)
     {
         FailIfNotInitialized();
         var op = Begin("Compiling");
@@ -159,6 +159,8 @@ public abstract class SilverProject : Runtime
         if (c is null)
         {
             op.Cancel();
+            diags = Array.Empty<Roslyn.Diagnostic>();
+            result = null;
             return false;
         }
         Action<Exception, DiagnosticAnalyzer, Roslyn.Diagnostic> errorHandler = (e, da, d) =>
@@ -167,42 +169,26 @@ public abstract class SilverProject : Runtime
         };
         var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
             new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
-        var diags = ca.GetAllDiagnosticsAsync(Ct).Result;
-        Info("Printing diagnostics...");
-        foreach (var d in diags)
-        {
-            var f = d.Location.GetLineSpan().Path;
-            var line = d.Location.GetLineSpan().StartLinePosition.Line;
-            var col = d.Location.GetLineSpan().StartLinePosition.Character;
-
-            if (d.WarningLevel == 0)
-            {
-                Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, ProjectFile.Directory?.FullName), line, col);
-            }
-            else if (DebugEnabled)
-            {
-                Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, ProjectFile.Directory?.FullName), line, col);
-            }
-        }
+        diags = ca.GetAllDiagnosticsAsync(Ct).Result;
         var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
         if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting...", ViewFilePath(TargetPath));
         using FileStream pestream = File.OpenWrite(TargetPath);
         using FileStream pdbstream = File.OpenWrite(Path.ChangeExtension(TargetPath, ".pdb")); 
-        var res = c.Emit(pestream, pdbstream, options: emitOptions);
-        if(res is not null)
+        result = c.Emit(pestream, pdbstream, options: emitOptions);
+        if(result is not null)
         {
-            if (res.Success)
+            if (result.Success)
             {
                 op.Complete();
                 Info("Compilation succeded.");
-                Info("Assembly is at {0}", ViewFilePath(TargetPath, ProjectFile.Directory?.FullName));
+                Info("Assembly is at {0}", TargetPath);
             }
             else
             {
                 op.Cancel();
                 Error("Compilation failed.");
             }
-            return res.Success;
+            return result.Success;
         }
         else
         {
@@ -254,7 +240,7 @@ public abstract class SilverProject : Runtime
                         Warn("File: " + warns[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
                             "               Msg: {1}", warnmsg[0], warnmsg[1]);
                     }
-                });
+                }, isNETFxTool: true);
 
             if (output is null || output.Contains("error"))
             {
