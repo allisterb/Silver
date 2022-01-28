@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "compile C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\PingPongContract\\PingPongContract\\PingPongContract.csproj"
+      "commandLineArgs": "compile C:\\Projects\\Silver\\src\\Stratis.SmartContracts\\Stratis.SmartContracts.csproj --sc"
     }
   }
 }

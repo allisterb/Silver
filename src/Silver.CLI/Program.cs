@@ -136,7 +136,7 @@ class Program : Runtime
              }
              else
              {
-                 CompilerCmd.Compile(file, buildConfig, o.Verify, o.Ssc, additionalFiles);
+                 CompilerCmd.Compile(file, buildConfig, o.Verify, o.Sc, additionalFiles);
              }
          })
           .WithParsed<SummarizeOptions>(o =>

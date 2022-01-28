@@ -38,7 +38,28 @@ public class MSBuildSilverProject : SilverProject
                 op.Cancel();
                 return;
             }
-            MsBuildProject = _results.First(r => r.Succeeded);
+            Debug("Target .NET frameworks are {0}.", _results.Where(r => r.Succeeded && !string.IsNullOrEmpty(r.TargetFramework)).Select(r => r.TargetFramework));
+            if (_results.Count(r => r.Succeeded) == 1)
+            {
+                MsBuildProject = _results.First(r => r.Succeeded);
+            }
+            else
+            {
+                if (_results.Any(r => r.Succeeded && r.TargetFramework == "net461"))
+                {
+                    MsBuildProject = _results.First(r => r.Succeeded && r.TargetFramework == "net461");
+                }
+                else
+                {
+                    MsBuildProject = _results.First(r => r.Succeeded && r.Items.ContainsKey("Compile"));
+                }
+            }
+            if(!MsBuildProject.Items.ContainsKey("Compile"))
+            {
+                Error("Cannot determine which files to compile in MSBuild project.");
+                return;
+            }
+            TargetFramework = MsBuildProject.TargetFramework;
             BuildConfiguration = MsBuildProject.GetProperty("Configuration");
             DefineConstants = MsBuildProject.GetProperty("DefineConstants");
             AssemblyName = MsBuildProject.GetProperty("AssemblyName");
@@ -49,14 +70,21 @@ public class MSBuildSilverProject : SilverProject
             TargetPath = MsBuildProject.GetProperty("TargetPath");
             TargetDir = MsBuildProject.GetProperty("TargetDir");
             TargetExt = MsBuildProject.GetProperty("TargetExt");
-            TargetFramework = MsBuildProject.TargetFramework;
-            NoStdLib = MsBuildProject.GetProperty("NoStdLib").ToLower() == "true" ? true : false;
+            NoStdLib = MsBuildProject.Properties.ContainsKey("NoStdLib") && MsBuildProject.GetProperty("NoStdLib").ToLower() == "true" ? true : false;
             PackageReferences =
                 MsBuildProject.PackageReferences
                 .Select(r => new AssemblyName(r.Key) { Version = r.Value.ContainsKey("Version") ? r.Value["Version"].ToVersion() : null })
                 .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
             References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
+            if ((MsBuildProject.Items.ContainsKey("Reference")) && MsBuildProject.Items["Reference"].Any(r => r.Metadata["IsImplicitlyDefined"] == "true"))
+            {
+                GACReferences
+                    .AddRange(MsBuildProject.Items["Reference"]
+                    .Where(r => r.Metadata["IsImplicitlyDefined"] == "true")
+                    .Select(r => new AssemblyGACReference(r.ItemSpec, true))); //new Asssr.ItemSpec);
+            }
+            References.AddRange(GACReferences.Select(r => r.Name + ".dll"));
             BuildUpToDate =
                 !string.IsNullOrEmpty(TargetPath) &&
                 File.Exists(TargetPath) &&
