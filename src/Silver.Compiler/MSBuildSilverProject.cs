@@ -76,14 +76,14 @@ public class MSBuildSilverProject : SilverProject
                 .Select(r => new AssemblyName(r.Key) { Version = r.Value.ContainsKey("Version") ? r.Value["Version"].ToVersion() : null })
                 .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
-            References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
-            if ((MsBuildProject.Items.ContainsKey("Reference")) && MsBuildProject.Items["Reference"].Any(r => r.Metadata["IsImplicitlyDefined"] == "true"))
-            {
-                GACReferences
-                    .AddRange(MsBuildProject.Items["Reference"]
-                    .Where(r => r.Metadata["IsImplicitlyDefined"] == "true")
-                    .Select(r => new AssemblyGACReference(r.ItemSpec, true))); //new Asssr.ItemSpec);
-            }
+            //References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
+            //if ((MsBuildProject.Items.ContainsKey("Reference")) && MsBuildProject.Items["Reference"].Any(r => r.Metadata["IsImplicitlyDefined"] == "true"))
+            //{
+            //    GACReferences
+            //        .AddRange(MsBuildProject.Items["Reference"]
+            //        .Where(r => r.Metadata["IsImplicitlyDefined"] == "true")
+            //        .Select(r => new AssemblyGACReference(r.ItemSpec, true))); //new Asssr.ItemSpec);
+            //}
             References.AddRange(GACReferences.Select(r => r.Name + ".dll"));
             BuildUpToDate =
                 !string.IsNullOrEmpty(TargetPath) &&

@@ -2,11 +2,14 @@ namespace Silver.Projects;
 
 using System.Collections.Immutable;
 
-using Roslyn = Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Emit;
 
+using SharpSyntaxRewriter.Rewriters;
+using SharpSyntaxRewriter.Rewriters.Types;
 using Silver.CodeAnalysis.Cs;
 #region Records
 internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
@@ -34,7 +37,7 @@ public abstract class SilverProject : Runtime
 
     protected SilverProject? Parent { get; init; }
 
-    public Roslyn.AdhocWorkspace RoslynWorkspace { get; } = new Roslyn.AdhocWorkspace();
+    public AdhocWorkspace RoslynWorkspace { get; } = new AdhocWorkspace();
 
     public string RequestedBuildConfig { get; init; }
 
@@ -51,7 +54,9 @@ public abstract class SilverProject : Runtime
 
     public string? RootNamespace { get; protected set; } = string.Empty;
 
-    public List<string> SourceFiles { get; init; } = new();
+    public List<string> SourceFiles { get; protected set; } = new();
+
+    public List<string>? OriginalSourceFiles { get; protected set; } 
 
     public string TargetPath { get; protected set; } = string.Empty;
 
@@ -149,7 +154,7 @@ public abstract class SilverProject : Runtime
     #endregion
 
     #region Methods
-    public virtual bool Compile(out IEnumerable<Roslyn.Diagnostic> diags, out EmitResult? result)
+    public virtual bool Compile(out IEnumerable<Diagnostic> diags, out EmitResult? result)
     {
         FailIfNotInitialized();
         var op = Begin("Compiling");
@@ -159,11 +164,11 @@ public abstract class SilverProject : Runtime
         if (c is null)
         {
             op.Cancel();
-            diags = Array.Empty<Roslyn.Diagnostic>();
+            diags = Array.Empty<Diagnostic>();
             result = null;
             return false;
         }
-        Action<Exception, DiagnosticAnalyzer, Roslyn.Diagnostic> errorHandler = (e, da, d) =>
+        Action<Exception, DiagnosticAnalyzer, Diagnostic> errorHandler = (e, da, d) =>
         {
             Error(e, "Analyzer {0} threw an exception when reporting diagnostic {1}:", da.GetType().Name, d.Id);
         };
@@ -181,7 +186,7 @@ public abstract class SilverProject : Runtime
             {
                 op.Complete();
                 Info("Compilation succeded.");
-                Info("Assembly is at {0}", TargetPath);
+                Info("Assembly is at {0}", TargetPath);               
             }
             else
             {
@@ -197,9 +202,59 @@ public abstract class SilverProject : Runtime
         }
     }
 
-    public SscCompilation SscCompile()
+    public SscCompilation SscCompile(out SscCompilation? sscc)
     {
         FailIfNotInitialized();
+        sscc = null;
+        CSharpParseOptions parseOptions = new CSharpParseOptions(LanguageVersion.Latest, DocumentationMode.None, SourceCodeKind.Regular, DefineConstants.Split(';'));
+        var op2 = Begin("Parsing and rewriting {0} files", SourceFiles.Count);
+        IEnumerable<SyntaxTree> syntaxTrees = SourceFiles.Select(item => CSharpSyntaxTree.ParseText(File.ReadAllText(item), parseOptions, item, cancellationToken: Ct));
+        List<SyntaxTree> rewrittenSyntaxTrees = new();
+        OriginalSourceFiles = new();
+        foreach (var st in syntaxTrees)
+        {
+            SyntaxNode rwt = st.GetRoot(Ct);
+            for (var i = 0; i < rewriters.Length; i++)
+            {
+                var rw = rewriters[i];
+                var rwn = rewriterNames[i];
+                var prev = rwt;
+                var prevSt = prev.SyntaxTree;
+                try
+                {
+                    rwt = rw.Visit(rwt);
+                    foreach(var tc in rwt.SyntaxTree.GetChanges(prevSt))
+                    {
+                        if (string.IsNullOrEmpty(tc.NewText)) continue;
+                        var flp = prevSt.GetLineSpan(tc.Span);
+                        Info("File: {0}", ViewFilePath(flp.Path), ProjectFile.Directory!.FullName);
+                        Info("Original: {0}", flp.ToString());
+                        Info("New: {0}", tc.NewText ?? "");
+                        Info("Rewriter: {0}.", rwn);
+                        //Info("Rewrote: {0} in {1} to {2}.", st.getStc.Span.ToString(), st.FilePath, tc.NewText ?? "");
+                    }
+                    var rwtDiags = rwt.GetDiagnostics();
+                    LogDiagnostics(rwtDiags, Path.GetDirectoryName(st.FilePath)!);
+                    if (rwtDiags.Any(d => d.Severity == 0))
+                    {
+                        Error("Error rewriting syntax of {0} using {1}. Skipping this rewriter.", st.FilePath, rw.GetType().Name);
+                        rwt = prev;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Error(ex, "Error rewriting syntax of {0} using {1}. Skipping this rewriter.", st.FilePath, rw.GetType().Name);
+                    rwt = prev;
+                }
+            }
+            rewrittenSyntaxTrees.Add(rwt.SyntaxTree);
+            File.WriteAllText(Path.ChangeExtension(st.FilePath, ".ssc"), rwt.GetText().ToString());
+            OriginalSourceFiles.Add(st.FilePath);
+        }
+        SourceFiles = syntaxTrees.Select(st => Path.ChangeExtension(st.FilePath, ".ssc")).ToList();
+
+        op2.Complete();
+
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
@@ -361,5 +416,51 @@ public abstract class SilverProject : Runtime
             return null;
         }
     }
+
+    public static void LogDiagnostics(IEnumerable<Diagnostic> diags, string projDir)
+    {
+        if(diags.Count(d => d.WarningLevel == 0) > 0 || (DebugEnabled && diags.Count() > 0))
+        {
+            Info("Printing diagnostics...");
+            foreach (var d in diags)
+            {
+                var f = d.Location.GetLineSpan().Path;
+                var line = d.Location.GetLineSpan().StartLinePosition.Line;
+                var col = d.Location.GetLineSpan().StartLinePosition.Character;
+
+                if (d.WarningLevel == 0)
+                {
+                    Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, projDir), line, col);
+                }
+                else if (DebugEnabled)
+                {
+                    Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, projDir), line, col);
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region Fields
+    private static CSharpSyntaxRewriter[] rewriters =
+    {
+        new SharpSyntaxRewriter.Rewriters.BlockifyExpressionBody(),
+        //new SharpSyntaxRewriter.Rewriters.DeanonymizeType(),
+        new SharpSyntaxRewriter.Rewriters.EmplaceGlobalStatement(),
+        new SharpSyntaxRewriter.Rewriters.EnsureVisibleConstructor(),
+        new SharpSyntaxRewriter.Rewriters.ExpandForeach(),
+        new SharpSyntaxRewriter.Rewriters.ImplementAutoProperty(),
+        new SharpSyntaxRewriter.Rewriters.ImposeThisPrefix(),
+        new SharpSyntaxRewriter.Rewriters.InitializeOutArgument(),
+        new SharpSyntaxRewriter.Rewriters.ReplicateLocalInitialization(),
+        //new SharpSyntaxRewriter.Rewriters.StoreObjectCreation(),
+        new SharpSyntaxRewriter.Rewriters.TranslateLinq(),
+        new SharpSyntaxRewriter.Rewriters.UncoalesceCoalescedNull(),
+        new SharpSyntaxRewriter.Rewriters.UninterpolateString(),
+        new SharpSyntaxRewriter.Rewriters.UnparameterizeRecordDeclaration()
+
+    };
+
+    private static string[] rewriterNames = rewriters.Select(r => r.GetType().Name).ToArray();
     #endregion
 }

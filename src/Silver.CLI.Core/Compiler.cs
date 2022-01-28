@@ -37,40 +37,38 @@ namespace Silver.CLI.Core
             }
         }
 
-        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, params string[] additionalFiles)
+        public static bool Compile(string filePath, string buildConfig, bool verify, bool sc, params string[] additionalFiles)
         {
             var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
-                proj.Verify = verify;
-                if (ssc)
+                if (sc)
                 {
-                    return proj.SscCompile().Succeded;
+                    return proj.SscCompile(out var sscc).Succeded;
                 }
-                else
+                proj.Verify = verify;
+                var c = proj.Compile(out var diags, out var result);
+                if (diags.Count(d => d.WarningLevel == 0) > 0 || (DebugEnabled && diags.Count() > 0))
                 {
-                    var c = proj.Compile(out var diags, out var result);
-                    if (diags.Count(d => d.WarningLevel == 0) > 0 || (DebugEnabled && diags.Count() > 0))
+                    Info("Printing diagnostics...");
+                    foreach (var d in diags)
                     {
-                        Info("Printing diagnostics...");
-                        foreach (var d in diags)
-                        {
-                            var f = d.Location.GetLineSpan().Path;
-                            var line = d.Location.GetLineSpan().StartLinePosition.Line;
-                            var col = d.Location.GetLineSpan().StartLinePosition.Character;
+                        var f = d.Location.GetLineSpan().Path;
+                        var line = d.Location.GetLineSpan().StartLinePosition.Line;
+                        var col = d.Location.GetLineSpan().StartLinePosition.Character;
 
-                            if (d.WarningLevel == 0)
-                            {
-                                Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
-                            }
-                            else if (DebugEnabled)
-                            {
-                                Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
-                            }
+                        if (d.WarningLevel == 0)
+                        {
+                            Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
+                        }
+                        else if (DebugEnabled)
+                        {
+                            Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
                         }
                     }
-                    return c;
                 }
+                return c;
+                
             }
             else
             {

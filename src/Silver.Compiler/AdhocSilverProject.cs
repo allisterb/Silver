@@ -77,7 +77,7 @@ public class AdhocSilverProject : SilverProject
     #endregion
 
     #region Overriden members
-    public override bool NativeBuild() => this.SscCompile().Succeded;
+    public override bool NativeBuild() => this.SscCompile(out var sscc).Succeded;
     #endregion
 
     #region Properties
