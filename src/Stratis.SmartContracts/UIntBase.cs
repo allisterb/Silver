@@ -15,7 +15,11 @@ namespace Stratis.SmartContracts
     private int width;
     private BigInteger value;
 
-    public UIntBase(int width) => this.width = (width & 3) == 0 ? width : throw new ArgumentException("The 'width' must be a multiple of 4.");
+    public UIntBase(int width)
+    {
+        this.width = (width & 3) == 0 ? width : throw new ArgumentException("The 'width' must be a multiple of 4.");
+        this.value = new BigInteger(width);
+    }
 
     public UIntBase(int width, BigInteger value)
       : this(width)
@@ -40,7 +44,7 @@ namespace Stratis.SmartContracts
     {
       if (vch.Length > this.width)
         throw new FormatException(string.Format("The byte array should be {0} bytes or less.", (object) this.width));
-      this.SetValue(new BigInteger((ReadOnlySpan<byte>) vch, true, !lendian));
+      this.SetValue(new BigInteger(vch));
     }
 
     public UIntBase(int width, string str)
@@ -61,7 +65,7 @@ namespace Stratis.SmartContracts
       byte[] numArray = new byte[this.width];
       for (int index = 0; index < num; ++index)
         BitConverter.GetBytes(array[index]).CopyTo((Array) numArray, index * 4);
-      this.SetValue(new BigInteger((ReadOnlySpan<byte>) numArray, true, false));
+      this.SetValue(new BigInteger(numArray));
     }
 
     private bool TooBig(byte[] bytes) => bytes.Length > this.width && (bytes.Length != this.width + 1 || bytes[this.width] != (byte) 0);
@@ -91,7 +95,7 @@ namespace Stratis.SmartContracts
       byte[] bytes = new byte[this.width];
       Array.Copy((Array) byteArray, (Array) bytes, Math.Min(byteArray.Length, bytes.Length));
       if (!lendian)
-        Array.Reverse<byte>(bytes);
+        Array.Reverse(bytes);
       return bytes;
     }
 
