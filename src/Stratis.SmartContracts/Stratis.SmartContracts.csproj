@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Users\Allister\Downloads\Stratis.SmartContracts.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{24597C4E-AEA4-4F0D-B83B-1DEB1220B3C8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Stratis.SmartContracts</AssemblyName>
+    <ApplicationVersion>2.0.0.0</ApplicationVersion>
+    <RootNamespace>Stratis.SmartContracts</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime" />
+    <Reference Include="System.Runtime.Extensions" />
+    <Reference Include="System.Runtime.Numerics" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Address.cs" />
+    <Compile Include="Block.cs" />
+    <Compile Include="DeployAttribute.cs" />
+    <Compile Include="IBlock.cs" />
+    <Compile Include="IContractLogger.cs" />
+    <Compile Include="ICreateResult.cs" />
+    <Compile Include="IInternalHashHelper.cs" />
+    <Compile Include="IInternalTransactionExecutor.cs" />
+    <Compile Include="IMessage.cs" />
+    <Compile Include="IndexAttribute.cs" />
+    <Compile Include="IPersistentState.cs" />
+    <Compile Include="ISerializer.cs" />
+    <Compile Include="ISmartContractState.cs" />
+    <Compile Include="ITransferResult.cs" />
+    <Compile Include="Message.cs" />
+    <Compile Include="SmartContract.cs" />
+    <Compile Include="SmartContractAssertException.cs" />
+    <Compile Include="UInt128.cs" />
+    <Compile Include="UInt256.cs" />
+    <Compile Include="UIntBase.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+</Project>
