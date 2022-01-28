@@ -196,7 +196,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only certain types can be used in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
+        ///   Looks up a localized string similar to Field declarations are not allowed in smart contract code https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
         /// </summary>
         internal static string SC0006_Description {
             get {
@@ -205,7 +205,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A variable of type {0} cannot be used here.
+        ///   Looks up a localized string similar to A field declaration cannot be made here.
         /// </summary>
         internal static string SC0006_MessageFormat {
             get {
@@ -214,7 +214,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Variable type not allowed .
+        ///   Looks up a localized string similar to Field declaration not allowed.
         /// </summary>
         internal static string SC0006_Title {
             get {

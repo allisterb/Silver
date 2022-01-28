@@ -148,7 +148,6 @@ namespace Silver.CodeAnalysis.Cs
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
 
-
         public static Type[] PrimitiveTypes =
         {
             typeof(void),

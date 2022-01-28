@@ -55,7 +55,7 @@ public partial class Analyzer : Runtime
 
 	public Graph GetCallGraph()
     {
-		using var op = Begin("Analyzing call graph");
+		using var op = Begin("Creating call graph");
 		var cha = new ClassHierarchyCallGraphAnalysis(Host);
 		cha.OnNewMethodFound = (m =>
 		{
@@ -64,12 +64,12 @@ public partial class Analyzer : Runtime
 			MethodBodyProvider.Instance.AddBody(m, methodBody);
 			return true;
 		});
-		var methods = GetContractMethods();
+		var methods = CollectMethods();
 		var cg = cha.Analyze();
 		var g = new Graph();
-		g.LayoutAlgorithmSettings = Drawing.Graph.GetSugiyamaLayout(); 
-		if (g is null) throw new InvalidOperationException();
-		foreach(var method in cg.Roots)
+		if (g is null) throw new Exception("Could not create graph drawing object.");
+		g.LayoutAlgorithmSettings = Drawing.Graph.GetSugiyamaLayout();
+		foreach (var method in cg.Roots)
         {
 			Node? rootNode = null;
 			var calllsites = cg.GetCallSites(method);
@@ -130,7 +130,7 @@ public partial class Analyzer : Runtime
 		return visitor.state;
 	}
 
-	internal List<IMethodDefinition> GetContractMethods()
+	internal List<IMethodDefinition> CollectMethods()
     {
 		if (State.ContainsKey("methods"))
         {
@@ -141,9 +141,8 @@ public partial class Analyzer : Runtime
 		{
 			var container = state.Get<List<IMethodDefinition>>("methods");
 			container.Add(m);
-
 		};
-		using var op = Begin("Get contract methods");
+		using var op = Begin("Collecting methods");
 		State.Add("methods", new List<IMethodDefinition>());
 		var visitor = new MethodVisitor(analyzer, State);
 		visitor.Traverse(Module);
@@ -185,7 +184,6 @@ public partial class Analyzer : Runtime
 			var splitter = new WebAnalysis(cfg, methodDefinition);
 			splitter.Analyze();
 			splitter.Transform();
-
 			methodBody.UpdateVariables();
 
 			var typeAnalysis = new TypeInferenceAnalysis(cfg, methodDefinition.Type);
@@ -204,7 +202,6 @@ public partial class Analyzer : Runtime
 
 			var liveVariables = new LiveVariablesAnalysis(cfg);
 			liveVariables.Analyze();
-
 			//var ssa = new StaticSingleAssignment(methodBody, cfg);
 			//ssa.Transform();
 			//ssa.Prune(liveVariables);
