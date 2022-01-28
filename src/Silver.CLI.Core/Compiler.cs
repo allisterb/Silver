@@ -61,11 +61,11 @@ namespace Silver.CLI.Core
 
                             if (d.WarningLevel == 0)
                             {
-                                Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
+                                Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
                             }
                             else if (DebugEnabled)
                             {
-                                Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
+                                Warn("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
                             }
                         }
                     }

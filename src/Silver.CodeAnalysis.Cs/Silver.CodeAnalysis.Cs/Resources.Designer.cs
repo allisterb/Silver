@@ -169,7 +169,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New object creation is not allowed in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
+        ///   Looks up a localized string similar to New object creation of reference types is not allowed in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
         /// </summary>
         internal static string SC0005_Description {
             get {
@@ -187,11 +187,38 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to New object creation not allowed.
+        ///   Looks up a localized string similar to New object creation of reference type not allowed.
         /// </summary>
         internal static string SC0005_Title {
             get {
                 return ResourceManager.GetString("SC0005_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only certain types can be used in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
+        /// </summary>
+        internal static string SC0006_Description {
+            get {
+                return ResourceManager.GetString("SC0006_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A variable of type {0} cannot be used here.
+        /// </summary>
+        internal static string SC0006_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0006_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable type not allowed .
+        /// </summary>
+        internal static string SC0006_Title {
+            get {
+                return ResourceManager.GetString("SC0006_Title", resourceCulture);
             }
         }
     }

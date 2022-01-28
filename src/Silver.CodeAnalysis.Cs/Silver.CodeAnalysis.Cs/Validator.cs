@@ -28,7 +28,7 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().OfType<NameSyntax>().FirstOrDefault();  
-            if (ns.ToFullString() != "Stratis.SmartContracts")
+            if (ns.ToFullString() != "Stratis.SmartContracts" || ns.ToFullString() != "Stratis.SmartContracts.Standards")
             {
                 return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
             }
@@ -87,9 +87,12 @@ namespace Silver.CodeAnalysis.Cs
             {
                 return null;
             }
-            
         }
 
+        public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SemanticModel model)
+        {
+            return null;
+        }
         // New object creation not allowed
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {
@@ -98,6 +101,19 @@ namespace Silver.CodeAnalysis.Cs
             return Diagnostic.Create(GetErrorDescriptor("SC0005"), objectCreation.Syntax.GetLocation(), t.ToDisplayString());
         }
 
+        // Only whitelisted types allowed in variable declarations
+        public static Diagnostic AnalyzeVariableDecl(IVariableDeclarationOperation variableDeclaration)
+        {
+            var v = variableDeclaration.Declarators.FirstOrDefault(d => d.Type != null && !d.Type.IsValueType && !WhitelistedTypeNames.Contains(d.Type.Name));
+            if (v == null)
+            {
+                return null;
+            }
+            else
+            {
+                return Diagnostic.Create(GetErrorDescriptor("SC0006"), v.Syntax.GetLocation(), v.Type.ToDisplayString());
+            }
+        }
         #region Overloads
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeUsingDirective(node, ctx.SemanticModel)?.Report(ctx);
@@ -110,8 +126,14 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeConstructor(ConstructorDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
             AnalyzeConstructorDecl(node, ctx.SemanticModel)?.Report(ctx);
 
+        public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
+           AnalyzeFieldDecl(node, ctx.SemanticModel)?.Report(ctx);
+
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation, OperationAnalysisContext ctx) =>
             AnalyzeObjectCreation(objectCreation).Report(ctx);
+        
+        public static Diagnostic AnalyzeVariableDecl(IVariableDeclarationOperation variableDeclaration, OperationAnalysisContext ctx) =>
+            AnalyzeVariableDecl(variableDeclaration).Report(ctx);
         #endregion
 
         public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
@@ -121,34 +143,55 @@ namespace Silver.CodeAnalysis.Cs
         #endregion
 
         #region Fields
-        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005"};
+        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005", "SC0006" };
         internal static ImmutableArray<DiagnosticDescriptor> Errors;
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
 
 
-        public static Type[] WhitelistedTypes =
+        public static Type[] PrimitiveTypes =
         {
             typeof(void),
-            typeof(System.Boolean),
-            typeof(System.Byte),
-            typeof(System.Char),
-            typeof(System.Int32),
-            typeof(System.UInt32),
-            typeof(System.Int64),
-            typeof(System.UInt64),
-            typeof(System.String),
-            typeof(System.Boolean[]),
-            typeof(System.Byte[]),
-            typeof(System.Char[]),
-            typeof(System.Int32[]),
-            typeof(System.UInt32[]),
-            typeof(System.Int64[]),
-            typeof(System.UInt64[]),
-            typeof(System.String[])
+            typeof(Boolean),
+            typeof(Byte),
+            typeof(SByte),
+            typeof(Char),
+            typeof(Int32),
+            typeof(UInt32),
+            typeof(Int64),
+            typeof(UInt64),
+            typeof(String),
+            typeof(Byte[]),
+            typeof(SByte[]),
+            typeof(Boolean[]),
+            typeof(Byte[]),
+            typeof(SByte[]),
+            typeof(Char[]),
+            typeof(Int32[]),
+            typeof(UInt32[]),
+            typeof(Int64[]),
+            typeof(UInt64[]),
+            typeof(String[])
         };
-        public static string[] WhiteListedTypeNames = WhitelistedTypes.Select(t => t.Name).ToArray();
-        
+        public static string[] PrimitiveTypeNames = (new[] { "Stratis.SmartContracts.UInt128", "Stratis.SmartContracts.UInt256" }).Concat(PrimitiveTypes.Select(t => t.Name)).ToArray();
+
+        public static string[] SmartContractTypeNames =
+        {
+            "Address",
+            "Block",
+            "IBlock",
+            "IContractLogger",
+            "ISmartContractState",
+            "ICreateResult",
+            "IMessage",
+            "IPersistentState",
+            "ITransferResult",
+            "Message",
+            "SmartContract",
+        };
+
+        public static string[] WhitelistedTypeNames = PrimitiveTypeNames.Concat(SmartContractTypeNames.Select(t => "Stratis.SmartContracts." + t)).ToArray();
+
         public static Dictionary<string, string[]> WhiteListedMemberNames = new Dictionary<string, string[]>
         {
             {typeof(System.Array).Name, new[] { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" } },

@@ -28,6 +28,8 @@
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeNamespaceDecl((NamespaceDeclarationSyntax)ctx.Node, ctx), SyntaxKind.NamespaceDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeClassDecl((ClassDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeConstructor((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
+            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeFieldDecl((FieldDeclarationSyntax)ctx.Node, ctx), SyntaxKind.FieldDeclaration);
+
 
             context.RegisterOperationAction(
                 ctx =>
@@ -36,6 +38,9 @@
                     {
                         case IObjectCreationOperation objectCreation:
                             Validator.AnalyzeObjectCreation(objectCreation, ctx);
+                            break;
+                        case IVariableDeclarationOperation variableDeclaration: 
+                            Validator.AnalyzeVariableDecl(variableDeclaration, ctx);
                             break;
                     }
                 }, OperationKind.ObjectCreation);
