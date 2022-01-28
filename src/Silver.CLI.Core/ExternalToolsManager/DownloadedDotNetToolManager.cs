@@ -1,11 +1,7 @@
 ﻿namespace Silver.CLI.Core;
 
-using System;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Net;
-using System.Runtime.InteropServices;
 
 internal class DownloadedDotNetToolManager : DownloadedToolManager
 {
@@ -63,8 +59,6 @@ internal class DownloadedDotNetToolManager : DownloadedToolManager
             System.IO.Directory.CreateDirectory(this.Directory);
         }
     }
-
-    
     #endregion
 }
 

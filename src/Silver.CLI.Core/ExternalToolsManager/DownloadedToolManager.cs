@@ -131,7 +131,7 @@ namespace Silver
         {
             if (OsName == "osx")
             {
-                RunCmd("ln", $"-s {DownloadURL} {Command}");
+                RunCmd("ln", $"-s {DownloadURL} {Command}", checkExists: false);
             }
         }
 

@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "install --info"
+      "commandLineArgs": "dis C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\PingPongContract\\PingPongContract\\bin\\Debug\\netcoreapp2.2/PingPongContract.dll -b"
     }
   }
 }
