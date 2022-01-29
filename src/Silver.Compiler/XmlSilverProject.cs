@@ -139,8 +139,5 @@ namespace Silver.Projects
         protected Models.VisualStudioProject? Model { get; init; }
         #endregion
 
-        #region Overriden members
-        public override bool NativeBuild() => this.Compile(out var diags, out var emitResult);
-        #endregion
     }
 }

@@ -105,12 +105,5 @@ public class MSBuildSilverProject : SilverProject
     public List<AssemblyReference>? PackageReferences { get; init; }
     #endregion
 
-    #region Overriden members
-    public override bool NativeBuild()
-    {
-        var r = RunCmd("dotnet", "build", this.ProjectFile.DirectoryName, checkExists: false);
-        return !string.IsNullOrWhiteSpace(r);
-    }
-    #endregion
 }
 

@@ -74,18 +74,6 @@ class Program : Runtime
                 }
             }
         })
-        .WithParsed<AssemblyOptions>(o =>
-        {
-            if (o.References)
-            {
-                AssemblyCmd.References(o.File);
-                Exit(ExitResult.SUCCESS);
-            }
-        })
-        .WithParsed<DisassemblerOptions>(o =>
-        {
-            ILCmd.Dissassemble(o.File,  o.Boogie, o.NoIL, !o.Stack);
-        })
         .WithParsed<BoogieOptions>(o =>
         {
             if (Core.Tools.Boogie(o.Options.ToArray()))
@@ -121,6 +109,31 @@ class Program : Runtime
             }
 
         })
+        .WithParsed<AssemblyOptions>(o =>
+        {
+            if (o.References)
+            {
+                AssemblyCmd.References(o.File);
+                Exit(ExitResult.SUCCESS);
+            }
+        })
+        .WithParsed<DisassemblerOptions>(o =>
+        {
+            ILCmd.Dissassemble(o.File, o.Boogie, o.NoIL, !o.Stack);
+        })
+        .WithParsed<SummarizeOptions>(o =>
+        {
+            ExitIfFileNotFound(o.InputFile);
+            ILCmd.Summarize(o.InputFile, o.All);
+
+        })
+          .WithParsed<CallGraphOptions>(o =>
+          {
+              ExitIfFileNotFound(o.InputFile);
+              if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
+              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.All);
+
+          })
          .WithParsed<CompileOptions>(o =>
          {
              var file = o.Files.First();
@@ -136,22 +149,9 @@ class Program : Runtime
              }
              else
              {
-                 CompilerCmd.Compile(file, buildConfig, o.Verify, o.Sc, additionalFiles);
+                 CompilerCmd.Compile(file, buildConfig, o.Verify, additionalFiles);
              }
          })
-          .WithParsed<SummarizeOptions>(o =>
-          {
-              ExitIfFileNotFound(o.InputFile);   
-              ILCmd.Summarize(o.InputFile, o.All);
-              
-          })
-          .WithParsed<CallGraphOptions>(o =>
-          {
-              ExitIfFileNotFound(o.InputFile);
-              if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
-              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.All);
-
-          })
          .WithParsed<VerifyOptions>(o =>
          {
              ExitIfFileNotFound(o.File);

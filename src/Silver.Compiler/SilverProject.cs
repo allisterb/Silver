@@ -149,10 +149,6 @@ public abstract class SilverProject : Runtime
     }
     #endregion
 
-    #region Abstract methods
-    public abstract bool NativeBuild();
-    #endregion
-
     #region Methods
     public virtual bool Compile(out IEnumerable<Diagnostic> diags, out EmitResult? result)
     {
@@ -263,16 +259,19 @@ public abstract class SilverProject : Runtime
             OriginalSourceFiles.Add(st.FilePath);
         }
         SourceFiles = syntaxTrees.Select(st => Path.ChangeExtension(st.FilePath, ".ssc")).ToList();
+        
         op2.Complete();
 
         References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
-        
+        TargetDir = Path.Combine(Path.GetDirectoryName(TargetPath)!, "ssc");
+        if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
+        TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
+
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
             var compilerErrors = new List<SscCompilerError>();
             var compilerWarnings = new List<SscCompilerWarning>();
-            Debug("ssc command-line: {0}.", CommandLine);
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => 
                 {
@@ -309,7 +308,7 @@ public abstract class SilverProject : Runtime
                     }
                 }, isNETFxTool: true);
 
-            if (output is null || output.Contains("error"))
+            if (output is null)
             {
                 Error("Compile failed.");
                 op.Cancel();
@@ -317,45 +316,40 @@ public abstract class SilverProject : Runtime
                 return false;
             }
             else
-            {
-                if (!Verify)
+            {       
+                foreach (var r in PublicReferences)
                 {
-                    foreach (var r in PublicReferences)
+                    var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
+                    if (File.Exists(r) && (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr))))
                     {
-                        var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
-                        if (File.Exists(r) && (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr))))
+                        if (File.Exists(cr)) File.Delete(cr);
+                        File.Copy(r, cr);
+                        var pr = Path.ChangeExtension(r, ".pdb");
+                        if (File.Exists(pr))
                         {
-                            if (File.Exists(cr)) File.Delete(cr);
-                            File.Copy(r, cr);
-                            var pr = Path.ChangeExtension(r, ".pdb");
-                            if (File.Exists(pr))
-                            {
-                                var pcr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(pr));
-                                if (File.Exists(pcr)) File.Delete(pcr);
-                                File.Copy(pr, pcr);
-                            }
-                            Info("Copied reference {0}.", Path.GetFileName(r));
+                            var pcr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(pr));
+                            if (File.Exists(pcr)) File.Delete(pcr);
+                            File.Copy(pr, pcr);
                         }
-                        else if (File.Exists(r))
-                        {
-                            Debug("Not copying reference {0} as it already exists.", r);
-                        }
+                        Info("Copied reference {0}.", Path.GetFileName(r));
                     }
-                    op.Complete();
-                    Info("Compile succeded. Assembly is at {0}.", TargetPath);
+                    else if (File.Exists(r))
+                    {
+                        Debug("Not copying reference {0} as it already exists.", r);
+                    }
                 }
-                else 
+                op.Complete();
+                Info("Compile succeded. Assembly is at {0}.", TargetPath);
+                if (Verify) 
                 {
-                    File.Delete(TargetPath);
-                    op.Complete();
                     var vwarn = compilerWarnings.Where(w => w.Msg.ToLower().Contains("unsatisfied"));
                     if (vwarn.Count() > 0)
                     {
-                        Info("Verification completed with {0} warnings. Target assembly not retained.", vwarn.Count());
+                        Info("Verification completed with {0} warnings.", vwarn.Count());
                     }
                     else
                     {
-                        Info("Verification succeded. Target assembly not retained");
+                        Info("Verification succeded.");
                     }
                 }
                 sscc = new SscCompilation(this, true, Verify, compilerErrors, compilerWarnings);

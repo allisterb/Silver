@@ -36,15 +36,11 @@ namespace Silver.CLI.Core
             }
         }
 
-        public static bool Compile(string filePath, string buildConfig, bool verify, bool sc, params string[] additionalFiles)
+        public static bool Compile(string filePath, string buildConfig, bool verify, params string[] additionalFiles)
         {
             var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
-                if (sc)
-                {
-                    return proj.SscCompile(out var sscc);
-                }
                 proj.Verify = verify;
                 var c = proj.Compile(out var diags, out var result);
                 if (diags.Count(d => d.WarningLevel == 0) > 0 || (DebugEnabled && diags.Count() > 0))
@@ -66,7 +62,15 @@ namespace Silver.CLI.Core
                         }
                     }
                 }
-                return c;
+                if (verify)
+                {
+                    c = proj.SscCompile(out var sscc);
+                    return c;
+                }
+                else
+                {
+                    return c;
+                }
                 
             }
             else

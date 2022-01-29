@@ -76,10 +76,6 @@ public class AdhocSilverProject : SilverProject
     }
     #endregion
 
-    #region Overriden members
-    public override bool NativeBuild() => this.SscCompile(out var sscc);
-    #endregion
-
     #region Properties
     public static string Proj =
         "<Project Sdk = \"Microsoft.NET.Sdk\" ><PropertyGroup><TargetFramework> netcoreapp3.1</TargetFramework></PropertyGroup><ItemGroup><PackageReference Include = \"Stratis.SmartContracts\" Version=\"2.0.0\" /></ItemGroup></Project>";

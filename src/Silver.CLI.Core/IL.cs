@@ -25,7 +25,7 @@ namespace Silver.CLI.Core
                     Info("Project {0} is up-to-date.", f);
                     return proj.TargetPath;
                 }
-                else if (proj.NativeBuild())
+                else if (proj.Compile(out var _, out var _))
                 {
                     return proj.TargetPath;
                 }

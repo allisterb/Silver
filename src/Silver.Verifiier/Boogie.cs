@@ -10,7 +10,7 @@ public class Boogie : Runtime
     {
         var f = DateTime.Now.Ticks.ToString() + Path.GetFileName(FailIfFileNotFound(path)) + ".xml";
         Debug("XML output will be written to file {0}.", Path.GetFullPath(f));
-        var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie"), path + " " + "/xml:"+ f);
+        var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), path + " " + "/xml:"+ f, isNETFxTool: true);
         if (ret is null)
         {
             Error("Coould not run program verifier.");
