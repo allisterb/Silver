@@ -70,7 +70,10 @@ public class Graph : Runtime
                 break;
 
             case GraphFormat.DGML:
-                File.WriteAllText(filename, DGMLWriter.Write(graph));
+                using (var fdgml = new FileStream(filename, FileMode.Create))
+                {
+                    DGMLWriter.Write(fdgml, graph);
+                }
                 break;
 
             case GraphFormat.SVG:

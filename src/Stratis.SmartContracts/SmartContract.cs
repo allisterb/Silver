@@ -57,10 +57,15 @@ namespace Stratis.SmartContracts
 
     protected byte[] Keccak256(byte[] toHash) => this.contractState.InternalHashHelper.Keccak256(toHash);
 
-    protected void Assert(bool condition, string message = "Assert failed.")
+    protected void Assert(bool condition, string message)
     {
       if (!condition)
         throw new SmartContractAssertException(message);
+    }
+
+    protected void Assert(bool condition)
+    {
+        Assert(condition, "Assert failed.");
     }
 
     protected void Log<T>(T toLog) where T : struct => this.contractState.ContractLogger.Log<T>(this.contractState, toLog);
