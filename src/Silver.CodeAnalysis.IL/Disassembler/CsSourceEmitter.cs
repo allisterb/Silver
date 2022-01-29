@@ -109,7 +109,7 @@ namespace PeToText {
     private void PrintOperation(IOperation operation) {
       sourceEmitterOutput.Write("IL_" + operation.Offset.ToString("x4") + ": ", true);
       sourceEmitterOutput.Write(operation.OperationCode.ToString());
-      ILocalDefinition/*?*/ local = operation.Value as ILocalDefinition;
+      ILocalDefinition/*?*/ local = (ILocalDefinition) operation.Value;
       if (local != null)
         sourceEmitterOutput.Write(" " + this.GetLocalName(local));
       else if (operation.Value is string)

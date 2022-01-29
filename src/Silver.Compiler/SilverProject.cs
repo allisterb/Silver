@@ -202,13 +202,24 @@ public abstract class SilverProject : Runtime
         }
     }
 
-    public SscCompilation SscCompile(out SscCompilation? sscc)
+    public bool SscCompile(out SscCompilation? sscc)
     {
         FailIfNotInitialized();
         sscc = null;
         CSharpParseOptions parseOptions = new CSharpParseOptions(LanguageVersion.Latest, DocumentationMode.None, SourceCodeKind.Regular, DefineConstants.Split(';'));
+        
         var op2 = Begin("Parsing and rewriting {0} files", SourceFiles.Count);
         IEnumerable<SyntaxTree> syntaxTrees = SourceFiles.Select(item => CSharpSyntaxTree.ParseText(File.ReadAllText(item), parseOptions, item, cancellationToken: Ct));
+        foreach(var st in syntaxTrees)
+        {
+            var stdiags = st.GetDiagnostics(Ct);
+            if (!stdiags.Any()) continue;
+            LogDiagnostics(stdiags, ProjectFile.DirectoryName!);
+            if (stdiags.Any(d => d.Severity == DiagnosticSeverity.Error))
+            {
+                return false;
+            }
+        }
         List<SyntaxTree> rewrittenSyntaxTrees = new();
         OriginalSourceFiles = new();
         foreach (var st in syntaxTrees)
@@ -229,7 +240,7 @@ public abstract class SilverProject : Runtime
                         if (string.IsNullOrEmpty(tc.NewText)) continue;
                         var flp = prevSt.GetLineSpan(tc.Span);
                         Info("Rewriter: {0}.", rwn);
-                        Info("File: {0}", ViewFilePath(flp.Path, ProjectFile.DirectoryName));
+                        Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
                         Info("Original: {0}", preText.ToString(tc.Span));
                         Info("New: {0}\n", tc.NewText);
                     }
@@ -252,9 +263,10 @@ public abstract class SilverProject : Runtime
             OriginalSourceFiles.Add(st.FilePath);
         }
         SourceFiles = syntaxTrees.Select(st => Path.ChangeExtension(st.FilePath, ".ssc")).ToList();
-
         op2.Complete();
+
         References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
+        
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
@@ -301,7 +313,8 @@ public abstract class SilverProject : Runtime
             {
                 Error("Compile failed.");
                 op.Cancel();
-                return new SscCompilation(this, false, Verify, compilerErrors, compilerWarnings);
+                sscc = new SscCompilation(this, false, Verify, compilerErrors, compilerWarnings);
+                return false;
             }
             else
             {
@@ -345,7 +358,8 @@ public abstract class SilverProject : Runtime
                         Info("Verification succeded. Target assembly not retained");
                     }
                 }
-                return new SscCompilation(this, true, Verify, compilerErrors, compilerWarnings);
+                sscc = new SscCompilation(this, true, Verify, compilerErrors, compilerWarnings);
+                return false;
             }
         }
     }
@@ -427,7 +441,6 @@ public abstract class SilverProject : Runtime
                 var f = d.Location.GetLineSpan().Path;
                 var line = d.Location.GetLineSpan().StartLinePosition.Line;
                 var col = d.Location.GetLineSpan().StartLinePosition.Character;
-
                 if (d.WarningLevel == 0)
                 {
                     Error("Id: {0}\n               Msg: {1}\n               File: {2}\n               Line: ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, projDir), line, col);

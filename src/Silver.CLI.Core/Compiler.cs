@@ -43,7 +43,7 @@ namespace Silver.CLI.Core
             {
                 if (sc)
                 {
-                    return proj.SscCompile(out var sscc).Succeded;
+                    return proj.SscCompile(out var sscc);
                 }
                 proj.Verify = verify;
                 var c = proj.Compile(out var diags, out var result);

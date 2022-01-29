@@ -1,5 +1,6 @@
 ﻿using Silver.CodeAnalysis.IL;
 using Silver.Projects;
+using Silver.Drawing;
 
 namespace Silver.CLI.Core
 {
@@ -75,11 +76,18 @@ namespace Silver.CLI.Core
                 
             
         }
-        public static bool PrintCallGraphs(string fileName, bool all)
+        public static bool PrintCallGraphs(string fileName, string outputFileName, string format, bool all)
         {
+            if(!Enum.TryParse<GraphFormat>(format.ToUpper(), out var graphFormat))
+            {
+                Error("Invalid graph format: {0}.", format);
+                return false;
+            }
             var analyzer = GetAnalyzer(fileName, all);
             if (analyzer is null) return false;
             var cg = analyzer.GetCallGraph();
+            if (cg is null) return false;
+            Graph.Draw(cg, outputFileName, graphFormat);
             return true;
         }
             

@@ -53,9 +53,9 @@ public partial class Analyzer : Runtime
 		return new(summary.types, summary.structs, summary.enums, summary.methods, summary.properties, summary.fields);
     }
 
-	public Graph GetCallGraph()
+	public Graph? GetCallGraph()
     {
-		using var op = Begin("Creating call graph");
+		using var op = Begin("Creating call graph for methods in assembly {0}", FileName);
 		var cha = new ClassHierarchyCallGraphAnalysis(Host);
 		cha.OnNewMethodFound = (m =>
 		{
@@ -67,7 +67,11 @@ public partial class Analyzer : Runtime
 		var methods = CollectMethods();
 		var cg = cha.Analyze();
 		var g = new Graph();
-		if (g is null) throw new Exception("Could not create graph drawing object.");
+		if (g is null)
+		{
+			Error("Could not create graph drawing object.");
+			return null;
+		}
 		g.LayoutAlgorithmSettings = Drawing.Graph.GetSugiyamaLayout();
 		foreach (var method in cg.Roots)
         {
@@ -98,11 +102,7 @@ public partial class Analyzer : Runtime
 
 				g.AddEdge(csNode.Id, rootNode.Id);
             }
-
-			
 		}
-		Drawing.Graph.Draw(g);
-		
 		return g;
     }
 	public Dictionary<IMethodDefinition, ControlFlowGraph> GetControlFlow()
@@ -149,6 +149,10 @@ public partial class Analyzer : Runtime
 		op.Complete();
 		return visitor.state.Get<List<IMethodDefinition>>("methods");
 	}
+
+	public static void SerializeCFGToDot(ControlFlowGraph g) => Backend.Serialization.DOTSerializer.Serialize(g);
+
+	public static void SerializeCFGToDGML(ControlFlowGraph g) => Backend.Serialization.DOTSerializer.Serialize(g);
 
 	public static void Test(string fileName)
     {

@@ -121,6 +121,12 @@ public abstract class Runtime
     public static Logger.Op Begin(string messageTemplate, params object[] args) => Logger.Begin(messageTemplate, args);
 
     [DebuggerStepThrough]
+    public static void WarnIfFileExists(string filename)
+    {
+        if (File.Exists(filename)) Warn("File {0} exists, overwriting...", filename);
+    }
+
+    [DebuggerStepThrough]
     public void FailIfNotInitialized()
     {
         if(!Initialized)

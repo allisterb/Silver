@@ -141,14 +141,15 @@ class Program : Runtime
          })
           .WithParsed<SummarizeOptions>(o =>
           {
-              ExitIfFileNotFound(o.File);   
-              ILCmd.Summarize(o.File, o.All);
+              ExitIfFileNotFound(o.InputFile);   
+              ILCmd.Summarize(o.InputFile, o.All);
               
           })
           .WithParsed<CallGraphOptions>(o =>
           {
-              ExitIfFileNotFound(o.File);
-              ILCmd.PrintCallGraph(o.File, o.All);
+              ExitIfFileNotFound(o.InputFile);
+              if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
+              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.All);
 
           })
          .WithParsed<VerifyOptions>(o =>

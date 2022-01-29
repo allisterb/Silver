@@ -30,10 +30,10 @@ internal class ILCmd : Command
         }
     }
 
-    internal static void PrintCallGraph(string fileName, bool all)
+    internal static void PrintCallGraph(string fileName, string outputFileName, string format, bool all)
     {
         ExitIfFileNotExists(fileName);
-        IL.PrintCallGraphs(fileName, all);
+        IL.PrintCallGraphs(fileName, outputFileName, format, all);
     }
 }
 
