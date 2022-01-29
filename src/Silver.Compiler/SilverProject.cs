@@ -97,42 +97,42 @@ public abstract class SilverProject : Runtime
         get
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append("/platform:v4 ");
+            sb.Append("-platform:v4 ");
             if (!string.IsNullOrEmpty(TargetPath))
             {
-                sb.AppendFormat("/out:{0} ", TargetPath);
+                sb.AppendFormat("-out:{0} ", TargetPath);
             }
             if (!string.IsNullOrEmpty(OutputType))
             {
-                sb.AppendFormat("/target:{0} ", OutputType);
+                sb.AppendFormat("-target:{0} ", OutputType);
             }
             if (!string.IsNullOrEmpty(DefineConstants))
             {
-                sb.AppendFormat("/define:{0} ", DefineConstants);
+                sb.AppendFormat("-define:{0} ", DefineConstants);
             }
             if (DebugConfig)
             {
-                sb.Append("/debug+ /debug:pdbonly ");
+                sb.Append("-debug+ -debug:pdbonly ");
             }
             if (NoStdLib)
             {
-                sb.Append("/nostdlib+ ");
+                sb.Append("-nostdlib+ ");
             }
             if (!string.IsNullOrEmpty(ShadowedAssembly))
             {
-                sb.AppendFormat("/shadow:{0} ", Path.Combine(ProjectFile.DirectoryName!, ShadowedAssembly));
+                sb.AppendFormat("-shadow:{0} ", Path.Combine(ProjectFile.DirectoryName!, ShadowedAssembly));
             }
             if (AllowUnsafe)
             {
-                sb.Append("/unsafe+ ");
+                sb.Append("-unsafe+ ");
             }
             if (Verify)
             {
-                sb.Append("/verify ");
+                sb.Append("-verify ");
             }
             if (References.Any())
             {
-                sb.AppendFormat("/r:{0} ", References.JoinWith(";"));
+                sb.AppendFormat("-r:{0} ", References.JoinWith(";"));
             }
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();

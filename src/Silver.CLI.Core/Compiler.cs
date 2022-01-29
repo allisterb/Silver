@@ -1,5 +1,4 @@
 ﻿using Silver.Projects;
-using Stratis.SmartContracts.CLR.Compilation;
 
 namespace Silver.CLI.Core
 {
