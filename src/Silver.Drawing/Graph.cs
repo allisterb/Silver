@@ -57,23 +57,19 @@ public class Graph : Runtime
             case GraphFormat.BMP:
                 GdiUtils.Draw2(rect, graph, graph.GeometryGraph, g);
                 bmp.Save(filename, ImageFormat.Bmp);
-                Info("Saved graph to BMP file {0}.", filename);
                 break;
 
             case GraphFormat.PNG:
                 GdiUtils.Draw2(rect, graph, graph.GeometryGraph, g);
                 bmp.Save(filename, ImageFormat.Png);
-                Info("Saved graph to PNG file {0}.", filename);
                 break;
 
             case GraphFormat.DOT:
                 File.WriteAllText(filename, DOTWriter.Write(graph));
-                Info("Saved graph to DOT file {0}.", filename);
                 break;
 
             case GraphFormat.DGML:
                 File.WriteAllText(filename, DGMLWriter.Write(graph));
-                Info("Saved graph to DGML file {0}.", filename);
                 break;
 
             case GraphFormat.SVG:
@@ -81,7 +77,6 @@ public class Graph : Runtime
                 {
                     var svgWriter = new SvgGraphWriter(fsvg, graph);
                     svgWriter.Write();
-                    Info("Saved graph to SVG file {0}.", filename);
                 }
                 break;
 
@@ -90,10 +85,10 @@ public class Graph : Runtime
                 {
                     var xmlWriter = new GraphWriter(fxml, graph);
                     xmlWriter.Write();
-                    Info("Saved graph to XML file {0}.", filename);
                 }
                 break;
-        }        
+        }
+        Info("Saved graph to {0} file {1}.", format, filename);
     }
 
     public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeWidth = 20, int minNodeHeight = 10)
