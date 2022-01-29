@@ -1,0 +1,64 @@
+using Stratis.SmartContracts;
+
+public class HelloBlockchain : SmartContract
+{
+	public HelloBlockchain(ISmartContractState state, string message)
+		: base(state)
+	{
+		Requestor = Message.Sender;
+		RequestMessage = message;
+		State = (uint)StateType.Request;
+	}
+
+	public enum StateType : uint
+	{
+		Request = 0,
+		Respond = 1
+	}
+
+	public uint State
+	{
+		get {return PersistentState.GetUInt32("State");}
+		private set {PersistentState.SetUInt32("State", value);}
+	}
+
+	public Address Requestor
+	{
+		get {return PersistentState.GetAddress("Requestor");}
+		private set {PersistentState.SetAddress("Requestor", value);}
+	}
+
+	public Address Responder
+	{
+		get {return PersistentState.GetAddress("Responder");}
+		private set {PersistentState.SetAddress("Responder", value);}
+	}
+
+	public string RequestMessage
+	{
+		get {return PersistentState.GetString("RequestMessage");}
+		private set {PersistentState.SetString("RequestMessage", value);}
+	}
+
+	public string ResponseMessage
+	{
+		get {return PersistentState.GetString("ResponseMessage");}
+		private set {PersistentState.SetString("ResponseMessage", value);}
+	}
+
+	public void SendRequest(string requestMessage)
+	{
+		Assert(Message.Sender == Requestor, "Sender is not requestor");
+
+		RequestMessage = requestMessage;
+		State = (uint)StateType.Request;
+	}
+
+	public void SendResponse(string responseMessage)
+	{
+		Responder = Message.Sender;
+
+		ResponseMessage = responseMessage;
+		State = (uint)StateType.Respond;
+	}
+}
