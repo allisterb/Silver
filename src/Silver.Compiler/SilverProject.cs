@@ -223,16 +223,15 @@ public abstract class SilverProject : Runtime
                 try
                 {
                     rwt = rw.Visit(rwt);
-                    foreach(var tc in rwt.SyntaxTree.GetChanges(prevSt))
+                    var preText = prevSt.GetText();
+                    foreach (var tc in rwt.SyntaxTree.GetChanges(prevSt))
                     {
                         if (string.IsNullOrEmpty(tc.NewText)) continue;
                         var flp = prevSt.GetLineSpan(tc.Span);
                         Info("Rewriter: {0}.", rwn);
-                        Info("File: {0}", ViewFilePath(flp.Path), ProjectFile.Directory!.FullName);
-                        Info("Original: {0}", flp.ToString());
-                        Info("New: {0}", tc.NewText);
-                       
-                        //Info("Rewrote: {0} in {1} to {2}.", st.getStc.Span.ToString(), st.FilePath, tc.NewText ?? "");
+                        Info("File: {0}", ViewFilePath(flp.Path, ProjectFile.DirectoryName));
+                        Info("Original: {0}", preText.ToString(tc.Span));
+                        Info("New: {0}\n", tc.NewText);
                     }
                     var rwtDiags = rwt.GetDiagnostics();
                     LogDiagnostics(rwtDiags, Path.GetDirectoryName(st.FilePath)!);

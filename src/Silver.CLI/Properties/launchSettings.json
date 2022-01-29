@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "compile C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\HelloBlockchainContract\\HelloBlockchainContract\\HelloBlockchainContract.csproj --sc -d"
+      "commandLineArgs": "compile C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\HelloBlockchainContract\\HelloBlockchainContract\\HelloBlockchainContract.csproj --sc "
     }
   }
 }
