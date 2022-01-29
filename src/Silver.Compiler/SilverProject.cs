@@ -132,9 +132,9 @@ public abstract class SilverProject : Runtime
             }
             if (References.Any())
             {
-                sb.AppendFormat("-r:{0} ", References.JoinWith(";"));
+                sb.AppendFormat("-r:{0} ", References.Select(f => Path.GetRelativePath(Path.Combine(AssemblyLocation, "ssc"), f)).JoinWith(";"));
             }
-            sb.Append(SourceFiles.JoinWithSpaces());
+            sb.Append(SourceFiles.Select(f => Path.GetRelativePath(Path.Combine(AssemblyLocation, "ssc"), f)).JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
     }
