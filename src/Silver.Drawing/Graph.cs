@@ -18,14 +18,15 @@ using GeometryPoint = Microsoft.Msagl.Core.Geometry.Point;
 using AGL.Drawing.Gdi;
 public class Graph : Runtime 
 {
-    public static void Draw(Microsoft.Msagl.Drawing.Graph graph, string filename, GraphFormat format, int width = 2000, int height = 2000)
+    public static void Draw(Microsoft.Msagl.Drawing.Graph graph, string filename, GraphFormat format, int width = 2000, int height = 2000, double rotateBy = 0.0)
     {
         graph.GeometryGraph = new GeometryGraph(); 
-        var layout = GetSugiyamaLayout(5, 10);
+        var layout = GetSugiyamaLayout(5, 10, rotateBy);
         graph.LayoutAlgorithmSettings = layout;
+        int nodeWidth = graph.Nodes.Max(n => n.LabelText.Length) * 9;
         foreach (Node n in graph.Nodes)
         {
-            var gn = new GeometryNode(CurveFactory.CreateRectangle(200, 40, new GeometryPoint()), n);
+            var gn = new GeometryNode(CurveFactory.CreateRectangle(nodeWidth, 40, new GeometryPoint()), n);
             graph.GeometryGraph.Nodes.Add(gn);
             n.GeometryNode = gn;
         }
@@ -91,11 +92,11 @@ public class Graph : Runtime
         Info("Saved graph to {0} file {1}.", format, filename);
     }
 
-    public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeWidth = 20, int minNodeHeight = 10)
+    public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeWidth = 2000, int minNodeHeight = 1000, double rotateBy = 0.0)
     {
         SugiyamaLayoutSettings sugiyamaSettings = new SugiyamaLayoutSettings
         {
-            Transformation = PlaneTransformation.Rotation(Math.PI / 2),
+            Transformation = PlaneTransformation.Rotation(rotateBy),
             EdgeRoutingSettings = { EdgeRoutingMode = EdgeRoutingMode.SugiyamaSplines },
             MinNodeHeight = minNodeHeight,
             MinNodeWidth = minNodeWidth

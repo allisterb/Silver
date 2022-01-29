@@ -72,7 +72,6 @@ public partial class Analyzer : Runtime
 			Error("Could not create graph drawing object.");
 			return null;
 		}
-		g.LayoutAlgorithmSettings = Drawing.Graph.GetSugiyamaLayout();
 		foreach (var method in cg.Roots)
         {
 			Node? rootNode = null;

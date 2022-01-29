@@ -87,7 +87,7 @@ namespace Silver.CLI.Core
             if (analyzer is null) return false;
             var cg = analyzer.GetCallGraph();
             if (cg is null) return false;
-            Graph.Draw(cg, outputFileName, graphFormat);
+            Graph.Draw(cg, outputFileName, graphFormat, rotateBy: Math.PI / 2);
             return true;
         }
             
