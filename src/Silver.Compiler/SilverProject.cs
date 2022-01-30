@@ -131,10 +131,10 @@ public abstract class SilverProject : Runtime
             {
                 sb.Append("-verify ");
             }
-            if (References.Any())
-            {
-                sb.AppendFormat("-r:{0} ", References.JoinWith(";"));
-            }
+            var scr = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.dll");
+            
+            sb.AppendFormat("-r:{0} ", References.Prepend(scr).JoinWith(";"));
+            
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
@@ -264,7 +264,9 @@ public abstract class SilverProject : Runtime
                     if (lines[i].TrimStart().StartsWith("//@"))
                     {
                         var ot = lines[i];
-                        lines[i] = ot.Replace("//@", "");
+                        lines[i] = ot
+                            .Replace("[Pure]", "[Microsoft.Contracts.Pure]")
+                            .Replace("//@", "");
                         Info("Rewriter: {0}.", "EmbeddedAsComment");
                         Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
                         Info("Original: {0}", ot);
@@ -292,6 +294,7 @@ public abstract class SilverProject : Runtime
             SourceFiles = syntaxTrees.Select(st => Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc"))).ToList();
             op2.Complete();
         }
+        
         if (Verify)
         {
             References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));

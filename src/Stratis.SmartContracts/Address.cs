@@ -5,9 +5,10 @@
 // Assembly location: C:\Users\Allister\Downloads\Stratis.SmartContracts.dll
 
 using System;
-
+using Microsoft.Contracts;
 namespace Stratis.SmartContracts
 {
+  
   public struct Address
   {
     public static Address Zero;
@@ -51,8 +52,10 @@ namespace Stratis.SmartContracts
 
     private static string UIntToHexString(uint val) => "0123456789ABCDEF"[(int) ((val & 240U) >> 4)].ToString() + (object) "0123456789ABCDEF"[(int) val & 15] + (object) "0123456789ABCDEF"[(int) ((val & 61440U) >> 12)] + (object) "0123456789ABCDEF"[(int) ((val & 3840U) >> 8)] + (object) "0123456789ABCDEF"[(int) ((val & 15728640U) >> 20)] + (object) "0123456789ABCDEF"[(int) ((val & 983040U) >> 16)] + (object) "0123456789ABCDEF"[(int) ((val & 4026531840U) >> 28)] + (object) "0123456789ABCDEF"[(int) ((val & 251658240U) >> 24)];
 
+    [Pure]
     public static bool operator ==(Address obj1, Address obj2) => obj1.Equals(obj2);
 
+    [Pure]
     public static bool operator !=(Address obj1, Address obj2) => !obj1.Equals(obj2);
 
     public override bool Equals(object obj) => obj is Address address && this.Equals(address);

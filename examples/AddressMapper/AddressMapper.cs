@@ -8,6 +8,7 @@ public class AddressMapper : SmartContract
     public Address GetSecondaryAddress(Address primary) => State.GetAddress($"SecondaryAddress:{primary}");
     private void SetSecondaryAddress(Address primary, Address secondary) => State.SetAddress($"SecondaryAddress:{primary}", secondary);
 
+    //@ [Pure]
     public MappingInfo GetMapping(Address secondary) => State.GetStruct<MappingInfo>($"Mapping:{secondary}");
     private void SetMapping(Address secondary, MappingInfo value) => State.SetStruct($"Mapping:{secondary}", value);
 

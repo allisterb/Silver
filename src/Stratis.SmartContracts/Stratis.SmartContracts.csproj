@@ -7,5 +7,11 @@
     <ApplicationVersion>2.0.0.0</ApplicationVersion>
     <RootNamespace>Stratis.SmartContracts</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Compiler.Runtime">
+      <HintPath>..\..\lib\net461\System.Compiler.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
   
 </Project>
