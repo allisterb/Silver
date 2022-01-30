@@ -388,7 +388,7 @@ public abstract class SilverProject : Runtime
                     }
                 }
                 op.Complete();
-                if (!DebugEnabled)
+                if (!DebugEnabled && rewrite)
                 {
                     Debug("Deleting temporary files...");
                     foreach (var d in SourceFiles.Select(f => Path.GetDirectoryName(f)!))

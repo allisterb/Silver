@@ -42,7 +42,7 @@ namespace Silver.CLI.Core
             if (proj is not null && proj.Initialized)
             {
                 proj.Verify = verify;
-                if (ssc)
+                if (ssc || Path.GetExtension(filePath).StartsWith(".ssc"))
                 {
                     return proj.SscCompile(false, out var sscc);
                 }

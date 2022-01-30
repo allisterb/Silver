@@ -117,6 +117,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressMapper", "..\example
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PingPongContract", "..\examples\PingPongContract\PingPongContract.csproj", "{7E4E5B39-45BC-4782-B6DC-0F212F17C681}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RMonahan", "RMonahan", "{4A5BF451-1E28-4D74-AB97-8175530450C3}"
+	ProjectSection(SolutionItems) = preProject
+		..\examples\RosemaryMonahan\Multiply.ssc = ..\examples\RosemaryMonahan\Multiply.ssc
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -772,6 +777,7 @@ Global
 		{37C29461-717C-4BB3-80B1-5E87036F2A8B} = {BD039360-D4FD-4D2C-BF67-C4BEA9A8AC9C}
 		{FD524008-C6D2-42EA-99D4-F178C6AE4D30} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
 		{7E4E5B39-45BC-4782-B6DC-0F212F17C681} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
+		{4A5BF451-1E28-4D74-AB97-8175530450C3} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}
