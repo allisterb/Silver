@@ -315,8 +315,11 @@ public abstract class SilverProject : Runtime
                         var errs = e.Data.Split(": error");
                         var errmsg = errs[1].Split(":");
                         compilerErrors.Add(new(errs[0], errmsg[0], errmsg[1]));
-                        Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine + 
-                            "               Msg: {1}", errmsg[0], errmsg[1]); 
+                       
+                            
+                            Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
+                                "               Msg: {1}", errmsg[0], errmsg[1]);
+                        
                     }
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("error"))
                     {
@@ -337,9 +340,12 @@ public abstract class SilverProject : Runtime
                     {
                         var warns = e.Data.Split(": warning");
                         var warnmsg = warns[1].Split(":");
-                        compilerWarnings.Add(new(warns[0], warnmsg[0], warnmsg[1]));
-                        Warn("File: " + warns[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
-                            "               Msg: {1}", warnmsg[0], warnmsg[1]);
+                        if (!suppressedSscWarningCodes.Contains(warnmsg[0].Trim()))
+                        {
+                            compilerWarnings.Add(new(warns[0], warnmsg[0], warnmsg[1]));
+                            Warn("File: " + warns[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
+                                "               Msg: {1}", warnmsg[0], warnmsg[1]);
+                        }
                     }
                 }, isNETFxTool: true);
 
@@ -527,5 +533,7 @@ public abstract class SilverProject : Runtime
     private static string[] rewriterNames = rewriters.Select(r => r.GetType().Name).ToArray();
 
     private static Regex assertStmt = new Regex(@"Assert\((.*)\)", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+
+    private static string[] suppressedSscWarningCodes = { "CS2614" };
     #endregion
 }

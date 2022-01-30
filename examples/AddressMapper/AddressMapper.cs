@@ -16,6 +16,7 @@ public class AddressMapper : SmartContract
 
     public Address Owner
     {
+        
         get => State.GetAddress(nameof(Owner));
         private set => State.SetAddress(nameof(Owner), value);
     }

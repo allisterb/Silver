@@ -70,7 +70,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type &apos;{0}&apos; cannot be used in smart contract code.
+        ///   Looks up a localized string similar to Types from namespace &apos;{0}&apos; cannot be used in smart contract code.
         /// </summary>
         internal static string SC0001_MessageFormat {
             get {
@@ -79,7 +79,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type cannot be used.
+        ///   Looks up a localized string similar to Namespace cannot be used.
         /// </summary>
         internal static string SC0001_Title {
             get {

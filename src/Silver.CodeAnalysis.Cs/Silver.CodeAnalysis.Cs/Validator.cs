@@ -28,7 +28,7 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().OfType<NameSyntax>().FirstOrDefault();  
-            if (ns.ToFullString() != "Stratis.SmartContracts" && ns.ToFullString() != "Stratis.SmartContracts.Standards")
+            if (!WhitelistedNamespaces.Contains(ns.ToFullString()))
             {
                 return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
             }
@@ -196,6 +196,8 @@ namespace Silver.CodeAnalysis.Cs
             {typeof(System.Array).Name, new[] { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" } },
             {typeof(string[]).Name, new[] { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" } },
         };
+
+        public static string[] WhitelistedNamespaces = { "System", "Stratis.SmartContracts", "Stratis.SmartContracts.Standards" };
         #endregion
     }
 }

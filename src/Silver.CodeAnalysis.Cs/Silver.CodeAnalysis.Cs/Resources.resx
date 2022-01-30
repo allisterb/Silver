@@ -122,11 +122,11 @@
     <comment>An optional longer localizable description of the diagnostic.</comment>
   </data>
   <data name="SC0001_MessageFormat" xml:space="preserve">
-    <value>Type '{0}' cannot be used in smart contract code</value>
+    <value>Types from namespace '{0}' cannot be used in smart contract code</value>
     <comment>The format-able message the diagnostic displays.</comment>
   </data>
   <data name="SC0001_Title" xml:space="preserve">
-    <value>Type cannot be used</value>
+    <value>Namespace cannot be used</value>
     <comment>The title of the diagnostic.</comment>
   </data>
   <data name="SC0002_Description" xml:space="preserve">
