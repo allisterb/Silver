@@ -117,10 +117,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AddressMapper", "..\example
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PingPongContract", "..\examples\PingPongContract\PingPongContract.csproj", "{7E4E5B39-45BC-4782-B6DC-0F212F17C681}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RMonahan", "RMonahan", "{4A5BF451-1E28-4D74-AB97-8175530450C3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RosemarryMonahan", "RosemarryMonahan", "{4A5BF451-1E28-4D74-AB97-8175530450C3}"
 	ProjectSection(SolutionItems) = preProject
 		..\examples\RosemaryMonahan\Multiply.cs = ..\examples\RosemaryMonahan\Multiply.cs
+		..\examples\RosemaryMonahan\Multiply.ssc = ..\examples\RosemaryMonahan\Multiply.ssc
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiplyContract", "..\examples\MultiplyContract\MultiplyContract.csproj", "{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -721,6 +724,20 @@ Global
 		{7E4E5B39-45BC-4782-B6DC-0F212F17C681}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E4E5B39-45BC-4782-B6DC-0F212F17C681}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
 		{7E4E5B39-45BC-4782-B6DC-0F212F17C681}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.DebugCommandLine|Any CPU.ActiveCfg = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.DebugCommandLine|Any CPU.Build.0 = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.DebugExp|Any CPU.ActiveCfg = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.DebugExp|Any CPU.Build.0 = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.DebugNoData|Any CPU.ActiveCfg = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.DebugNoData|Any CPU.Build.0 = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.NoExtendedRuntime|Any CPU.ActiveCfg = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.NoExtendedRuntime|Any CPU.Build.0 = Debug|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -778,6 +795,7 @@ Global
 		{FD524008-C6D2-42EA-99D4-F178C6AE4D30} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
 		{7E4E5B39-45BC-4782-B6DC-0F212F17C681} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
 		{4A5BF451-1E28-4D74-AB97-8175530450C3} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
+		{669609E3-5A3D-45D0-B5B5-6AD84FB95FE3} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}

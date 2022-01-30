@@ -18,9 +18,6 @@
  
 
 using System;
-
-using Microsoft.Contracts;
-
  
 
 public class C {
@@ -39,11 +36,11 @@ public class C {
 
   static int multiply(int x, int y)
 
-  requires 0 <= y;
+  //@  requires 0 <= y;
 
-  requires 0 <= x;
+  //@ requires 0 <= x;
 
-  ensures result == y * x;
+  //@ ensures result == y * x;
 
   {
 
@@ -53,39 +50,39 @@ public class C {
 
         while(i <=y )
 
-    invariant 0<= i;
+    //@ invariant 0<= i;
 
-    invariant i<= y;
+    //@ invariant i<= y;
 
-    invariant q == (i * x);
+    //@ invariant q == (i * x);
 
         {
 
-          assert  q == (i * x);
+          //@ assert  q == (i * x);
 
-          assert  q + x == (i * x) + x;
+          //@ assert  q + x == (i * x) + x;
 
               q = q + x;
 
              
 
-              assert  q == (i * x) + x;
+              //@ assert  q == (i * x) + x;
 
               //assumption needed for distribution of operators.
 
-              assume (i*x) + x == (i+1) * x;
+              //@ assume (i*x) + x == (i+1) * x;
 
              
 
-              assert  q == (i+1) * x;
+              //@ assert  q == (i+1) * x;
 
               i= i+1;
 
-              assert  q == i * x;
+              //@ assert  q == i * x;
 
         }
 
-    assert  q == i * x && i == y;
+    //@ assert  q == i * x && i == y;
 
         return q;
 
