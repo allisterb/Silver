@@ -22,8 +22,8 @@ public class AddressMapper : SmartContract
 
     public AddressMapper(ISmartContractState smartContractState, Address owner) : base(smartContractState)
     {
-
-        Assert(true);
+       
+        
         this.Owner = owner;
     }
 

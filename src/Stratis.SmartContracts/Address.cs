@@ -58,8 +58,10 @@ namespace Stratis.SmartContracts
     [Pure]
     public static bool operator !=(Address obj1, Address obj2) => !obj1.Equals(obj2);
 
+    [Pure]
     public override bool Equals(object obj) => obj is Address address && this.Equals(address);
 
+    [Pure]
     public bool Equals(Address obj) => (1 & ((int) this.pn0 == (int) obj.pn0 ? 1 : 0) & ((int) this.pn1 == (int) obj.pn1 ? 1 : 0) & ((int) this.pn2 == (int) obj.pn2 ? 1 : 0) & ((int) this.pn3 == (int) obj.pn3 ? 1 : 0) & ((int) this.pn4 == (int) obj.pn4 ? 1 : 0)) != 0;
   }
 }
