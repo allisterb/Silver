@@ -392,9 +392,11 @@ public abstract class SilverProject : Runtime
                 { 
                     var scr = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.dll");
                     var scrd = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.pdb");
-                    File.Copy(scr, Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.dll"));
-                    File.Copy(scrd, Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.pdb"));
 
+                    var cscr = Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.dll");
+                    var cscrd = Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.pdb");
+                    if (!File.Exists(cscr)) File.Copy(scr, cscr);
+                    if (!File.Exists(cscrd)) File.Copy(cscrd, cscrd);  
                 }
                 op.Complete();
                 if (!DebugEnabled && rewrite)
