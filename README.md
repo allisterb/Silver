@@ -9,7 +9,8 @@ tool for Stratis smart contracts. Silver can analyze both C# source code using a
 and can run both inside Visual Studio and on the command line.
 
 ![img](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/814/415/datas/original.png)
-## Install
+
+## Building
 
 ### Requirements
 * [NET 6.0](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)

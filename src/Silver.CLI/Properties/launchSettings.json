@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "verify C:\\Projects\\Silver\\examples\\RosemaryMonahan\\Multiply.dll"
+      "commandLineArgs": "install"
     }
   }
 }
