@@ -82,6 +82,9 @@ public class CompileOptions : Options
 
     [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the build configuration for the source files or project. Defaults to 'Debug'.")]
     public string BuildConfig { get; set; } = string.Empty;
+
+    [Option("ssc", Required = false, HelpText = "Use the SSC compiler")]
+    public bool Ssc { get; set; }
 }
 
 [Verb("verify", HelpText = "Verify a .NET assembly compiled with Spec#.")]

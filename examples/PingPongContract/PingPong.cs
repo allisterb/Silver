@@ -74,7 +74,7 @@ public class Player : SmartContract
         Assert(Message.Sender == PlayerAddress);     
         Assert(State == (uint)StateType.ReceivedPing || State == (uint)StateType.Provisioned);
 
-        var isFinishedResult = Call(Opponent, 0, nameof(Player.IsFinished));
+        ITransferResult isFinishedResult = Call(Opponent, 0, nameof(Player.IsFinished));
 
         Assert(isFinishedResult.Success);
 
@@ -91,7 +91,7 @@ public class Player : SmartContract
             PingsSent += 1;
         }
 
-        var callResult = Call(Opponent, 0, nameof(Player.ReceivePing));
+        ITransferResult callResult = Call(Opponent, 0, nameof(Player.ReceivePing));
         Assert(callResult.Success);
         State = (uint)StateType.SentPing;
     }
@@ -125,19 +125,19 @@ public class Starter : SmartContract
     /// <param name="maxPingPongTimes"></param>
     public void StartGame(Address player1, Address player2, string gameName)
     {
-        var player1CreateResult = Create<Player>(0, new object[] { player1, player2, gameName }, 0);
+        ICreateResult player1CreateResult = Create<Player>(0, new object[] { player1, player2, gameName }, 0);
 
         Assert(player1CreateResult.Success);
 
-        var player2CreateResult = Create<Player>(0, new object[] { player2, player1, gameName }, 0);
+        ICreateResult player2CreateResult = Create<Player>(0, new object[] { player2, player1, gameName }, 0);
 
         Assert(player2CreateResult.Success);
 
-        var gc = new GameCreated();
+        GameCreated gc = new GameCreated();
         gc.Player1Contract = player1CreateResult.NewContractAddress;
         gc.Player2Contract = player2CreateResult.NewContractAddress;
         gc.GameName = gameName;
-        //Log<GameCreated>(gc);
+        Log<GameCreated>(gc);
     }
 
     public struct GameCreated

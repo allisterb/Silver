@@ -132,9 +132,9 @@ public abstract class SilverProject : Runtime
             }
             if (References.Any())
             {
-                sb.AppendFormat("-r:{0} ", References.Select(f => Path.GetRelativePath(Path.Combine(AssemblyLocation, "ssc"), f)).JoinWith(";"));
+                sb.AppendFormat("-r:{0} ", References.JoinWith(";"));
             }
-            sb.Append(SourceFiles.Select(f => Path.GetRelativePath(Path.Combine(AssemblyLocation, "ssc"), f)).JoinWithSpaces());
+            sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
     }
@@ -198,75 +198,77 @@ public abstract class SilverProject : Runtime
         }
     }
 
-    public bool SscCompile(out SscCompilation? sscc)
+    public bool SscCompile(bool rewrite, out SscCompilation? sscc)
     {
         FailIfNotInitialized();
         sscc = null;
         CSharpParseOptions parseOptions = new CSharpParseOptions(LanguageVersion.Latest, DocumentationMode.None, SourceCodeKind.Regular, DefineConstants.Split(';'));
-        
-        var op2 = Begin("Parsing and rewriting {0} files", SourceFiles.Count);
-        IEnumerable<SyntaxTree> syntaxTrees = SourceFiles.Select(item => CSharpSyntaxTree.ParseText(File.ReadAllText(item), parseOptions, item, cancellationToken: Ct));
-        foreach(var st in syntaxTrees)
+        if (rewrite)
         {
-            var stdiags = st.GetDiagnostics(Ct);
-            if (!stdiags.Any()) continue;
-            LogDiagnostics(stdiags, ProjectFile.DirectoryName!);
-            if (stdiags.Any(d => d.Severity == DiagnosticSeverity.Error))
+            var op2 = Begin("Parsing and rewriting {0} files", SourceFiles.Count);
+            IEnumerable<SyntaxTree> syntaxTrees = SourceFiles.Select(item => CSharpSyntaxTree.ParseText(File.ReadAllText(item), parseOptions, item, cancellationToken: Ct));
+            foreach (var st in syntaxTrees)
             {
-                return false;
-            }
-        }
-        List<SyntaxTree> rewrittenSyntaxTrees = new();
-        OriginalSourceFiles = new();
-        foreach (var st in syntaxTrees)
-        {
-            SyntaxNode rwt = st.GetRoot(Ct);
-            for (var i = 0; i < rewriters.Length; i++)
-            {
-                var rw = rewriters[i];
-                var rwn = rewriterNames[i];
-                var prev = rwt;
-                var prevSt = prev.SyntaxTree;
-                try
+                var stdiags = st.GetDiagnostics(Ct);
+                if (!stdiags.Any()) continue;
+                LogDiagnostics(stdiags, ProjectFile.DirectoryName!);
+                if (stdiags.Any(d => d.Severity == DiagnosticSeverity.Error))
                 {
-                    rwt = rw.Visit(rwt);
-                    var preText = prevSt.GetText();
-                    foreach (var tc in rwt.SyntaxTree.GetChanges(prevSt))
+                    return false;
+                }
+            }
+            List<SyntaxTree> rewrittenSyntaxTrees = new();
+            OriginalSourceFiles = new();
+            foreach (var st in syntaxTrees)
+            {
+                SyntaxNode rwt = st.GetRoot(Ct);
+                for (var i = 0; i < rewriters.Length; i++)
+                {
+                    var rw = rewriters[i];
+                    var rwn = rewriterNames[i];
+                    var prev = rwt;
+                    var prevSt = prev.SyntaxTree;
+                    try
                     {
-                        if (string.IsNullOrEmpty(tc.NewText)) continue;
-                        var flp = prevSt.GetLineSpan(tc.Span);
-                        Info("Rewriter: {0}.", rwn);
-                        Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
-                        Info("Original: {0}", preText.ToString(tc.Span));
-                        Info("New: {0}\n", tc.NewText);
+                        rwt = rw.Visit(rwt);
+                        var preText = prevSt.GetText();
+                        foreach (var tc in rwt.SyntaxTree.GetChanges(prevSt))
+                        {
+                            if (string.IsNullOrEmpty(tc.NewText)) continue;
+                            var flp = prevSt.GetLineSpan(tc.Span);
+                            Info("Rewriter: {0}.", rwn);
+                            Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
+                            Info("Original: {0}", preText.ToString(tc.Span));
+                            Info("New: {0}\n", tc.NewText);
+                        }
+                        var rwtDiags = rwt.GetDiagnostics();
+                        LogDiagnostics(rwtDiags, Path.GetDirectoryName(st.FilePath)!);
+                        if (rwtDiags.Any(d => d.Severity == 0))
+                        {
+                            Error("Error rewriting syntax of {0} using {1}. Skipping this rewriter.", st.FilePath, rw.GetType().Name);
+                            rwt = prev;
+                        }
                     }
-                    var rwtDiags = rwt.GetDiagnostics();
-                    LogDiagnostics(rwtDiags, Path.GetDirectoryName(st.FilePath)!);
-                    if (rwtDiags.Any(d => d.Severity == 0))
+                    catch (Exception ex)
                     {
-                        Error("Error rewriting syntax of {0} using {1}. Skipping this rewriter.", st.FilePath, rw.GetType().Name);
+                        Error(ex, "Error rewriting syntax of {0} using {1}. Skipping this rewriter.", st.FilePath, rw.GetType().Name);
                         rwt = prev;
                     }
                 }
-                catch (Exception ex)
-                {
-                    Error(ex, "Error rewriting syntax of {0} using {1}. Skipping this rewriter.", st.FilePath, rw.GetType().Name);
-                    rwt = prev;
-                }
+                rewrittenSyntaxTrees.Add(rwt.SyntaxTree);
+                File.WriteAllText(Path.ChangeExtension(st.FilePath, ".ssc"), rwt.GetText().ToString());
+                OriginalSourceFiles.Add(st.FilePath);
             }
-            rewrittenSyntaxTrees.Add(rwt.SyntaxTree);
-            File.WriteAllText(Path.ChangeExtension(st.FilePath, ".ssc"), rwt.GetText().ToString());
-            OriginalSourceFiles.Add(st.FilePath);
+            SourceFiles = syntaxTrees.Select(st => Path.ChangeExtension(st.FilePath, ".ssc")).ToList();
+            op2.Complete();
         }
-        SourceFiles = syntaxTrees.Select(st => Path.ChangeExtension(st.FilePath, ".ssc")).ToList();
-        
-        op2.Complete();
-
-        References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
-        TargetDir = Path.Combine(Path.GetDirectoryName(TargetPath)!, "ssc");
-        if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
-        TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
-
+        if (Verify)
+        {
+            References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
+            TargetDir = Path.Combine(Path.GetDirectoryName(TargetPath)!, "ssc");
+            if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
+            TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
+        }
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
@@ -353,7 +355,7 @@ public abstract class SilverProject : Runtime
                     }
                 }
                 sscc = new SscCompilation(this, true, Verify, compilerErrors, compilerWarnings);
-                return false;
+                return true;
             }
         }
     }

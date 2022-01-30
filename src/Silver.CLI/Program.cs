@@ -87,7 +87,7 @@ class Program : Runtime
         })
         .WithParsed<SscOptions>(o =>
         {
-            if (Core.Tools.Boogie(o.Options.ToArray()))
+            if (Core.Tools.Ssc(o.Options.ToArray()))
             {
                 Exit(ExitResult.SUCCESS);
             }
@@ -149,7 +149,7 @@ class Program : Runtime
              }
              else
              {
-                 CompilerCmd.Compile(file, buildConfig, o.Verify, additionalFiles);
+                 CompilerCmd.Compile(file, buildConfig, o.Verify,o.Ssc, !o.Ssc, additionalFiles);
              }
          })
          .WithParsed<VerifyOptions>(o =>

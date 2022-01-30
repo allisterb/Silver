@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": " compile C:\\Projects\\Silver\\examples\\AddressMapper\\AddressMapper.csproj --sc"
+      "commandLineArgs": " compile C:\\Projects\\Silver\\examples\\AddressMapper\\AddressMapper.csproj --verify"
     }
   }
 }

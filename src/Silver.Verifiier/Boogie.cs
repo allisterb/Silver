@@ -14,11 +14,13 @@ public class Boogie : Runtime
         if (ret is null)
         {
             Error("Coould not run program verifier.");
+            File.Delete(f);
             return null;
         }
         else if(!ret.Contains("Spec# program verifier finished"))
         {
             Error("Program verifier did not complete successfully");
+            File.Delete(f);
             return null;
         }
         else
