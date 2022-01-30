@@ -387,6 +387,15 @@ public abstract class SilverProject : Runtime
                         Debug("Not copying reference {0} as it already exists.", r);
                     }
                 }
+
+                if (!File.Exists(Path.Combine(Path.GetDirectoryName(TargetPath)!, "system.Compiler.Runtime.dll")))
+                { 
+                    var scr = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.dll");
+                    var scrd = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.pdb");
+                    File.Copy(scr, Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.dll"));
+                    File.Copy(scrd, Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.pdb"));
+
+                }
                 op.Complete();
                 if (!DebugEnabled && rewrite)
                 {
