@@ -28,7 +28,7 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().OfType<NameSyntax>().FirstOrDefault();  
-            if (ns.ToFullString() != "Stratis.SmartContracts" || ns.ToFullString() != "Stratis.SmartContracts.Standards")
+            if (ns.ToFullString() != "Stratis.SmartContracts" && ns.ToFullString() != "Stratis.SmartContracts.Standards")
             {
                 return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
             }

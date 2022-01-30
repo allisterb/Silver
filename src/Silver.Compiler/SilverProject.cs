@@ -350,7 +350,12 @@ public abstract class SilverProject : Runtime
                     }
                 }
                 op.Complete();
-                Info("Compile succeded. Assembly is at {0}.", TargetPath);
+                Info("Deleting temporary files...");
+                foreach(var d in SourceFiles.Select(f => Path.GetDirectoryName(f)!))
+                {
+                    if (Directory.Exists(d)) Directory.Delete(d, true);
+                }
+                Debug("Compile succeded. Assembly is at {0}.", TargetPath);
                 if (Verify) 
                 {
                     var vwarn = compilerWarnings.Where(w => w.Msg.ToLower().Contains("unsatisfied"));
