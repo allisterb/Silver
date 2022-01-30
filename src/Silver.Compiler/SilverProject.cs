@@ -1,6 +1,7 @@
 namespace Silver.Projects;
 
 using System.Collections.Immutable;
+using System.Text.RegularExpressions;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -256,8 +257,36 @@ public abstract class SilverProject : Runtime
                     }
                 }
                 rewrittenSyntaxTrees.Add(rwt.SyntaxTree);
+                var text = rwt.GetText().ToString();
+                var lines = text.Split(Environment.NewLine);
+                for(int i = 0; i < lines.Length; i++)
+                {
+                    if (lines[i].TrimStart().StartsWith("//@"))
+                    {
+                        var ot = lines[i];
+                        lines[i] = ot.Replace("//@", "");
+                        Info("Rewriter: {0}.", "EmbeddedAsComment");
+                        Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
+                        Info("Original: {0}", ot);
+                        Info("New: {0}\n", lines[i]);
+                    }
+
+                    else
+                    {
+                        var m = assertStmt.Match(lines[i].Trim());
+                        if (m.Success)
+                        {
+                            var ot = lines[i];
+                            lines[i] = ot.Replace(m.Groups[0].Value, $"assert {m.Groups[1].Value.Split(',')[0]}");
+                            Info("Rewriter: {0}.", "AssertStmt");
+                            Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
+                            Info("Original: {0}", ot);
+                            Info("New: {0}\n", lines[i]);
+                        }
+                    }
+                }
                 if (!Directory.Exists(Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc")))) Directory.CreateDirectory(Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc")));
-                File.WriteAllText(Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc")), rwt.GetText().ToString());
+                File.WriteAllLines(Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc")), lines);
                 OriginalSourceFiles.Add(st.FilePath);
             }
             SourceFiles = syntaxTrees.Select(st => Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc"))).ToList();
@@ -350,12 +379,19 @@ public abstract class SilverProject : Runtime
                     }
                 }
                 op.Complete();
-                Info("Deleting temporary files...");
-                foreach(var d in SourceFiles.Select(f => Path.GetDirectoryName(f)!))
+                if (!DebugEnabled)
                 {
-                    if (Directory.Exists(d)) Directory.Delete(d, true);
+                    Debug("Deleting temporary files...");
+                    foreach (var d in SourceFiles.Select(f => Path.GetDirectoryName(f)!))
+                    {
+                        if (Directory.Exists(d)) Directory.Delete(d, true);
+                    }
                 }
-                Debug("Compile succeded. Assembly is at {0}.", TargetPath);
+                else
+                {
+                    Debug("Not deleting temporary files in debug mode.");
+                }
+                Info("Compile succeded. Assembly is at {0}.", TargetPath);
                 if (Verify) 
                 {
                     var vwarn = compilerWarnings.Where(w => w.Msg.ToLower().Contains("unsatisfied"));
@@ -486,5 +522,7 @@ public abstract class SilverProject : Runtime
     };
 
     private static string[] rewriterNames = rewriters.Select(r => r.GetType().Name).ToArray();
+
+    private static Regex assertStmt = new Regex(@"Assert\((.*)\)", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
     #endregion
 }
