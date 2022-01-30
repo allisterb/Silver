@@ -4,7 +4,9 @@
 </p>
 
 ## About
-Silver is a [static analysis](https://en.wikipedia.org/wiki/Static_analysis) and [formal verification](https://en.wikipedia.org/wiki/Formal_verification) tool for Stratis smart contracts. Stratis can analyze both C# source code using a Roslyn diagnostic analyzer and CIL code in a bytecode assembly and can run both inside Visual Studio and on the command line.
+Silver is a [static analysis](https://en.wikipedia.org/wiki/Static_analysis) and [formal verification](https://en.wikipedia.org/wiki/Formal_verification) 
+tool for Stratis smart contracts. Silver can analyze both C# source code using a Roslyn diagnostic analyzer and CIL code in a bytecode assembly 
+and can run both inside Visual Studio and on the command line.
 
 ![img](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/814/415/datas/original.png)
 ## Install
