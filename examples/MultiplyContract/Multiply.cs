@@ -1,5 +1,4 @@
 ﻿using Stratis.SmartContracts;
-//@ using Microsoft.Contracts;
 
 [Deploy]
 public class MultiplyContract : SmartContract
@@ -14,7 +13,7 @@ public class MultiplyContract : SmartContract
         {
             int q = 0;
             int i = 0;
-            while (i <= y)
+            while (i < y)
             //@ invariant 0<= i;
             //@ invariant i<= y;
             //@ invariant q == (i * x);
@@ -36,4 +35,12 @@ public class MultiplyContract : SmartContract
             //@ assert  q == i * x && i == y;
             return q;
         }
+
+    public void SendMoney(int c, int d, Address recep)
+    {
+        if (c >= 0 && d >= 0)
+        {
+            int r = Multiply(c, d);
+        }
+    }
 }
