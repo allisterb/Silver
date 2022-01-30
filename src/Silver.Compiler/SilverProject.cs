@@ -256,10 +256,11 @@ public abstract class SilverProject : Runtime
                     }
                 }
                 rewrittenSyntaxTrees.Add(rwt.SyntaxTree);
-                File.WriteAllText(Path.ChangeExtension(st.FilePath, ".ssc"), rwt.GetText().ToString());
+                if (!Directory.Exists(Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc")))) Directory.CreateDirectory(Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc")));
+                File.WriteAllText(Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc")), rwt.GetText().ToString());
                 OriginalSourceFiles.Add(st.FilePath);
             }
-            SourceFiles = syntaxTrees.Select(st => Path.ChangeExtension(st.FilePath, ".ssc")).ToList();
+            SourceFiles = syntaxTrees.Select(st => Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc"))).ToList();
             op2.Complete();
         }
         if (Verify)
@@ -322,6 +323,10 @@ public abstract class SilverProject : Runtime
                 foreach (var r in PublicReferences)
                 {
                     var cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(r));
+                    if (Path.GetFileName(cr) == "Stratis.SmartContracts.NET4.dll")
+                    {
+                        cr = Path.Combine(Path.GetDirectoryName(TargetPath)!, "Stratis.SmartContracts.dll");
+                    }
                     if (File.Exists(r) && (!File.Exists(cr) || (File.GetLastWriteTime(r) > File.GetLastWriteTime(cr))))
                     {
                         if (File.Exists(cr)) File.Delete(cr);
@@ -330,6 +335,10 @@ public abstract class SilverProject : Runtime
                         if (File.Exists(pr))
                         {
                             var pcr = Path.Combine(Path.GetDirectoryName(TargetPath)!, Path.GetFileName(pr));
+                            if (Path.GetFileName(pcr) == "Stratis.SmartContracts.NET4.pdb")
+                            {
+                                pcr = Path.Combine(Path.GetDirectoryName(TargetPath)!, "Stratis.SmartContracts.pdb");
+                            }
                             if (File.Exists(pcr)) File.Delete(pcr);
                             File.Copy(pr, pcr);
                         }

@@ -35,7 +35,7 @@ public class AddressMapper : SmartContract
     public void Approve(Address secondary)
     {
         EnsureAdminOnly();
-        var mapping = GetMapping(secondary);
+        MappingInfo mapping = GetMapping(secondary);
         Assert(mapping.Status == (int)Status.Pending, "Mapping is not in pending state.");
 
         SetSecondaryAddress(mapping.Primary, secondary);
@@ -52,7 +52,7 @@ public class AddressMapper : SmartContract
     public void Reject(Address secondary)
     {
         EnsureAdminOnly();
-        var mapping = GetMapping(secondary);
+        MappingInfo mapping = GetMapping(secondary);
         Assert(mapping.Status == (int)Status.Pending, "Mapping is not in pending state.");
 
         ClearMappingInfo(secondary); // same address can be mapped again. 
