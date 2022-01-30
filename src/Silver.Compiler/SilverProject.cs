@@ -310,7 +310,7 @@ public abstract class SilverProject : Runtime
                     }
                 }, isNETFxTool: true);
 
-            if (output is null)
+            if (output is null || output.Contains(" error "))
             {
                 Error("Compile failed.");
                 op.Cancel();
@@ -383,7 +383,7 @@ public abstract class SilverProject : Runtime
                 return new XmlSilverProject(f.FullName, buildConfig);
             case ".cs":
             case ".ssc":
-                var sourceFiles = additionalFiles.ToList().Prepend(filePath).ToList();
+                var sourceFiles = additionalFiles.ToList().Prepend(filePath).Select(f => Path.GetFullPath(f)).ToList();
                 var settings = new Dictionary<string, object> 
                 {
                     { "BuildConfig", "Debug" },
