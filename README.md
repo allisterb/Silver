@@ -18,7 +18,7 @@ and can run both inside Visual Studio and on the command line.
 * libgdiplus (on *nix/MacOs, for graph drawing)
 
 ### Known issues
-The verifier is currently broken on non-Windows as the Spec# verifier depends on some Windows specific code in the compiler to write .PDB files which are needed to verify an assembly. Everything else works including the analyzers and compiler.
+The verifier is currently broken on non-Windows as the Spec# verifier depends on some Windows specific code in the compiler to write .PDB files which are needed to verify an assembly. Everything else should work cross-platform including the analyzers and compiler.
 
 ### Steps
 1. Ensure requirements are installed
