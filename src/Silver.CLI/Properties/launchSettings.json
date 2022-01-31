@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "install --info"
+      "commandLineArgs": "dis C:\\Projects\\Silver\\examples\\AddressMapper\\bin\\Debug\\netcoreapp2.1\\AddressMapper.dll"
     }
   }
 }
