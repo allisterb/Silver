@@ -7,6 +7,7 @@ public class Tools : Runtime
         var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), args.Aggregate((a, b) => a + " " + b), isNETFxTool: true);
         if (ret is not null)
         {
+            Info("Executed {0} command with args {1}.\n", "SscBooge", args.Aggregate((a, b) => a + " " + b));
             Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
             return true;
         }
@@ -27,6 +28,7 @@ public class Tools : Runtime
                );
         if (ret is not null)
         {
+            Info("Executed {0} command with args {1}.\n", "ssc", args.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "--") : a).JoinWithSpaces());
             Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
             return true;
         }
@@ -46,6 +48,7 @@ public class Tools : Runtime
                );
         if (ret is not null)
         {
+            Info("Executed {0} command with args {1}.\n", "sct", args.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "--") : a).JoinWithSpaces());
             Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
             return true;
         }

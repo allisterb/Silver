@@ -14,6 +14,10 @@ public class ExternalToolsManager : Runtime
         var specsharpSourceSettings = new ToolSourceSettings();
         ToolSourceConfig.GetSection("specsharp").Bind(specsharpSourceSettings);
         SpecSharp = new DownloadedDotNetToolManager(specsharpSourceSettings);
+
+        var sctSettings = new ToolSourceSettings();
+        ToolSourceConfig.GetSection("sct").Bind(sctSettings);
+        Sct = new DownloadedDotNetToolManager(sctSettings);
     }
     #endregion
 
@@ -25,6 +29,8 @@ public class ExternalToolsManager : Runtime
     public static ToolManager Z3 { get; private set; }
 
     public static ToolManager SpecSharp { get; private set; }
+
+    public static ToolManager Sct { get; private set; }
     #endregion
 
     #region Methods
@@ -32,6 +38,7 @@ public class ExternalToolsManager : Runtime
     {
         Z3.EnsureExists();
         SpecSharp.EnsureExists();
+        Sct.EnsureExists();
         Info("All required external tools installed.");
     }
 
