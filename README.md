@@ -4,7 +4,7 @@
 </p>
 
 ## About
-Silver is a [static analysis](https://en.wikipedia.org/wiki/Static_analysis) and [formal verification](https://en.wikipedia.org/wiki/Formal_verification) 
+Silver is a [static analysis](https://en.wikipedia.org/wiki/Static_program_analysis) and [formal verification](https://en.wikipedia.org/wiki/Formal_verification) 
 tool for Stratis smart contracts. Silver can analyze both C# source code using a Roslyn diagnostic analyzer and CIL code in a bytecode assembly 
 and can run both inside Visual Studio and on the command line.
 
