@@ -164,7 +164,11 @@ public abstract class Runtime
             else if (isNETCoreTool && System.Environment.OSVersion.Platform == PlatformID.Unix)
             {
                 p.StartInfo.FileName = "dotnet";
+<<<<<<< HEAD
                 p.StartInfo.Arguments = (File.Exists(cmdName) ? cmdName : cmdName.Replace(".exe", "")) + " " + arguments;
+=======
+                p.StartInfo.Arguments = File.Exists(cmdName) ? (cmdName : cmdName.Replace(".exe", "")) + " " + arguments;
+>>>>>>> 13baa53f02032ffb3fee43c9c7f1d89d21a07c04
             }
             else
             {
