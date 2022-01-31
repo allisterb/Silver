@@ -39,7 +39,8 @@ The verifier is currently broken on non-Windows as the Spec# verifier depends on
 2. Clone this git repo and submodules: `git clone https://github.com/allisterb/Silver.git --recurse-submodules`
 3. Run .`/build` or `build.cmd` in the root repo directory. Build should complete without errors.
 4. Run `./silver install` to download and install the external tools needed.
-5. Compile and verify one of the example projects e.g. `./silver compile examples\AddressMapper\AddressMapper.csproj --verify` and ` silver verify examples\AddressMapper\bin\Debug\netcoreapp2.1\ssc\AddressMapper.dll`
+5. Compile and analyze one of the example projects e.g. `./silver compile examples\AddressMapper\AddressMapper.csproj` and ` silver dis examples/AddressMapper/bin/Debug/netcoreapp2.1/AddressMapper.dll`
+6. On Windows you can compile and verify one of the example projects e.g. `./silver compile examples\AddressMapper\AddressMapper.csproj --verify` and `silver verify examples\AddressMapper\bin\Debug\netcoreapp2.1\ssc\AddressMapper.dll`
 
 ### Usage
 See `silver help` for the different commands and actions.
