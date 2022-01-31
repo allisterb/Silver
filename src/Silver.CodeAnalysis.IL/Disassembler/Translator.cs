@@ -9,14 +9,14 @@ public class Translator : Runtime
             var translatorErrors = new List<string>();
             var temp = Path.Combine(AssemblyLocation, Path.GetRandomFileName());
             var a = new string[] { "-i", fileName, "-o", temp };
-            var output = RunCmd(Path.Combine(AssemblyLocation, "TinyBCT.NET6"), a.Concat(args).JoinWithSpaces(), outputHandler: (sender, e) =>
+            var output = RunCmd(Path.Combine(AssemblyLocation, "TinyBCT.NET6.exe"), a.Concat(args).JoinWithSpaces(), outputHandler: (sender, e) =>
             {
                 if (e.Data is not null && (e.Data.Contains("Unhandled exception") || e.Data.ToLower().Contains("error")))
                 {
                     translatorErrors.Add(e.Data);
                     Error(e.Data);
                 }
-            });
+            }, isNETCoreTool: true);
             var o = Path.ChangeExtension(temp, "bpl");
             if (output is null || translatorErrors.Any())
             {
