@@ -70,7 +70,7 @@ class Program : Runtime
             {
                 foreach(var vi in Core.ExternalToolsManager.GetVersionInfo())
                 {
-                    Con.WriteLine(vi);
+                    Con.WriteLine(vi.Trim());
                 }
             }
         })
