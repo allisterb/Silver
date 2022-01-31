@@ -20,7 +20,10 @@ namespace Silver.CodeAnalysis.Cs
     {
         public sealed override ImmutableArray<string> FixableDiagnosticIds
         {
-            get { return ImmutableArray.Create("SC0001"); }
+            get
+            {
+                return ImmutableArray.Create(Array.Empty<string>());
+            }
         }
 
         public sealed override FixAllProvider GetFixAllProvider()
@@ -29,9 +32,11 @@ namespace Silver.CodeAnalysis.Cs
             return WellKnownFixAllProviders.BatchFixer;
         }
 
+        
         public sealed override async Task RegisterCodeFixesAsync(CodeFixContext context)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
+            
+            /*var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
 
             // TODO: Replace the following code with your own analysis, generating a CodeAction for each fix to suggest
             var diagnostic = context.Diagnostics.First();
@@ -47,9 +52,10 @@ namespace Silver.CodeAnalysis.Cs
                     createChangedSolution: c => MakeUppercaseAsync(context.Document, declaration, c),
                     equivalenceKey: nameof(CodeFixResources.CodeFixTitle)),
                 diagnostic);
+            */
         }
-
-        private async Task<Solution> MakeUppercaseAsync(Document document, TypeDeclarationSyntax typeDecl, CancellationToken cancellationToken)
+        
+            private async Task<Solution> MakeUppercaseAsync(Document document, TypeDeclarationSyntax typeDecl, CancellationToken cancellationToken)
         {
             // Compute new uppercase name.
             var identifierToken = typeDecl.Identifier;

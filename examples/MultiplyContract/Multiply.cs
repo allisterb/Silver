@@ -1,4 +1,5 @@
 ﻿using Stratis.SmartContracts;
+//using System.Collections.Generic;
 
 [Deploy]
 public class MultiplyContract : SmartContract
@@ -11,6 +12,7 @@ public class MultiplyContract : SmartContract
     //@ requires 0 <= x;
     //@ ensures result == y * x;
         {
+            
             int q = 0;
             int i = 0;
             while (i < y)
@@ -43,4 +45,5 @@ public class MultiplyContract : SmartContract
             int r = Multiply(c, d);
         }
     }
+    
 }
