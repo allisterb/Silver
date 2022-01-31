@@ -8,7 +8,12 @@ Silver is a [static analysis](https://en.wikipedia.org/wiki/Static_analysis) and
 tool for Stratis smart contracts. Silver can analyze both C# source code using a Roslyn diagnostic analyzer and CIL code in a bytecode assembly 
 and can run both inside Visual Studio and on the command line.
 
+![type not allowed from namespace](https://dm2301files.storage.live.com/y4mtdREUkjcGF6gKDRZjHDPQ1s0NU53LLENRXrni2IXbOeNblTZ4z7xMATD2woY3RdyoZvto0VlnKjW80e6tUISj2YO2t4JifQJdj0tRIwK5YDt5XIuLSWo-fBbwl6iWcF7jQGuJ0zlhvk7_uYfoflzmJSp7E612_O6O5KREX3vWTYcEJHpGO4kYHC6r6309vJx?width=1424&height=1015&cropmode=none)
+
+Silver can [validate](https://github.com/allisterb/Silver/blob/master/src/Silver.CodeAnalysis.Cs/Silver.CodeAnalysis.Cs/Validator.cs) C# code using a Roslyn diagnostic analyzer according to the same [validation policies](https://github.com/stratisproject/StratisFullNode/blob/master/src/Stratis.SmartContracts.CLR.Validation/DeterminismPolicy.cs) for types and members used by the Stratis CLR VM for smart contracts. In the screenshot above the class generates a diagnostic with the code _SC0002_ when a smart contract class does not inherit from the base **Stratis.SmartContracts.SmartContract** class.
 ![img](https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/software_photos/001/814/415/datas/original.png)
+
+
 
 ## Building
 
