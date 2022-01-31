@@ -44,7 +44,7 @@ public class Tools : Runtime
         var ret = RunCmd(
                    Path.Combine(AssemblyLocation, "sct", "Stratis.SmartContracts.Tools.Sct.exe"),
                    args.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "--") : a).JoinWithSpaces(),
-                   Path.Combine(AssemblyLocation, "sct")
+                   Path.Combine(AssemblyLocation, "sct"), isNETCoreTool: true
                );
         if (ret is not null)
         {
