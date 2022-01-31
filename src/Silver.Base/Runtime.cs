@@ -141,7 +141,7 @@ public abstract class Runtime
     public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler? errorHandler = null, 
         bool checkExists = true, bool isNETFxTool = false, bool isNETCoreTool = false)
     {
-        if (checkExists && !(File.Exists(cmdName) || File.Exists(cmdName + ".exe")))
+        if (checkExists && !(File.Exists(cmdName)))
         {
             Error("The executable {0} does not exist.", cmdName);
             return null;
@@ -164,7 +164,7 @@ public abstract class Runtime
             else if (isNETCoreTool && System.Environment.OSVersion.Platform == PlatformID.Unix)
             {
                 p.StartInfo.FileName = "dotnet";
-                p.StartInfo.Arguments = cmdName + " " + arguments;
+                p.StartInfo.Arguments = File.Exists(cmdName) ? (cmdName : cmdName.Replace(".exe", "")) + " " + arguments;
             }
             else
             {
