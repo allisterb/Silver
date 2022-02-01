@@ -1,9 +1,13 @@
-﻿using Silver.CodeAnalysis.IL;
-using Silver.Projects;
-using Silver.Drawing;
-
+﻿
 namespace Silver.CLI.Core
 {
+    using System.Drawing;
+    
+    using Silver.CodeAnalysis.IL;
+    using Silver.Projects;
+    using Silver.Drawing;
+    using Colorful;
+
     public class IL : Runtime
     {
         public static string? GetTargetAssembly(string f)
@@ -39,16 +43,35 @@ namespace Silver.CLI.Core
         }
         public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack)
         {
-            var output =  boogie ? Translator.ToBoogie(FailIfFileNotFound(fileName)) : Disassembler.Run(FailIfFileNotFound(fileName), noIL, noStack);
-            if (output is null)
+            if (boogie)
             {
-                Error("Could not disassemble {0}.", fileName);
-                return false;
+                var output = Translator.ToBoogie(FailIfFileNotFound(fileName));
+                if (output is null)
+                {
+                    Error("Could not disassemble {0} as  Boogie.", fileName);
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
             else
             {
-                Con.WriteLine(output);
-                return true;
+                if (InteractiveConsole)
+                {
+                    var output = new ColorfulConsoleSourceEmitterOutput();
+                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, true);
+                    return true;
+                }
+                else
+                {
+                    var output = new CSharpSourceEmitter.SourceEmitterOutputString();
+                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack);
+                    System.Console.WriteLine(output.Data);
+                    return true;
+                }
+                
             }
         }
         public static bool Summarize(string fileName, bool all)

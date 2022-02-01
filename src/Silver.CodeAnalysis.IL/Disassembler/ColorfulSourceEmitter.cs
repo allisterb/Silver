@@ -10,6 +10,9 @@
 // PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 //
 //-----------------------------------------------------------------------------
+
+namespace Silver.CodeAnalysis.IL;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,10 +22,10 @@ using Microsoft.Cci.MetadataReader;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.Contracts;
 
-public class MarkupSourceEmitter : CSharpSourceEmitter.SourceEmitter
+public class ColorfulSourceEmitter : SourceEmitter
 {
-
-    public MarkupSourceEmitter(ISourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader/*?*/ pdbReader, bool noIL, bool printCompilerGeneratedMembers)
+    #region Constructor
+    public ColorfulSourceEmitter(IColorfulSourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader/*?*/ pdbReader, bool noIL, bool printCompilerGeneratedMembers)
       : base(sourceEmitterOutput)
     {
         this.host = host;
@@ -30,11 +33,9 @@ public class MarkupSourceEmitter : CSharpSourceEmitter.SourceEmitter
         this.noIL = noIL;
         this.printCompilerGeneratedMembers = printCompilerGeneratedMembers;
     }
+    #endregion
 
-    IMetadataHost host;
-    PdbReader/*?*/ pdbReader;
-    bool noIL;
-
+    #region Overriden members
     public override void Traverse(IMethodBody methodBody)
     {
         PrintToken(CSharpToken.LeftCurly);
@@ -80,6 +81,31 @@ public class MarkupSourceEmitter : CSharpSourceEmitter.SourceEmitter
         PrintToken(CSharpToken.RightCurly);
     }
 
+    public override bool PrintToken(CSharpToken token)
+    {
+        switch (token)
+        {
+            case CSharpToken.Class:
+            case CSharpToken.Struct:
+                
+                base.PrintToken(token);
+                
+                break;
+            default:
+                base.PrintToken(token);
+                break;
+        }
+        
+        return true;
+    }
+
+    public override void PrintIdentifier(IName name)
+    {
+        base.PrintIdentifier(name);
+    }
+    #endregion
+
+    #region Methods
     private void PrintScopes(IMethodBody methodBody)
     {
         foreach (ILocalScope scope in this.pdbReader.GetLocalScopes(methodBody))
@@ -168,4 +194,11 @@ public class MarkupSourceEmitter : CSharpSourceEmitter.SourceEmitter
         sourceEmitterOutput.Write(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true);
         sourceEmitterOutput.WriteLine(psloc.Source);
     }
+    #endregion
+
+    #region Fields
+    IMetadataHost host;
+    PdbReader/*?*/ pdbReader;
+    bool noIL;
+    #endregion
 }

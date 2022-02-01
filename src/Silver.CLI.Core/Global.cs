@@ -12,9 +12,9 @@ global using System.Text.RegularExpressions;
 global using System.Threading;
 global using System.Threading.Tasks;
 
-global using static Silver.CollectionUtils;
-
 global using Spectre.Console;
 global using Con = Spectre.Console.AnsiConsole;
-global using ColorCon = Colorful.Console;
+global using CC = Colorful.Console;
+
+global using static Silver.CollectionUtils;
 global using static Silver.CLI.Core.Utils;
