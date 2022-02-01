@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
 
+using Stratis.SmartContracts;
 namespace Silver.CodeAnalysis.Cs
 {
     public class Validator
@@ -31,6 +32,7 @@ namespace Silver.CodeAnalysis.Cs
             if (!WhitelistedNamespaces.Contains(ns.ToFullString()))
             {
                 return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
+                //var n = typeof(int[]).getM
             }
             else
             {
@@ -147,7 +149,6 @@ namespace Silver.CodeAnalysis.Cs
         internal static ImmutableArray<DiagnosticDescriptor> Errors;
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
-
         public static Type[] PrimitiveTypes =
         {
             typeof(void),
@@ -160,6 +161,8 @@ namespace Silver.CodeAnalysis.Cs
             typeof(Int64),
             typeof(UInt64),
             typeof(String),
+            typeof(UInt128),
+            typeof(UInt256),
             typeof(Byte[]),
             typeof(SByte[]),
             typeof(Boolean[]),
@@ -172,24 +175,32 @@ namespace Silver.CodeAnalysis.Cs
             typeof(UInt64[]),
             typeof(String[])
         };
-        public static string[] PrimitiveTypeNames = (new[] { "Stratis.SmartContracts.UInt128", "Stratis.SmartContracts.UInt256" }).Concat(PrimitiveTypes.Select(t => t.Name)).ToArray();
+        public static string[] PrimitiveTypeNames =PrimitiveTypes.Select(t => t.Name).ToArray();
 
-        public static string[] SmartContractTypeNames =
+        public static Type[] SmartContractTypes =
         {
-            "Address",
-            "Block",
-            "IBlock",
-            "IContractLogger",
-            "ISmartContractState",
-            "ICreateResult",
-            "IMessage",
-            "IPersistentState",
-            "ITransferResult",
-            "Message",
-            "SmartContract",
+            typeof(Address),
+            typeof(Block),
+            typeof(IBlock),
+            typeof(IContractLogger),
+            typeof(ICreateResult),
+            typeof(IMessage),
+            typeof(IPersistentState),
+            typeof(ISmartContractState),
+            typeof(ITransferResult),
+            typeof(Message),
+            typeof(SmartContract)
         };
 
-        public static string[] WhitelistedTypeNames = PrimitiveTypeNames.Concat(SmartContractTypeNames.Select(t => "Stratis.SmartContracts." + t)).ToArray();
+        public static Type[] SmartContractAttributeTypes =
+        {
+            typeof(DeployAttribute),
+            typeof(IndexAttribute)
+        };
+
+        
+
+        public static string[] WhitelistedTypeNames = PrimitiveTypes.Concat(SmartContractTypes).Select(t => t.Name).ToArray();
 
         public static Dictionary<string, string[]> WhiteListedMemberNames = new Dictionary<string, string[]>
         {

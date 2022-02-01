@@ -63,6 +63,16 @@ public class CallGraphOptions : AnalyzeOptions
     [Value(2, Required = false, HelpText = "The format of the output file. Can be xml, svg, dot, dgml, png, or bmp.")]
     public string OutputFormat { get; set; } = String.Empty;
 }
+
+[Verb("control-flow", HelpText = "Get the control-flow graphs for Stratis smart contracts in a .NET project or bytecode assembly.")]
+public class ControlFlowGraphOptions : AnalyzeOptions
+{
+    [Value(1, Required = true, HelpText = "The output file for the operation. Format will be determined by the file extension or if specified by --format.")]
+    public string OutputFile { get; set; } = String.Empty;
+
+    [Value(2, Required = false, HelpText = "The format of the output file. Can be xml, svg, dot, dgml, png, or bmp.")]
+    public string OutputFormat { get; set; } = String.Empty;
+}
 #endregion
 
 [Verb("compile", HelpText = "Compile a C# source code project or files.")]

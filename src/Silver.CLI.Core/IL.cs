@@ -91,7 +91,21 @@ namespace Silver.CLI.Core
             return true;
         }
             
-
+        public static bool PrintControlFlowGraph(string fileName, string outputFileName, string format, bool all)
+        {
+            if (!Enum.TryParse<GraphFormat>(format.ToUpper(), out var graphFormat))
+            {
+                Error("Invalid graph format: {0}.", format);
+                return false;
+            }
+            var analyzer = GetAnalyzer(fileName, all);
+            if (analyzer is null) return false;
+            analyzer.GetControlFlowGraph();
+            return true;
+            //if (cg is null) return false;
+            //Graph.Draw(cg, outputFileName, graphFormat, rotateBy: Math.PI / 2);
+            //return true;
+        }
         internal static Analyzer? GetAnalyzer(string fileName, bool all)
         {
             var a = GetTargetAssembly(FailIfFileNotFound(fileName));

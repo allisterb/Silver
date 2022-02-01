@@ -57,7 +57,7 @@ class Program : Runtime
         #region Parse options
         ParserResult<object> result = new Parser().ParseArguments<Options, CompileOptions, DisassemblerOptions, VerifyOptions, AssemblyOptions,
             AnalyzeOptions, 
-            SummarizeOptions, CallGraphOptions,
+            SummarizeOptions, CallGraphOptions, ControlFlowGraphOptions,
             BoogieOptions, SscOptions, SctOptions, InstallOptions>(args);
         result.WithParsed<Options>(o =>
         {
@@ -132,6 +132,13 @@ class Program : Runtime
               ExitIfFileNotFound(o.InputFile);
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
               ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.All);
+
+          })
+          .WithParsed<ControlFlowGraphOptions>(o =>
+          {
+              ExitIfFileNotFound(o.InputFile);
+              if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
+              ILCmd.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.All);
 
           })
          .WithParsed<CompileOptions>(o =>
@@ -301,7 +308,7 @@ class Program : Runtime
     { 
         typeof(Options), typeof(CompileOptions), typeof(DisassemblerOptions),
         typeof(AnalyzeOptions), 
-        typeof(SummarizeOptions), typeof(CallGraphOptions),
+        typeof(SummarizeOptions), typeof(CallGraphOptions), typeof(ControlFlowGraphOptions),
         typeof(VerifyOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(SctOptions), typeof(InstallOptions)
 
     };

@@ -35,5 +35,11 @@ internal class ILCmd : Command
         ExitIfFileNotExists(fileName);
         IL.PrintCallGraphs(fileName, outputFileName, format, all);
     }
+
+    internal static void PrintControlFlowGraph(string fileName, string outputFileName, string format, bool all)
+    {
+        ExitIfFileNotExists(fileName);
+        IL.PrintControlFlowGraph(fileName, outputFileName, format, all);
+    }
 }
 

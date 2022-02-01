@@ -16,12 +16,13 @@ public partial class Analyzer : Runtime
     #region Constructors
     public Analyzer(string fileName, bool all = false, AnalyzerState? state = null)
 	{
-		FileName = fileName;
+		AssemblyFile = new FileInfo(fileName);
 		Host = new PeReader.DefaultHost();
 		Module = this.Host.LoadUnitFrom(fileName) as IModule;
 		State = state ?? new();
 		if (Module is null || Module == Dummy.Module || Module == Dummy.Assembly)
 		{
+			moduleTypeDefinitions = Array.Empty<INamedTypeDefinition>();
 			Error("The file {0} is not a valid CLR module or assembly.", fileName);
 			return;
 		}
@@ -32,12 +33,19 @@ public partial class Analyzer : Runtime
 		{
 			PdbReader = new PdbReader(fileName, pdbFileName, this.Host, true);
 		}
+		moduleTypeDefinitions = from a in Host.LoadedUnits.OfType<IModule>()
+									from t in a.GetAllTypes()
+									select t;
+			//from m in t.Members.OfType<IMethodDefinition>()
+			//where m.Body != null
+			//select m;
 		Initialized = true;
 	}
     #endregion
 
     #region Properties
-    public string FileName { get; init; }
+    public FileInfo AssemblyFile { get; init; }
+	
 	public IMetadataHost Host { get; init; }
 	public IModule? Module { get; init; }
 	public PdbReader? PdbReader { get; init; }
@@ -55,7 +63,8 @@ public partial class Analyzer : Runtime
 
 	public Graph? GetCallGraph()
     {
-		using var op = Begin("Creating call graph for methods in assembly {0}", FileName);
+		FailIfNotInitialized();
+		using var op = Begin("Creating call graph for methods in assembly {0}", AssemblyFile.Name);
 		var cha = new ClassHierarchyCallGraphAnalysis(Host);
 		cha.OnNewMethodFound = (m =>
 		{
@@ -104,22 +113,20 @@ public partial class Analyzer : Runtime
 		}
 		return g;
     }
-	public Dictionary<IMethodDefinition, ControlFlowGraph> GetControlFlow()
+	public void GetControlFlowGraph()
 	{
 		FailIfNotInitialized();
-		State.Add("cfg", new Dictionary<IMethodDefinition, ControlFlowGraph>());
-		System.Action<IMethodDefinition, AnalyzerState> analyzer = (m, state) =>
-		{
-			var container = state.Get<Dictionary<IMethodDefinition, ControlFlowGraph>>("cfg");
-			var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
+		using var op = Begin("Creating control-flow graph for methods in assembly {0}", AssemblyFile.Name);
+		var methods = CollectMethods();
+		foreach(var method in methods)
+        {
+			var disassembler = new Backend.Transformations.Disassembler(Host, method, PdbReader);
 			var methodBody = disassembler.Execute();
 			var cfg = new ControlFlowAnalysis(methodBody).GenerateNormalControlFlow();
-			container.Add(m, cfg);
-		};
-		var visitor = new MethodVisitor(analyzer, State);
-		visitor.Traverse(Module);
-        return State.Get<Dictionary<IMethodDefinition, ControlFlowGraph>>("cfg");
-
+			File.WriteAllText(Path.Combine(AssemblyFile.DirectoryName!, method.Name.Value), SerializeCFGToDGML(cfg));
+			Info("Wrote CFG for method {0}.", method.Name);
+			op.Complete();
+		}
     }
     internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
@@ -129,29 +136,29 @@ public partial class Analyzer : Runtime
 		return visitor.state;
 	}
 
-	internal List<IMethodDefinition> CollectMethods()
+	internal IEnumerable<IMethodDefinition> CollectMethods()
     {
 		if (State.ContainsKey("methods"))
         {
-			return State.Get<List<IMethodDefinition>>("methods");
+			Debug("Methods are already collected, reusing...");
+			return State.Get<IEnumerable<IMethodDefinition>>("methods");
         }
-
-		System.Action<IMethodDefinition, AnalyzerState> analyzer = (m, state) =>
-		{
-			var container = state.Get<List<IMethodDefinition>>("methods");
-			container.Add(m);
-		};
-		using var op = Begin("Collecting methods");
-		State.Add("methods", new List<IMethodDefinition>());
-		var visitor = new MethodVisitor(analyzer, State);
-		visitor.Traverse(Module);
-		op.Complete();
-		return visitor.state.Get<List<IMethodDefinition>>("methods");
+		else
+        {
+			using var op = Begin("Collecting methods");
+			var methods = from t in moduleTypeDefinitions
+						  from m in t.Members.AsParallel().OfType<IMethodDefinition>()
+						  where m.Body is not null
+						  select m;
+			State.Add("methods", methods);
+			op.Complete();
+			return methods;
+		}
 	}
 
-	public static void SerializeCFGToDot(ControlFlowGraph g) => Backend.Serialization.DOTSerializer.Serialize(g);
+	public static string SerializeCFGToDot(ControlFlowGraph g) => Backend.Serialization.DOTSerializer.Serialize(g);
 
-	public static void SerializeCFGToDGML(ControlFlowGraph g) => Backend.Serialization.DOTSerializer.Serialize(g);
+	public static string SerializeCFGToDGML(ControlFlowGraph g) => Backend.Serialization.DGMLSerializer.Serialize(g);
 
 	public static void Test(string fileName)
     {
@@ -217,6 +224,10 @@ public partial class Analyzer : Runtime
 		analyzer.AnalyzeMethods(f);
 		Info("State:{0}", analyzer.State.Keys.JoinWithSpaces());
 	}
-    #endregion
+	#endregion
+
+	#region Fields
+	internal IEnumerable<INamedTypeDefinition> moduleTypeDefinitions;
+	#endregion
 }
 
