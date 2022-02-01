@@ -19,7 +19,6 @@ public class Disassembler : Runtime
         }
         string pdbFile = Path.ChangeExtension(module.Location, "pdb");       
         using var pdbReader = new PdbReader(fileName, pdbFile, host, true);
-        
         var options = DecompilerOptions.AnonymousDelegates | DecompilerOptions.Iterators | DecompilerOptions.Loops;
         if (noStack)
         {

@@ -124,21 +124,21 @@ class Program : Runtime
         .WithParsed<SummarizeOptions>(o =>
         {
             ExitIfFileNotFound(o.InputFile);
-            ILCmd.Summarize(o.InputFile, o.All);
+            ILCmd.Summarize(o.InputFile, o.AllTypes);
 
         })
           .WithParsed<CallGraphOptions>(o =>
           {
               ExitIfFileNotFound(o.InputFile);
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
-              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.All);
+              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllTypes);
 
           })
           .WithParsed<ControlFlowGraphOptions>(o =>
           {
               ExitIfFileNotFound(o.InputFile);
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
-              ILCmd.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.All);
+              ILCmd.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllTypes);
 
           })
          .WithParsed<CompileOptions>(o =>

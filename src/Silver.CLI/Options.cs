@@ -44,8 +44,8 @@ public class AnalyzeOptions : Options
     [Value(0, Required = true, HelpText = "The file to analyze.")]
     public string InputFile { get; set; } = String.Empty;
 
-    [Option('a', "all", Required = false, HelpText = "Analyze all classes in an assembly, not only contract classes.")]
-    public bool All { get; set; }
+    [Option('a', "all", Required = false, HelpText = "Analyze all types in an assembly, not only smart contract types.")]
+    public bool AllTypes { get; set; }
 }
 #endregion
 
@@ -78,22 +78,22 @@ public class ControlFlowGraphOptions : AnalyzeOptions
 [Verb("compile", HelpText = "Compile a C# source code project or files.")]
 public class CompileOptions : Options
 {
-    [Value(0, Required = true, HelpText = "The project file or source files to compile.")]
+    [Value(0, Required = true, HelpText = "The C# source files or project file to compile.")]
     public IEnumerable<string> Files { get; set; } = Array.Empty<string>();
-
-    [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file after compilation.")]
-    public bool Verify { get; set; }
 
     [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified source files or project file.")]
     public string Property { get; set; } = string.Empty;
 
-    [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line for the specified source files project file.")]
+    [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line that will be invoked for the specified source files project file.")]
     public bool CommandLine { get; set; }
 
-    [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the build configuration for the source files or project. Defaults to 'Debug'.")]
+    [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the build configuration for compiling the source files or project file. Defaults to 'Debug'.")]
     public string BuildConfig { get; set; } = string.Empty;
 
-    [Option("ssc", Required = false, HelpText = "Use the SSC compiler")]
+    [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file after compilation.")]
+    public bool Verify { get; set; }
+
+    [Option("ssc", Required = false, HelpText = "Use the SSC compiler instead of MSBuild.")]
     public bool Ssc { get; set; }
 }
 
@@ -117,14 +117,23 @@ public class AssemblyOptions : Options
 [Verb("dis", HelpText = "Disassemble a .NET bytecode assembly.")]
 public class DisassemblerOptions : Options
 {
-    [Value(0, Required = true, HelpText = "The assembly file (usually *.dll or *.exe) to disassemble.")]
+    [Value(0, Required = true, HelpText = "The .NET assembly file (usually *.dll or *.exe) to disassemble.")]
     public string File { get; set; } = String.Empty;
 
-    [Option('n', "noil", Required = false, HelpText = "Emit only C# code i.e. decompile the assembly.")]
+    [Option("nocs", Required = false, HelpText = "Emit only IL code.")]
+    public bool NoCs { get; set; }
+
+    [Option("noil", Required = false, HelpText = "Emit only C# code.")]
     public bool NoIL { get; set; }
 
     [Option('k', "stack", Required = false, HelpText = "Emit code that retains a stack.")]
     public bool Stack { get; set; }
+
+    [Option('c', "class", Required = false, HelpText = "Only disassemble methods belonging to classes matching this name pattern.")]
+    public bool FilterClasses { get; set; }
+
+    [Option('m', "method", Required = false, HelpText = "Only disassemble methods matching this name pattern.")]
+    public bool FilterMethods { get; set; }
 
     [Option('b', "boogie", Required = false, HelpText = "Translate the assembly bytecode to Boogie.")]
     public bool Boogie { get; set; }
