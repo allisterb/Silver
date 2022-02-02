@@ -30,18 +30,31 @@ using Microsoft.Cci.Contracts;
 public class ColorfulSourceEmitter : SourceEmitter
 {
     #region Constructor
-    public ColorfulSourceEmitter(IColorfulSourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader/*?*/ pdbReader, bool noIL, bool printCompilerGeneratedMembers)
+    public ColorfulSourceEmitter(IColorfulSourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader? pdbReader, bool printCompilerGeneratedMembers, bool noIL, bool all = false)
       : base(sourceEmitterOutput)
     {
         this.host = host;
         this.pdbReader = pdbReader;
         this.noIL = noIL;
+        this.all = all;
         this.printCompilerGeneratedMembers = printCompilerGeneratedMembers;
         this.csourceEmitterOutput = sourceEmitterOutput;
     }
     #endregion
 
     #region Overriden members
+    public override void TraverseChildren(ITypeDefinition typeDefinition)
+    {
+        if (typeDefinition.IsSmartContract() || all)
+        {
+            base.TraverseChildren(typeDefinition);
+        }
+        else
+        {
+            Runtime.Debug("Not traversing non-contract type {0}.", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
+        }
+    }
+    
     public override void Traverse(IMethodBody methodBody)
     {
         PrintToken(CSharpToken.LeftCurly);
@@ -237,7 +250,7 @@ public class ColorfulSourceEmitter : SourceEmitter
                 break;
             #endregion
 
-            #region Directives
+            #region Primitives
             case CSharpToken.Boolean:
                 csourceEmitterOutput.Write("boolean ", Color.DarkBlue);
                 break;
@@ -281,37 +294,37 @@ public class ColorfulSourceEmitter : SourceEmitter
                 csourceEmitterOutput.Write("get", Color.DarkBlue);
                 break;
             case CSharpToken.Set:
-                csourceEmitterOutput.Write("set");
+                csourceEmitterOutput.Write("set", Color.DarkBlue);
                 break;
             case CSharpToken.Add:
-                csourceEmitterOutput.Write("add");
+                csourceEmitterOutput.Write("add", Color.DarkBlue);
                 break;
             case CSharpToken.Remove:
-                csourceEmitterOutput.Write("remove");
+                csourceEmitterOutput.Write("remove", Color.DarkBlue);
                 break;
             case CSharpToken.Return:
-                csourceEmitterOutput.Write("return");
+                csourceEmitterOutput.Write("return", Color.DarkBlue);
                 break;
             case CSharpToken.This:
-                csourceEmitterOutput.Write("this");
+                csourceEmitterOutput.Write("this", Color.DarkBlue);
                 break;
             case CSharpToken.Throw:
-                csourceEmitterOutput.Write("throw");
+                csourceEmitterOutput.Write("throw", Color.DarkBlue);
                 break;
             case CSharpToken.Try:
-                csourceEmitterOutput.Write("try");
+                csourceEmitterOutput.Write("try", Color.DarkBlue);
                 break;
             case CSharpToken.YieldReturn:
-                csourceEmitterOutput.Write("yield return");
+                csourceEmitterOutput.Write("yield return", Color.DarkBlue);
                 break;
             case CSharpToken.YieldBreak:
-                csourceEmitterOutput.Write("yield break");
+                csourceEmitterOutput.Write("yield break", Color.DarkBlue);
                 break;
             case CSharpToken.TypeOf:
-                csourceEmitterOutput.Write("typeof");
+                csourceEmitterOutput.Write("typeof", Color.DarkBlue);
                 break;
             default:
-                csourceEmitterOutput.Write("Unknown-token");
+                csourceEmitterOutput.Write("Unknown-token", Color.DarkBlue);
                 break;
             #endregion
 
@@ -337,23 +350,29 @@ public class ColorfulSourceEmitter : SourceEmitter
           NameFormattingOptions.ContractNullable | NameFormattingOptions.UseTypeKeywords |
           NameFormattingOptions.TypeParameters | NameFormattingOptions.EmptyTypeParameterList |
           NameFormattingOptions.OmitCustomModifiers);
-        csourceEmitterOutput.Write(typeName, Color.Green);
+        csourceEmitterOutput.Write(typeName, Color.Cyan);
     }
     private void PrintScopes(IMethodBody methodBody)
     {
-        foreach (ILocalScope scope in this.pdbReader.GetLocalScopes(methodBody))
-            PrintScopes(scope);
+        if (this.pdbReader is not null)
+        {
+            foreach (ILocalScope scope in this.pdbReader.GetLocalScopes(methodBody))
+                PrintScopes(scope);
+        }
     }
 
     private void PrintScopes(ILocalScope scope)
     {
-        sourceEmitterOutput.Write(string.Format("IL_{0} ... IL_{1} ", scope.Offset.ToString("x4"), (scope.Offset + scope.Length).ToString("x4")), true);
-        sourceEmitterOutput.WriteLine("{");
-        sourceEmitterOutput.IncreaseIndent();
-        PrintConstants(this.pdbReader.GetConstantsInScope(scope));
-        PrintLocals(this.pdbReader.GetVariablesInScope(scope));
-        sourceEmitterOutput.DecreaseIndent();
-        sourceEmitterOutput.WriteLine("}", true);
+        if (this.pdbReader is not null)
+        {
+            sourceEmitterOutput.Write(string.Format("IL_{0} ... IL_{1} ", scope.Offset.ToString("x4"), (scope.Offset + scope.Length).ToString("x4")), true);
+            sourceEmitterOutput.WriteLine("{");
+            sourceEmitterOutput.IncreaseIndent();
+            PrintConstants(this.pdbReader.GetConstantsInScope(scope));
+            PrintLocals(this.pdbReader.GetVariablesInScope(scope));
+            sourceEmitterOutput.DecreaseIndent();
+            sourceEmitterOutput.WriteLine("}", true);
+        }
     }
 
     private void PrintConstants(IEnumerable<ILocalDefinition> locals)
@@ -493,8 +512,9 @@ public class ColorfulSourceEmitter : SourceEmitter
 
     #region Fields
     IMetadataHost host;
-    PdbReader/*?*/ pdbReader;
+    PdbReader? pdbReader;
     bool noIL;
+    bool all;
     IColorfulSourceEmitterOutput csourceEmitterOutput;
     #endregion
 }

@@ -33,7 +33,7 @@ public class Disassembler : Runtime
         }
         else
         {
-            var sourceEmitter = new ColorfulSourceEmitter((IColorfulSourceEmitterOutput) output, host, pdbReader, noIL, printCompilerGeneratedMembers: true);
+            var sourceEmitter = new ColorfulSourceEmitter((IColorfulSourceEmitterOutput) output, host, pdbReader, true, noIL);
             sourceEmitter.Traverse(module);
         }
     }
