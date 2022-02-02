@@ -54,9 +54,10 @@ public class ColorfulSourceEmitter : SourceEmitter
             Runtime.Debug("Not traversing non-contract type {0}.", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
         }
     }
-    
+
     public override void Traverse(IMethodBody methodBody)
     {
+ 
         PrintToken(CSharpToken.LeftCurly);
         ISourceMethodBody? sourceMethodBody = (ISourceMethodBody)methodBody;
         if (sourceMethodBody == null)
@@ -103,6 +104,92 @@ public class ColorfulSourceEmitter : SourceEmitter
     #region Methods
 
     #region Printers
+    private void PrintOperation(IOperation operation)
+    {
+        csourceEmitterOutput.Write("IL_" + operation.Offset.ToString("x4") + ": ", true, Color.Blue);
+        csourceEmitterOutput.Write(operation.OperationCode.ToString(), Color.Magenta);
+        if (operation is ILocalDefinition ld)
+            csourceEmitterOutput.Write(" " + this.GetLocalName(ld), Color.Red);
+        else if (operation.Value is string)
+            csourceEmitterOutput.Write(" \"" + operation.Value + "\"", Color.Brown);
+        else if (operation.Value is not null)
+        {
+            if (OperationCode.Br_S <= operation.OperationCode && operation.OperationCode <= OperationCode.Blt_Un)
+                sourceEmitterOutput.Write(" IL_" + ((uint)operation.Value).ToString("x4"));
+            else if (operation.OperationCode == OperationCode.Switch)
+            {
+                foreach (uint i in (uint[])operation.Value)
+                    sourceEmitterOutput.Write(" IL_" + i.ToString("x4"));
+            }
+            else if (operation.Value is Microsoft.Cci.MutableCodeModel.MethodDefinition md)
+            {
+                string mdt = md.Name.Value.StartsWith("get_") || md.Name.Value.StartsWith("set_") ? (md.Name.Value.StartsWith("get_") ? "get" : "set") : "method";
+                csourceEmitterOutput.Write($" [{mdt}] ", Color.Cyan);
+                csourceEmitterOutput.Write(md.Type.ToString() + " ", Color.Cyan);
+                csourceEmitterOutput.Write($"{md.ContainingTypeDefinition.GetName()}.", Color.Pink);
+                csourceEmitterOutput.Write(md.Name.Value.Replace("get_", "").Replace("set_", ""));
+                if (md.Parameters is not null && md.Parameters.Any())
+                {
+                    csourceEmitterOutput.Write("(" + md.Parameters.Select(p => p.Type.ToString() ?? "").JoinWith(",") + ")", Color.LimeGreen);
+                }
+                else
+                {
+                    csourceEmitterOutput.Write("()");
+                }
+            }
+            else if (operation.Value is Microsoft.Cci.MutableCodeModel.MethodReference mr)
+            {
+                string mrt = mr.Name.Value.StartsWith("get_") || mr.Name.Value.StartsWith("set_") ? (mr.Name.Value.StartsWith("get_") ? "get" : "set") : "method";
+                csourceEmitterOutput.Write($" [{mrt}] ", Color.Cyan);
+                csourceEmitterOutput.Write(mr.Type.ToString() + " ", Color.Cyan);
+                csourceEmitterOutput.Write($"{mr.ContainingType.ToString()}.", Color.Pink);
+                csourceEmitterOutput.Write(mr.Name.Value.Replace("get_", "").Replace("set_", ""));
+                if (mr.Parameters is not null && mr.Parameters.Any())
+                {
+                    csourceEmitterOutput.Write("(" + mr.Parameters.Select(p => p.Type.ToString() ?? "").JoinWith(", ") + ")", Color.LimeGreen);
+                }
+                else
+                {
+                    csourceEmitterOutput.Write("()");
+                }
+            }
+            else if (operation.Value is Microsoft.Cci.MutableCodeModel.FieldDefinition fd)
+            {
+                csourceEmitterOutput.Write(" [field] ", Color.Cyan);
+                csourceEmitterOutput.Write(fd.Type.ToString() + " ", Color.Cyan);
+                csourceEmitterOutput.Write(fd.ContainingTypeDefinition.GetName() + ".");
+                csourceEmitterOutput.Write(fd.Name.ToString());
+
+            }
+            else if (operation.Value is Microsoft.Cci.MutableCodeModel.FieldReference fr)
+            {
+                csourceEmitterOutput.Write(" [field] ", Color.Cyan);
+                csourceEmitterOutput.Write(fr.Type.ToString() + " ", Color.Cyan);
+                csourceEmitterOutput.Write(fr.ContainingType.ToString() + ".", Color.Pink);
+                csourceEmitterOutput.Write(fr.Name.ToString());
+
+            }
+            else if (operation.Value is Microsoft.Cci.MutableCodeModel.ParameterDefinition pd)
+            {
+                csourceEmitterOutput.Write(" [param] ", Color.Cyan);
+                csourceEmitterOutput.Write(pd.Type.ToString() + " ", Color.Pink);
+                csourceEmitterOutput.Write(pd.Name.ToString());
+
+            }
+            else if (operation.Value is Microsoft.Cci.MutableCodeModel.LocalDefinition _ld)
+            {
+                csourceEmitterOutput.Write(" [var] ", Color.Cyan);
+                csourceEmitterOutput.Write(_ld.Type.ToString() + " ", Color.Cyan);
+                csourceEmitterOutput.Write(_ld.Name.ToString());
+
+            }
+            else
+            {
+                csourceEmitterOutput.Write(operation.Value.GetType().ToString() + " " + operation.Value);
+            }
+        }
+        sourceEmitterOutput.WriteLine("", false);
+    }
     public override bool PrintToken(CSharpToken token)
     {
         switch (token)
@@ -174,79 +261,79 @@ public class ColorfulSourceEmitter : SourceEmitter
 
             #region Keywords
             case CSharpToken.Public:
-                csourceEmitterOutput.Write("public ", Color.Pink);
+                csourceEmitterOutput.Write("public ", Color.DarkBlue);
                 break;
             case CSharpToken.Private:
-                csourceEmitterOutput.Write("private ", Color.Pink);
+                csourceEmitterOutput.Write("private ", Color.DarkBlue);
                 break;
             case CSharpToken.Internal:
                 csourceEmitterOutput.Write("internal ");
                 break;
             case CSharpToken.Protected:
-                csourceEmitterOutput.Write("protected ", Color.Pink);
+                csourceEmitterOutput.Write("protected ", Color.DarkBlue);
                 break;
             case CSharpToken.Static:
-                csourceEmitterOutput.Write("static ", Color.Pink);
+                csourceEmitterOutput.Write("static ", Color.DarkBlue);
                 break;
             case CSharpToken.Abstract:
-                csourceEmitterOutput.Write("abstract ", Color.Pink);
+                csourceEmitterOutput.Write("abstract ", Color.DarkBlue);
                 break;
             case CSharpToken.Extern:
-                csourceEmitterOutput.Write("extern ", Color.Pink);
+                csourceEmitterOutput.Write("extern ", Color.DarkBlue);
                 break;
             case CSharpToken.Unsafe:
-                csourceEmitterOutput.Write("unsafe ", Color.Pink);
+                csourceEmitterOutput.Write("unsafe ", Color.DarkBlue);
                 break;
             case CSharpToken.ReadOnly:
-                csourceEmitterOutput.Write("readonly ", Color.Pink);
+                csourceEmitterOutput.Write("readonly ", Color.DarkBlue);
                 break;
             case CSharpToken.Fixed:
-                csourceEmitterOutput.Write("fixed ", Color.Pink);
+                csourceEmitterOutput.Write("fixed ", Color.DarkBlue);
                 break;
             case CSharpToken.New:
-                csourceEmitterOutput.Write("new ", Color.Pink);
+                csourceEmitterOutput.Write("new ", Color.DarkBlue);
                 break;
             case CSharpToken.Sealed:
-                csourceEmitterOutput.Write("sealed ", Color.Pink);
+                csourceEmitterOutput.Write("sealed ", Color.DarkBlue);
                 break;
             case CSharpToken.Virtual:
-                csourceEmitterOutput.Write("virtual ", Color.Pink);
+                csourceEmitterOutput.Write("virtual ", Color.DarkBlue);
                 break;
             case CSharpToken.Override:
-                csourceEmitterOutput.Write("override ", Color.Pink);
+                csourceEmitterOutput.Write("override ", Color.DarkBlue);
                 break;
             case CSharpToken.Class:
-                csourceEmitterOutput.Write("class ", Color.Pink);
+                csourceEmitterOutput.Write("class ", Color.DarkBlue);
                 break;
             case CSharpToken.Interface:
-                csourceEmitterOutput.Write("interface ", Color.Pink);
+                csourceEmitterOutput.Write("interface ", Color.DarkBlue);
                 break;
             case CSharpToken.Struct:
-                csourceEmitterOutput.Write("struct ", Color.Pink);
+                csourceEmitterOutput.Write("struct ", Color.DarkBlue);
                 break;
             case CSharpToken.Enum:
-                csourceEmitterOutput.Write("enum ", Color.Pink);
+                csourceEmitterOutput.Write("enum ", Color.DarkBlue);
                 break;
             case CSharpToken.Delegate:
-                csourceEmitterOutput.Write("delegate ", Color.Pink);
+                csourceEmitterOutput.Write("delegate ", Color.DarkBlue);
                 break;
             case CSharpToken.Event:
-                csourceEmitterOutput.Write("event ", Color.Pink);
+                csourceEmitterOutput.Write("event ", Color.DarkBlue);
                 break;
             case CSharpToken.Namespace:
-                csourceEmitterOutput.Write("namespace ", Color.Pink);
+                csourceEmitterOutput.Write("namespace ", Color.DarkBlue);
                 break;
             case CSharpToken.Null:
-                csourceEmitterOutput.Write("null", Color.Pink);
+                csourceEmitterOutput.Write("null", Color.DarkBlue);
                 break;
             case CSharpToken.In:
-                csourceEmitterOutput.Write("in ", Color.Pink);
+                csourceEmitterOutput.Write("in ", Color.DarkBlue);
                 break;
             case CSharpToken.Out:
-                csourceEmitterOutput.Write("out ", Color.Pink);
+                csourceEmitterOutput.Write("out ", Color.DarkBlue);
                 break;
             case CSharpToken.Ref:
-                csourceEmitterOutput.Write("ref ", Color.Pink);
+                csourceEmitterOutput.Write("ref ", Color.DarkBlue);
                 break;
             #endregion
 
@@ -400,89 +487,7 @@ public class ColorfulSourceEmitter : SourceEmitter
         this.sourceEmitterOutput.Write(this.GetLocalName(local));
     }
 
-    private void PrintOperation(IOperation operation)
-    {
-        csourceEmitterOutput.Write("IL_" + operation.Offset.ToString("x4") + ": ", true, Color.Blue);
-        csourceEmitterOutput.Write(operation.OperationCode.ToString(), Color.Magenta);
-        if (operation is ILocalDefinition ld)
-            csourceEmitterOutput.Write(" " + this.GetLocalName(ld), Color.Red);
-        else if (operation.Value is string)
-            csourceEmitterOutput.Write(" \"" + operation.Value + "\"", Color.Brown);
-        else if (operation.Value is not null)
-        {
-            if (OperationCode.Br_S <= operation.OperationCode && operation.OperationCode <= OperationCode.Blt_Un)
-                sourceEmitterOutput.Write(" IL_" + ((uint)operation.Value).ToString("x4"));
-            else if (operation.OperationCode == OperationCode.Switch)
-            {
-                foreach (uint i in (uint[])operation.Value)
-                    sourceEmitterOutput.Write(" IL_" + i.ToString("x4"));
-            }
-            else if (operation.Value is Microsoft.Cci.MutableCodeModel.MethodDefinition md)
-            {
-                string mdt = md.Name.Value.StartsWith("get_") || md.Name.Value.StartsWith("set_") ? (md.Name.Value.StartsWith("get_") ? "get" : "set") : "method";
-                csourceEmitterOutput.Write($" [{mdt}] ", Color.Cyan);
-                csourceEmitterOutput.Write(md.Type.ToString() + " ", Color.Cyan);
-                csourceEmitterOutput.Write($"{md.ContainingTypeDefinition.GetName()}.", Color.Pink);
-                csourceEmitterOutput.Write(md.Name.Value.Replace("get_", "").Replace("set_", ""));
-                if (md.Parameters is not null && md.Parameters.Any())
-                {
-                    csourceEmitterOutput.Write("(" + md.Parameters.Select(p => p.Type.ToString() ?? "").JoinWith(",") + ")", Color.LimeGreen);
-                }
-                else
-                {
-                    csourceEmitterOutput.Write("()");
-                }
-            }
-            else if (operation.Value is Microsoft.Cci.MutableCodeModel.MethodReference mr)
-            {
-                string mrt = mr.Name.Value.StartsWith("get_") || mr.Name.Value.StartsWith("set_") ? (mr.Name.Value.StartsWith("get_") ? "get" : "set") : "method";
-                csourceEmitterOutput.Write($" [{mrt}] ", Color.Cyan);
-                csourceEmitterOutput.Write(mr.Type.ToString() + " ", Color.Cyan);
-                csourceEmitterOutput.Write($"{mr.ContainingType.ToString()}.", Color.Pink);
-                csourceEmitterOutput.Write(mr.Name.Value.Replace("get_", "").Replace("set_", ""));
-                if (mr.Parameters is not null && mr.Parameters.Any())
-                {
-                    csourceEmitterOutput.Write("(" + mr.Parameters.Select(p => p.Type.ToString() ?? "").JoinWith(", ") + ")", Color.LimeGreen);
-                }
-                else
-                {
-                    csourceEmitterOutput.Write("()");
-                }
-            }
-            else if (operation.Value is Microsoft.Cci.MutableCodeModel.FieldDefinition fd)
-            {
-                csourceEmitterOutput.Write(" [field] ", Color.Cyan);
-                csourceEmitterOutput.Write(fd.Type.ToString() + " ", Color.Cyan);
-                csourceEmitterOutput.Write(fd.ContainingTypeDefinition.GetName() + ".");
-                csourceEmitterOutput.Write(fd.Name.ToString());
-                
-            }
-            else if (operation.Value is Microsoft.Cci.MutableCodeModel.FieldReference fr)
-            {
-                csourceEmitterOutput.Write(" [field] ", Color.Cyan);
-                csourceEmitterOutput.Write(fr.Type.ToString() + " ", Color.Cyan);
-                csourceEmitterOutput.Write(fr.ContainingType.ToString() + ".", Color.Pink);
-                csourceEmitterOutput.Write(fr.Name.ToString());
-
-            }
-            else if (operation.Value is Microsoft.Cci.MutableCodeModel.ParameterDefinition pd)
-            {
-                csourceEmitterOutput.Write(" [param] ", Color.Cyan);
-                csourceEmitterOutput.Write(pd.Type.ToString() + " ", Color.Pink);
-                csourceEmitterOutput.Write(pd.Name.ToString());
-
-            }
-            else if (operation.Value is Microsoft.Cci.MutableCodeModel.LocalDefinition _ld)
-            {
-                csourceEmitterOutput.Write(" [var] ", Color.Cyan);
-                csourceEmitterOutput.Write(_ld.Type.ToString() + " ", Color.Cyan);
-                csourceEmitterOutput.Write(_ld.Name.ToString());
-
-            }
-            //sourceEmitterOutput.Write("other" + " " + operation.Value.GetType().ToString() + " " + operation.Value);
-        }
-        sourceEmitterOutput.WriteLine("", false);
-    }
+    
 
     private void PrintSourceLocation(IPrimarySourceLocation psloc)
     {

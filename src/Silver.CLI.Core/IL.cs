@@ -41,7 +41,7 @@ namespace Silver.CLI.Core
             }
             else return null;
         }
-        public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack)
+        public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack, bool all)
         {
             if (boogie)
             {
@@ -61,7 +61,7 @@ namespace Silver.CLI.Core
                 if (InteractiveConsole)
                 {
                     var output = new ColorfulConsoleSourceEmitterOutput();
-                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, true);
+                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, all, true);
                     return true;
                 }
                 else

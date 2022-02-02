@@ -119,26 +119,26 @@ class Program : Runtime
         })
         .WithParsed<DisassemblerOptions>(o =>
         {
-            ILCmd.Dissassemble(o.File, o.Boogie, o.NoIL, !o.Stack);
+            ILCmd.Dissassemble(o.File, o.Boogie, o.NoIL, !o.Stack, o.AllClasses);
         })
         .WithParsed<SummarizeOptions>(o =>
         {
             ExitIfFileNotFound(o.InputFile);
-            ILCmd.Summarize(o.InputFile, o.AllTypes);
+            ILCmd.Summarize(o.InputFile, o.AllClasses);
 
         })
           .WithParsed<CallGraphOptions>(o =>
           {
               ExitIfFileNotFound(o.InputFile);
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
-              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllTypes);
+              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
 
           })
           .WithParsed<ControlFlowGraphOptions>(o =>
           {
               ExitIfFileNotFound(o.InputFile);
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
-              ILCmd.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllTypes);
+              ILCmd.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
 
           })
          .WithParsed<CompileOptions>(o =>

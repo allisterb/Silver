@@ -8,7 +8,7 @@ using Microsoft.Cci.MetadataReader;
 
 public class Disassembler : Runtime
 {
-    public static void Run(string fileName, ISourceEmitterOutput output, bool noIL = false, bool noStack = true, bool colorful = false)
+    public static void Run(string fileName, ISourceEmitterOutput output, bool noIL = false, bool noStack = true, bool all = false, bool colorful = false)
     {
         using var host = new PeReader.DefaultHost();
         IModule? module = host.LoadUnitFrom(FailIfFileNotFound(fileName)) as IModule;
@@ -33,7 +33,7 @@ public class Disassembler : Runtime
         }
         else
         {
-            var sourceEmitter = new ColorfulSourceEmitter((IColorfulSourceEmitterOutput) output, host, pdbReader, true, noIL);
+            var sourceEmitter = new ColorfulSourceEmitter((IColorfulSourceEmitterOutput) output, host, pdbReader, true, noIL, all);
             sourceEmitter.Traverse(module);
         }
     }

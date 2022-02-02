@@ -44,8 +44,8 @@ public class AnalyzeOptions : Options
     [Value(0, Required = true, HelpText = "The file to analyze.")]
     public string InputFile { get; set; } = String.Empty;
 
-    [Option('a', "all", Required = false, HelpText = "Analyze all types in an assembly, not only smart contract types.")]
-    public bool AllTypes { get; set; }
+    [Option('a', "all", Required = false, HelpText = "Analyze all classes in an assembly, not only smart contract classes.")]
+    public bool AllClasses { get; set; }
 }
 #endregion
 
@@ -120,10 +120,10 @@ public class DisassemblerOptions : Options
     [Value(0, Required = true, HelpText = "The .NET assembly file (usually *.dll or *.exe) to disassemble.")]
     public string File { get; set; } = String.Empty;
 
-    [Option("nocs", Required = false, HelpText = "Emit only IL code.")]
-    public bool NoCs { get; set; }
+    [Option('a', "all", Required = false, HelpText = "Disassemble all classes in an assembly, not only smart contract classes.")]
+    public bool AllClasses { get; set; }
 
-    [Option("noil", Required = false, HelpText = "Emit only C# code.")]
+    [Option("cs", Required = false, HelpText = "Emit only C# code i.e. decompile.")]
     public bool NoIL { get; set; }
 
     [Option('k', "stack", Required = false, HelpText = "Emit code that retains a stack.")]
@@ -135,7 +135,7 @@ public class DisassemblerOptions : Options
     [Option('m', "method", Required = false, HelpText = "Only disassemble methods matching this name pattern.")]
     public bool FilterMethods { get; set; }
 
-    [Option('b', "boogie", Required = false, HelpText = "Translate the assembly bytecode to Boogie.")]
+    [Option('b', "boogie", Required = false, HelpText = "Translate the assembly CIL to Boogie.")]
     public bool Boogie { get; set; }
 }
 
