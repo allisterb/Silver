@@ -116,18 +116,58 @@ public partial class Analyzer : Runtime
 	public void GetControlFlowGraph()
 	{
 		FailIfNotInitialized();
+		if (State.ContainsKey("cfg"))
+        {
+			Info("Using cached control-flow graphs");
+        }
 		using var op = Begin("Creating control-flow graph for methods in assembly {0}", AssemblyFile.Name);
+		//Dictionary<IMethodDefinition, ControlFlowGraph?> cfgs = new();
 		var methods = CollectMethods();
-		foreach(var method in methods)
+		Graph g = new Graph();
+		foreach (var method in methods)
         {
 			var disassembler = new Backend.Transformations.Disassembler(Host, method, PdbReader);
 			var methodBody = disassembler.Execute();
+			//cfg.Add(method, );
 			var cfg = new ControlFlowAnalysis(methodBody).GenerateNormalControlFlow();
-			File.WriteAllText(Path.Combine(AssemblyFile.DirectoryName!, method.Name.Value), SerializeCFGToDGML(cfg));
-			Info("Wrote CFG for method {0}.", method.Name);
-			op.Complete();
+			foreach(var cfgNode in cfg.Nodes)
+            {
+				var nid = method.GetUniqueId(cfgNode.Id);
+				var node = g.Nodes.FirstOrDefault(n => n.Id == nid);
+				if (node is null)
+				{
+					node = new Node(nid);
+					if (cfgNode.Kind == CFGNodeKind.Exit)
+                    {
+						node.LabelText = "Exit";
+                    }
+					else if(cfgNode.Kind == CFGNodeKind.Entry)
+                    {
+						node.LabelText = "Entry";
+                    }
+					g.AddNode(node);
+				}
+				foreach(var successor in cfgNode.Successors)
+                {
+					var snid = method.GetUniqueId(successor.Id);
+					var snode = g.Nodes.FirstOrDefault(n => n.Id == snid);
+					if (snode is null)
+                    {
+						snode = new Node(snid);
+						g.AddNode(snode);
+                    }
+					g.AddEdge(node.Id, snode.Id);
+                }
+            }
+			//File.WriteAllText(Path.Combine(AssemblyFile.DirectoryName!, method.Name.Value), SerializeCFGToDGML(cfg));
+			Info("Createf CFG for method {0}.", method.Name);
+			
 		}
-    }
+		
+		op.Complete();
+		//Backend
+		Drawing.Graph.Draw(g, "graph.dgml", Drawing.GraphFormat.DGML);
+	}
     internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
 		FailIfNotInitialized();
@@ -136,23 +176,23 @@ public partial class Analyzer : Runtime
 		return visitor.state;
 	}
 
-	internal IEnumerable<IMethodDefinition> CollectMethods()
+	internal IMethodDefinition[] CollectMethods()
     {
 		if (State.ContainsKey("methods"))
         {
-			Debug("Methods are already collected, reusing...");
-			return State.Get<IEnumerable<IMethodDefinition>>("methods");
+			Info("Methods are already collected, reusing...");
+			return State.Get<IMethodDefinition[]>("methods");
         }
 		else
         {
 			using var op = Begin("Collecting methods");
 			var methods = from t in moduleTypeDefinitions
-						  from m in t.Members.AsParallel().OfType<IMethodDefinition>()
+						  from m in t.Members.OfType<IMethodDefinition>()
 						  where m.Body is not null
 						  select m;
-			State.Add("methods", methods);
+			State.Add("methods", methods.ToArray());
 			op.Complete();
-			return methods;
+			return State.Get<IMethodDefinition[]>("methods");
 		}
 	}
 

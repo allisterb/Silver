@@ -5,13 +5,13 @@ namespace Silver.CLI;
 #region Base classes
 public class Options
 {
-    [Option('d', "debug", Required = false, HelpText = "Enable debug mode.")]
+    [Option("debug", Required = false, HelpText = "Enable debug mode.")]
     public bool Debug { get; set; }
 
-    [Option('s', "script", Required = false, HelpText = "Enable script (non-interactive) mode.")]
+    [Option("script", Required = false, HelpText = "Enable script (non-interactive) mode.")]
     public bool Script { get; set; }
 
-    [Option('o', "options", Required = false, HelpText = "Any additional options for the selected operation.")]
+    [Option("options", Required = false, HelpText = "Any additional options for the selected operation.")]
     public string AdditionalOptions { get; set; } = String.Empty;
 
     public static Dictionary<string, object> Parse(string o)
@@ -44,7 +44,7 @@ public class AnalyzeOptions : Options
     [Value(0, Required = true, HelpText = "The file to analyze.")]
     public string InputFile { get; set; } = String.Empty;
 
-    [Option('a', "all", Required = false, HelpText = "Analyze all classes in an assembly, not only smart contract classes.")]
+    [Option('a', "all", Required = false, HelpText = "Analyze members in all classes in an assembly, not only smart contract classes.")]
     public bool AllClasses { get; set; }
 }
 #endregion
@@ -53,7 +53,7 @@ public class AnalyzeOptions : Options
 [Verb("summarize", HelpText = "Summarize Stratis smart contracts in a .NET project or bytecode assembly.")]
 public class SummarizeOptions : AnalyzeOptions { }
 
-[Verb("call-graph", HelpText = "Get the call graph for Stratis smart contracts in a .NET project or bytecode assembly.")]
+[Verb("cg", HelpText = "Get the call graph for Stratis smart contracts in a .NET project or bytecode assembly.")]
 public class CallGraphOptions : AnalyzeOptions 
 {
 
@@ -64,14 +64,23 @@ public class CallGraphOptions : AnalyzeOptions
     public string OutputFormat { get; set; } = String.Empty;
 }
 
-[Verb("control-flow", HelpText = "Get the control-flow graphs for Stratis smart contracts in a .NET project or bytecode assembly.")]
+[Verb("cfg", HelpText = "Get the control-flow graphs for Stratis smart contracts in a .NET project or bytecode assembly.")]
 public class ControlFlowGraphOptions : AnalyzeOptions
 {
     [Value(1, Required = true, HelpText = "The output file for the operation. Format will be determined by the file extension or if specified by --format.")]
     public string OutputFile { get; set; } = String.Empty;
 
-    [Value(2, Required = false, HelpText = "The format of the output file. Can be xml, svg, dot, dgml, png, or bmp.")]
+    [Option("format", Required = false, HelpText = "Output graphs in this format, otherwise use the file extension to determine format. Can be one of bmp, png, xml, dgml, svg.")]
     public string OutputFormat { get; set; } = String.Empty;
+
+    [Option('t', "target", Required = false, HelpText = "Only output nodes and edges that have this name pattern as their target method.")]
+    public string Target { get; set; } = String.Empty;
+
+    [Option('s', "source", Required = false, HelpText = "Only output nodes and edges that have this name pattern as their source method.")]
+    public string Source { get; set; } = String.Empty;
+
+
+
 }
 #endregion
 

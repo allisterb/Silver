@@ -55,9 +55,9 @@ class Program : Runtime
         PrintLogo();
 
         #region Parse options
-        ParserResult<object> result = new Parser().ParseArguments<Options, CompileOptions, DisassemblerOptions, VerifyOptions, AssemblyOptions,
-            AnalyzeOptions, 
+        ParserResult<object> result = new Parser().ParseArguments<Options, CompileOptions, AnalyzeOptions, DisassemblerOptions,
             SummarizeOptions, CallGraphOptions, ControlFlowGraphOptions,
+            VerifyOptions, AssemblyOptions,
             BoogieOptions, SscOptions, SctOptions, InstallOptions>(args);
         result.WithParsed<Options>(o =>
         {
@@ -131,14 +131,15 @@ class Program : Runtime
           {
               ExitIfFileNotFound(o.InputFile);
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
-              ILCmd.PrintCallGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
+              ILCmd.PrintCallGraph(o);
 
           })
           .WithParsed<ControlFlowGraphOptions>(o =>
           {
               ExitIfFileNotFound(o.InputFile);
+
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
-              ILCmd.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
+              ILCmd.PrintControlFlowGraph(o);
 
           })
          .WithParsed<CompileOptions>(o =>
@@ -306,10 +307,10 @@ class Program : Runtime
     static object uilock = new object();
     static Type[] optionTypes = 
     { 
-        typeof(Options), typeof(CompileOptions), typeof(DisassemblerOptions),
-        typeof(AnalyzeOptions), 
+        typeof(Options), typeof(CompileOptions), typeof(AnalyzeOptions),
         typeof(SummarizeOptions), typeof(CallGraphOptions), typeof(ControlFlowGraphOptions),
-        typeof(VerifyOptions), typeof(AssemblyOptions), typeof(BoogieOptions), typeof(SscOptions), typeof(SctOptions), typeof(InstallOptions)
+        typeof(DisassemblerOptions), typeof(VerifyOptions), typeof(AssemblyOptions), 
+        typeof(BoogieOptions), typeof(SscOptions), typeof(SctOptions), typeof(InstallOptions)
 
     };
     static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));

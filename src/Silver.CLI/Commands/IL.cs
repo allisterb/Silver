@@ -30,16 +30,21 @@ internal class ILCmd : Command
         }
     }
 
-    internal static void PrintCallGraph(string fileName, string outputFileName, string format, bool all)
+    internal static void PrintCallGraph(CallGraphOptions o)
     {
-        ExitIfFileNotExists(fileName);
-        IL.PrintCallGraphs(fileName, outputFileName, format, all);
+        ExitIfFileNotExists(o.InputFile);
+        IL.PrintCallGraphs(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
     }
 
-    internal static void PrintControlFlowGraph(string fileName, string outputFileName, string format, bool all)
+    internal static void PrintControlFlowGraph(ControlFlowGraphOptions o)
     {
-        ExitIfFileNotExists(fileName);
-        IL.PrintControlFlowGraph(fileName, outputFileName, format, all);
+        ExitIfFileNotExists(o.InputFile);
+        if (!Enum.TryParse<Drawing.GraphFormat>(o.OutputFormat.ToUpper(), out var graphFormat))
+        {
+            Error("Invalid graph format: {0}.", o.OutputFormat);
+            Exit(ExitResult.INVALID_OPTIONS);
+        }
+        IL.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
     }
 }
 

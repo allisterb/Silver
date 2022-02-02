@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "dis C:\\Projects\\Silver\\examples\\AddressMapper\\bin\\Debug\\netcoreapp2.1\\ssc\\AddressMapper.dll"
+      "commandLineArgs": "cfg C:\\Projects\\Silver\\examples\\AddressMapper\\bin\\Debug\\netcoreapp2.1\\ssc\\AddressMapper.dll graph.dgml"
     }
   }
 }

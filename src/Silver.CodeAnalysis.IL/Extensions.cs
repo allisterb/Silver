@@ -10,5 +10,8 @@
         {
             return t.HaseBaseClass() && t.BaseClasses.Any(t => t.ToString() == "Stratis.SmartContracts.SmartContract");
         }
+
+        public static string GetUniqueId(this IMethodDefinition md, int id)
+            => md.ContainingTypeDefinition.GetName() + "::" + md.Name + "::" + id; 
     }
 }
