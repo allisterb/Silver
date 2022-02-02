@@ -127,7 +127,7 @@ public class ColorfulSourceEmitter : SourceEmitter
                 csourceEmitterOutput.Write($" [{mdt}] ", Color.Cyan);
                 csourceEmitterOutput.Write(md.Type.ToString() + " ", Color.Cyan);
                 csourceEmitterOutput.Write($"{md.ContainingTypeDefinition.GetName()}.", Color.Pink);
-                csourceEmitterOutput.Write(md.Name.Value.Replace("get_", "").Replace("set_", ""));
+                csourceEmitterOutput.Write(md.Name.Value.Replace("get_", "").Replace("set_", ""), Color.Yellow);
                 if (md.Parameters is not null && md.Parameters.Any())
                 {
                     csourceEmitterOutput.Write("(" + md.Parameters.Select(p => p.Type.ToString() ?? "").JoinWith(",") + ")", Color.LimeGreen);
@@ -143,10 +143,10 @@ public class ColorfulSourceEmitter : SourceEmitter
                 csourceEmitterOutput.Write($" [{mrt}] ", Color.Cyan);
                 csourceEmitterOutput.Write(mr.Type.ToString() + " ", Color.Cyan);
                 csourceEmitterOutput.Write($"{mr.ContainingType.ToString()}.", Color.Pink);
-                csourceEmitterOutput.Write(mr.Name.Value.Replace("get_", "").Replace("set_", ""));
+                csourceEmitterOutput.Write(mr.Name.Value.Replace("get_", "").Replace("set_", ""), Color.Yellow);
                 if (mr.Parameters is not null && mr.Parameters.Any())
                 {
-                    csourceEmitterOutput.Write("(" + mr.Parameters.Select(p => p.Type.ToString() ?? "").JoinWith(", ") + ")", Color.LimeGreen);
+                    csourceEmitterOutput.Write("(" + mr.Parameters.Select(p => p.Type.ToString()!).JoinWith(", ") + ")", Color.LimeGreen);
                 }
                 else
                 {
@@ -157,8 +157,8 @@ public class ColorfulSourceEmitter : SourceEmitter
             {
                 csourceEmitterOutput.Write(" [field] ", Color.Cyan);
                 csourceEmitterOutput.Write(fd.Type.ToString() + " ", Color.Cyan);
-                csourceEmitterOutput.Write(fd.ContainingTypeDefinition.GetName() + ".");
-                csourceEmitterOutput.Write(fd.Name.ToString());
+                csourceEmitterOutput.Write(fd.ContainingTypeDefinition.GetName() + ".", Color.Pink);
+                csourceEmitterOutput.Write(fd.Name.ToString()!, Color.Yellow);
 
             }
             else if (operation.Value is Microsoft.Cci.MutableCodeModel.FieldReference fr)
@@ -166,21 +166,21 @@ public class ColorfulSourceEmitter : SourceEmitter
                 csourceEmitterOutput.Write(" [field] ", Color.Cyan);
                 csourceEmitterOutput.Write(fr.Type.ToString() + " ", Color.Cyan);
                 csourceEmitterOutput.Write(fr.ContainingType.ToString() + ".", Color.Pink);
-                csourceEmitterOutput.Write(fr.Name.ToString());
+                csourceEmitterOutput.Write(fr.Name.ToString()!, Color.Yellow);
 
             }
             else if (operation.Value is Microsoft.Cci.MutableCodeModel.ParameterDefinition pd)
             {
                 csourceEmitterOutput.Write(" [param] ", Color.Cyan);
                 csourceEmitterOutput.Write(pd.Type.ToString() + " ", Color.Pink);
-                csourceEmitterOutput.Write(pd.Name.ToString());
+                csourceEmitterOutput.Write(pd.Name.ToString()!, Color.Yellow);
 
             }
             else if (operation.Value is Microsoft.Cci.MutableCodeModel.LocalDefinition _ld)
             {
                 csourceEmitterOutput.Write(" [var] ", Color.Cyan);
                 csourceEmitterOutput.Write(_ld.Type.ToString() + " ", Color.Cyan);
-                csourceEmitterOutput.Write(_ld.Name.ToString());
+                csourceEmitterOutput.Write(_ld.Name.ToString()!, Color.Yellow);
 
             }
             else
