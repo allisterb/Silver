@@ -136,29 +136,29 @@ public partial class Analyzer : Runtime
 				var node = g.Nodes.FirstOrDefault(n => n.Id == nid);
 				if (node is null)
 				{
-					node = new Node(nid);
-					if (cfgNode.Kind == CFGNodeKind.Exit)
-                    {
-						node.LabelText = "Exit";
-                    }
-					else if(cfgNode.Kind == CFGNodeKind.Entry)
-                    {
-						node.LabelText = "Entry";
-                    }
-					g.AddNode(node);
+					switch (cfgNode.Kind)
+					{
+						case CFGNodeKind.Exit:
+							break;
+						default:
+							node = new Node(nid);
+							node.LabelText = GetCFGNodeLabel(method, cfgNode);
+							g.AddNode(node);
+							break;
+					}
 				}
+			}
+			foreach(var cfgNode in cfg.Nodes)
+            {
+				var node = g.FindNode(method.GetUniqueId(cfgNode.Id));	
 				foreach(var successor in cfgNode.Successors)
                 {
+					if (successor.Kind == CFGNodeKind.Exit) continue;
 					var snid = method.GetUniqueId(successor.Id);
-					var snode = g.Nodes.FirstOrDefault(n => n.Id == snid);
-					if (snode is null)
-                    {
-						snode = new Node(snid);
-						g.AddNode(snode);
-                    }
+					var snode = g.FindNode(snid);
 					g.AddEdge(node.Id, snode.Id);
-                }
-            }
+				}
+			}
 			//File.WriteAllText(Path.Combine(AssemblyFile.DirectoryName!, method.Name.Value), SerializeCFGToDGML(cfg));
 			Info("Createf CFG for method {0}.", method.Name);
 			
@@ -266,6 +266,20 @@ public partial class Analyzer : Runtime
 	}
 	#endregion
 
+	protected static string GetCFGNodeLabel(IMethodDefinition md, CFGNode node)
+	{
+		switch (node.Kind)
+		{
+			case CFGNodeKind.Entry: 
+				return md.GetUniqueName(); 
+				
+			case CFGNodeKind.Exit: 
+				return md.GetUniqueName() + "::" + "return"; 
+				
+			default:
+				return string.Format("Node ID: {0}{1}{2}", md.GetUniqueId(node.Id), Environment.NewLine, string.Join(Environment.NewLine, node.Instructions));
+		}
+	}
 	#region Fields
 	internal IEnumerable<INamedTypeDefinition> moduleTypeDefinitions;
 	#endregion

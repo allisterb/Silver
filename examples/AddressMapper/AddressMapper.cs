@@ -53,6 +53,14 @@ public class AddressMapper : SmartContract
         alog.Primary = mapping.Primary;
         alog.Secondary = secondary;
         Log(alog);
+        if (secondary.ToBytes().Length == 0)
+        {
+            Log(secondary);
+        }
+        else
+        {
+            Log(3);
+        }
     }
 
     public void Reject(Address secondary)
