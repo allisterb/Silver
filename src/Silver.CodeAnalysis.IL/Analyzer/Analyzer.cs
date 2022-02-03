@@ -37,9 +37,6 @@ public partial class Analyzer : Runtime
 		moduleTypeDefinitions = from a in Host.LoadedUnits.OfType<IModule>()
 									from t in a.GetAllTypes()
 									select t;
-			//from m in t.Members.OfType<IMethodDefinition>()
-			//where m.Body != null
-			//select m;
 		Initialized = true;
 	}
     #endregion
@@ -77,7 +74,6 @@ public partial class Analyzer : Runtime
 		var methods = CollectMethods();
 		var cg = cha.Analyze();
 		var g = new Graph();
-		
 		foreach (var method in cg.Roots)
         {
 			Node? rootNode = null;
@@ -162,9 +158,7 @@ public partial class Analyzer : Runtime
 			}
 			//File.WriteAllText(Path.Combine(AssemblyFile.DirectoryName!, method.Name.Value), SerializeCFGToDGML(cfg));
 			Info("Created CFG nodes for method {0}.", method.Name);
-			
 		}
-		
 		op.Complete();
 		//Backend
 		//Drawing.Graph.Draw(g, "graph.dgml", Drawing.GraphFormat.DGML);

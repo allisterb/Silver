@@ -123,11 +123,10 @@ namespace Silver.CLI.Core
             }
             var analyzer = GetAnalyzer(fileName, all);
             if (analyzer is null) return false;
-            analyzer.GetControlFlowGraph();
+            var cfg = analyzer.GetControlFlowGraph();
+            if (cfg is null) return false;
+            Graph.Draw(cfg, outputFileName, graphFormat);
             return true;
-            //if (cg is null) return false;
-            //Graph.Draw(cg, outputFileName, graphFormat, rotateBy: Math.PI / 2);
-            //return true;
         }
         internal static Analyzer? GetAnalyzer(string fileName, bool all)
         {

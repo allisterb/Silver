@@ -60,6 +60,7 @@ public class ColorfulSourceEmitter : SourceEmitter
     public override void Traverse(IMethodBody methodBody)
     {
         PrintToken(CSharpToken.LeftCurly);
+        // top
         ISourceMethodBody? sourceMethodBody = (ISourceMethodBody)methodBody;
         if (sourceMethodBody == null)
         {
@@ -90,6 +91,7 @@ public class ColorfulSourceEmitter : SourceEmitter
                         if (psloc.StartIndex != currentIndex)
                         {
                             PrintSourceLocation(psloc);
+                            PrintInstructionCount(methodBody.Operations);
                             currentIndex = psloc.StartIndex;
                         }
                     }
@@ -492,6 +494,13 @@ public class ColorfulSourceEmitter : SourceEmitter
         //csourceEmitterOutput.WriteLine("");
         csourceEmitterOutput.Write(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
         csourceEmitterOutput.WriteLine(psloc.Source);
+    }
+
+    private void PrintInstructionCount(IEnumerable<IOperation> operations)
+    {
+        csourceEmitterOutput.Write("Instruction Count: ", true, Color.Red);
+        csourceEmitterOutput.Write(operations.Count().ToString(), Color.Magenta);
+        csourceEmitterOutput.WriteLine("");
     }
     #endregion
 
