@@ -493,13 +493,15 @@ public class ColorfulSourceEmitter : SourceEmitter
     {
         //csourceEmitterOutput.WriteLine("");
         csourceEmitterOutput.Write(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
-        csourceEmitterOutput.WriteLine(psloc.Source);
+        csourceEmitterOutput.Write(psloc.Source);
+        csourceEmitterOutput.Write(".");
     }
 
     private void PrintInstructionCount(IEnumerable<IOperation> operations)
     {
-        csourceEmitterOutput.Write("Instruction Count: ", true, Color.Red);
+        csourceEmitterOutput.Write(" Instructions in method: ", Color.Red);
         csourceEmitterOutput.Write(operations.Count().ToString(), Color.Magenta);
+        csourceEmitterOutput.Write(".");
         csourceEmitterOutput.WriteLine("");
     }
     #endregion
