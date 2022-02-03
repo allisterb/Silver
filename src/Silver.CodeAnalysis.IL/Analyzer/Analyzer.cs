@@ -3,6 +3,7 @@
 using Backend.Analyses;
 using Backend.Model;
 
+using Microsoft.Cci.MetadataReader;
 using Microsoft.Msagl.Drawing;
 
 #region Records
@@ -61,26 +62,22 @@ public partial class Analyzer : Runtime
 		return new(summary.types, summary.structs, summary.enums, summary.methods, summary.properties, summary.fields);
     }
 
-	public Graph? GetCallGraph()
+	public Graph GetCallGraph()
     {
 		FailIfNotInitialized();
 		using var op = Begin("Creating call graph for methods in assembly {0}", AssemblyFile.Name);
 		var cha = new ClassHierarchyCallGraphAnalysis(Host);
 		cha.OnNewMethodFound = (m =>
 		{
-			var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
-			var methodBody = disassembler.Execute();
-			MethodBodyProvider.Instance.AddBody(m, methodBody);
+			//var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
+			//var methodBody = disassembler.Execute();
+			//MethodBodyProvider.Instance.AddBody(m, methodBody);
 			return true;
 		});
 		var methods = CollectMethods();
 		var cg = cha.Analyze();
 		var g = new Graph();
-		if (g is null)
-		{
-			Error("Could not create graph drawing object.");
-			return null;
-		}
+		
 		foreach (var method in cg.Roots)
         {
 			Node? rootNode = null;
@@ -107,29 +104,25 @@ public partial class Analyzer : Runtime
                 {
 					csNode = g.FindNode(csid);
                 }
-
 				g.AddEdge(csNode.Id, rootNode.Id);
             }
 		}
 		return g;
     }
-	public void GetControlFlowGraph()
+	public Graph GetControlFlowGraph()
 	{
 		FailIfNotInitialized();
 		if (State.ContainsKey("cfg"))
         {
-			Info("Using cached control-flow graphs");
+			Info("Using cached control-flow graphs.");
         }
 		using var op = Begin("Creating control-flow graph for methods in assembly {0}", AssemblyFile.Name);
-		//Dictionary<IMethodDefinition, ControlFlowGraph?> cfgs = new();
 		var methods = CollectMethods();
 		Graph g = new Graph();
+		var sourceEmitterOutput = new MonochromeSourceEmitterOutput();
 		foreach (var method in methods)
         {
-			var disassembler = new Backend.Transformations.Disassembler(Host, method, PdbReader);
-			var methodBody = disassembler.Execute();
-			//cfg.Add(method, );
-			var cfg = new ControlFlowAnalysis(methodBody).GenerateNormalControlFlow();
+			var cfg = new ControlFlowAnalysis(MethodBodyProvider.Instance.GetBody(method)).GenerateNormalControlFlow();
 			foreach(var cfgNode in cfg.Nodes)
             {
 				var nid = method.GetUniqueId(cfgNode.Id);
@@ -142,7 +135,15 @@ public partial class Analyzer : Runtime
 							break;
 						default:
 							node = new Node(nid);
-							node.LabelText = GetCFGNodeLabel(method, cfgNode);
+							node.LabelText = PrintCFGNodeLabel(method, cfgNode, sourceEmitterOutput);
+							if (method.IsSmartContractMethod() && cfgNode.Kind == CFGNodeKind.Entry)
+                            {
+								node.Attr.FillColor = Color.Yellow;
+                            }
+							else
+                            {
+								node.Attr.FillColor = Color.White;
+							}
 							g.AddNode(node);
 							break;
 					}
@@ -160,13 +161,14 @@ public partial class Analyzer : Runtime
 				}
 			}
 			//File.WriteAllText(Path.Combine(AssemblyFile.DirectoryName!, method.Name.Value), SerializeCFGToDGML(cfg));
-			Info("Createf CFG for method {0}.", method.Name);
+			Info("Created CFG nodes for method {0}.", method.Name);
 			
 		}
 		
 		op.Complete();
 		//Backend
-		Drawing.Graph.Draw(g, "graph.dgml", Drawing.GraphFormat.DGML);
+		//Drawing.Graph.Draw(g, "graph.dgml", Drawing.GraphFormat.DGML);
+		return g;
 	}
     internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
@@ -186,22 +188,24 @@ public partial class Analyzer : Runtime
 		else
         {
 			using var op = Begin("Collecting methods");
-			var methods = from t in moduleTypeDefinitions
+			var _methods = from t in moduleTypeDefinitions
 						  from m in t.Members.OfType<IMethodDefinition>()
 						  where m.Body is not null
 						  select m;
-			State.Add("methods", methods.ToArray());
+			var methods = _methods.ToArray();
+			foreach (var m in methods)
+			{
+				var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
+				MethodBodyProvider.Instance.AddBody(m, disassembler.Execute());
+			}
+			State.Add("methods", methods);
 			op.Complete();
 			return State.Get<IMethodDefinition[]>("methods");
 		}
 	}
 
-	public static string SerializeCFGToDot(ControlFlowGraph g) => Backend.Serialization.DOTSerializer.Serialize(g);
-
-	public static string SerializeCFGToDGML(ControlFlowGraph g) => Backend.Serialization.DGMLSerializer.Serialize(g);
-
 	public static void Test(string fileName)
-    {
+	{
 		var analyzer = new Analyzer(fileName);
 		System.Action<IMethodDefinition, AnalyzerState> f = (methodDefinition, state) =>
 		{
@@ -264,22 +268,122 @@ public partial class Analyzer : Runtime
 		analyzer.AnalyzeMethods(f);
 		Info("State:{0}", analyzer.State.Keys.JoinWithSpaces());
 	}
-	#endregion
 
-	protected static string GetCFGNodeLabel(IMethodDefinition md, CFGNode node)
+	#region Printers
+	protected string PrintCFGNodeLabel(IMethodDefinition method, CFGNode node, MonochromeSourceEmitterOutput iloutput)
 	{
 		switch (node.Kind)
 		{
-			case CFGNodeKind.Entry: 
-				return md.GetUniqueName(); 
-				
-			case CFGNodeKind.Exit: 
-				return md.GetUniqueName() + "::" + "return"; 
-				
+			case CFGNodeKind.Entry:
+				var name = method.GetUniqueName();
+				var loc = this.PdbReader is not null && method.Locations is not null && method.Locations.Any() ?
+					Environment.NewLine + "Location: " + PrintSourceLocation(PdbReader.GetPrimarySourceLocationsFor(method.Locations.First())) : "";
+				return name + loc;
+
+			case CFGNodeKind.Exit:
+				return method.GetUniqueName() + "::" + "return";
+
 			default:
-				return string.Format("Node ID: {0}{1}{2}", md.GetUniqueId(node.Id), Environment.NewLine, string.Join(Environment.NewLine, node.Instructions));
+				var il = node.Instructions.SelectMany(i => i.GetILFromBody(method.Body));
+				iloutput.ClearData();
+				PrintOperations(il, iloutput);
+				return string.Format("Node ID: {0}{1}{2}", method.GetUniqueId(node.Id), Environment.NewLine, iloutput.Data);
 		}
 	}
+
+	private void PrintOperations(IEnumerable<IOperation> operations, MonochromeSourceEmitterOutput sourceEmitterOutput)
+	{
+		sourceEmitterOutput.ClearData();
+		foreach (var operation in operations)
+		{
+			sourceEmitterOutput.Write("IL_" + operation.Offset.ToString("x4") + ": ", true);
+			sourceEmitterOutput.Write(operation.OperationCode.ToString());
+			if (operation.Value is string)
+				sourceEmitterOutput.Write(" \"" + operation.Value + "\"");
+			else if (operation.Value is not null)
+			{
+				if (OperationCode.Br_S <= operation.OperationCode && operation.OperationCode <= OperationCode.Blt_Un)
+					sourceEmitterOutput.Write(" IL_" + ((uint)operation.Value).ToString("x4"));
+				else if (operation.OperationCode == OperationCode.Switch)
+				{
+					foreach (uint i in (uint[])operation.Value)
+						sourceEmitterOutput.Write(" IL_" + i.ToString("x4"));
+				}
+
+				else if (operation.OperationCode == OperationCode.Call || operation.OperationCode == OperationCode.Callvirt)
+				{
+					var fullNamect = operation.Value.ToString()!;
+					var ct = fullNamect.SkipLast(1);
+					var namep = fullNamect.Split('.').Last().Split('(');
+					var name = namep.First();
+					var p = "(" + namep.Last();
+					if (name.StartsWith("get_"))
+					{
+						sourceEmitterOutput.Write(" " + "[get] " + ct + "." + name.Replace("get_", ""));
+
+					}
+					else if (name.StartsWith("set_"))
+					{
+						sourceEmitterOutput.Write(" " + "[set] " + ct + "." + name.Replace("set_", ""));
+
+					}
+					else
+					{
+						sourceEmitterOutput.Write(" " + "[method] " + fullNamect);
+
+					}
+				}
+				else
+				{
+					var vt = operation.Value.GetType().Name;
+					if (vt.EndsWith("FieldDefinition") || vt.EndsWith("FieldReference"))
+					{
+						sourceEmitterOutput.Write(" [field] " + operation.Value.ToString());
+					}
+					else
+					{
+						sourceEmitterOutput.Write(" " + operation.Value.GetType().FullName);
+					}
+				}
+			}
+			sourceEmitterOutput.WriteLine("", false);
+		}
+
+	}
+
+	private string PrintLocation(ILocation l)
+	{
+		string location = "";
+
+		if (this.PdbReader != null)
+		{
+			foreach (IPrimarySourceLocation psloc in this.PdbReader.GetPrimarySourceLocationsFor(l))
+			{
+				if (psloc.Source.Length > 0)
+				{
+					location = psloc.Source;
+					break;
+				}
+			}
+		}
+		return location;
+	}
+
+	private string PrintSourceLocation(IPrimarySourceLocation psloc) =>
+		(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + ")");
+
+	private string PrintSourceLocation(IEnumerable<IPrimarySourceLocation> psloc) =>
+		(psloc.First().Document.Name.Value + "(" + psloc.First().StartLine + ":" + psloc.First().StartColumn + ")-(" + psloc.Last().EndLine + ":" + psloc.Last().EndColumn + ")");
+
+	public static string SerializeCFGToDot(ControlFlowGraph g) => Backend.Serialization.DOTSerializer.Serialize(g);
+
+	public static string SerializeCFGToDGML(ControlFlowGraph g) => Backend.Serialization.DGMLSerializer.Serialize(g);
+    #endregion
+
+   
+	#endregion
+
+	
 	#region Fields
 	internal IEnumerable<INamedTypeDefinition> moduleTypeDefinitions;
 	#endregion

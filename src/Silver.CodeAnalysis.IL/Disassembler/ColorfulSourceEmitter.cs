@@ -42,7 +42,9 @@ public class ColorfulSourceEmitter : SourceEmitter
     }
     #endregion
 
-    #region Overriden members
+    #region Methods
+
+    #region Traversers
     public override void TraverseChildren(ITypeDefinition typeDefinition)
     {
         if (typeDefinition.IsSmartContract() || all)
@@ -51,13 +53,12 @@ public class ColorfulSourceEmitter : SourceEmitter
         }
         else
         {
-            Runtime.Debug("Not traversing non-contract type {0}.", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
+            Runtime.Debug("Not traversing non-contract type {0} for disassembly.", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
         }
     }
 
     public override void Traverse(IMethodBody methodBody)
     {
- 
         PrintToken(CSharpToken.LeftCurly);
         ISourceMethodBody? sourceMethodBody = (ISourceMethodBody)methodBody;
         if (sourceMethodBody == null)
@@ -101,7 +102,6 @@ public class ColorfulSourceEmitter : SourceEmitter
     }
     #endregion
 
-    #region Methods
 
     #region Printers
     private void PrintOperation(IOperation operation)
@@ -486,8 +486,6 @@ public class ColorfulSourceEmitter : SourceEmitter
     {
         this.sourceEmitterOutput.Write(this.GetLocalName(local));
     }
-
-    
 
     private void PrintSourceLocation(IPrimarySourceLocation psloc)
     {
