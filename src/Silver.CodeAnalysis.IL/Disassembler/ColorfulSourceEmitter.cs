@@ -60,7 +60,6 @@ public class ColorfulSourceEmitter : SourceEmitter
     public override void Traverse(IMethodBody methodBody)
     {
         PrintToken(CSharpToken.LeftCurly);
-        // top
         ISourceMethodBody? sourceMethodBody = (ISourceMethodBody)methodBody;
         if (sourceMethodBody == null)
         {
@@ -91,13 +90,13 @@ public class ColorfulSourceEmitter : SourceEmitter
                         if (psloc.StartIndex != currentIndex)
                         {
                             PrintSourceLocation(psloc);
-                            PrintInstructionCount(methodBody.Operations);
                             currentIndex = psloc.StartIndex;
                         }
                     }
                 }
                 PrintOperation(operation);
             }
+            PrintInstructionCount(methodBody.Operations);
         }
 
         PrintToken(CSharpToken.RightCurly);
@@ -491,18 +490,21 @@ public class ColorfulSourceEmitter : SourceEmitter
 
     private void PrintSourceLocation(IPrimarySourceLocation psloc)
     {
-        //csourceEmitterOutput.WriteLine("");
         csourceEmitterOutput.Write(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
-        csourceEmitterOutput.Write(psloc.Source);
-        csourceEmitterOutput.Write(".");
+        if (psloc.Source.Length > 1)
+        {
+            csourceEmitterOutput.WriteLine(psloc.Source);
+        }
+        else
+        {
+            csourceEmitterOutput.WriteLine("");
+        }
     }
 
     private void PrintInstructionCount(IEnumerable<IOperation> operations)
     {
-        csourceEmitterOutput.Write(" Instructions in method: ", Color.Red);
-        csourceEmitterOutput.Write(operations.Count().ToString(), Color.Magenta);
-        csourceEmitterOutput.Write(".");
-        csourceEmitterOutput.WriteLine("");
+        csourceEmitterOutput.Write("Instructions in method: ",true, Color.Red);
+        csourceEmitterOutput.WriteLine(operations.Count().ToString(), Color.Magenta);
     }
     #endregion
 
