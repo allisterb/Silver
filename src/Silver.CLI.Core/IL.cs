@@ -58,13 +58,13 @@ namespace Silver.CLI.Core
                 if (InteractiveConsole)
                 {
                     var output = new ColorfulConsoleSourceEmitterOutput();
-                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, true);
+                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, classPattern, methodPattern, true);
                     return true;
                 }
                 else
                 {
                     var output = new CSharpSourceEmitter.SourceEmitterOutputString();
-                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack);
+                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, classPattern, methodPattern);
                     System.Console.WriteLine(output.Data);
                     return true;
                 }

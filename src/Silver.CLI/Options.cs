@@ -129,10 +129,10 @@ public class DisassemblerOptions : Options
     public bool Stack { get; set; }
 
     [Option('c', "class", Required = false, HelpText = "Only disassemble methods belonging to classes matching this name pattern.")]
-    public bool ClassPattern { get; set; }
+    public string? ClassPattern { get; set; }
 
     [Option('m', "method", Required = false, HelpText = "Only disassemble methods matching this name pattern.")]
-    public bool MethodPattern { get; set; }
+    public string? MethodPattern { get; set; }
 
     [Option('b', "boogie", Required = false, HelpText = "Translate the assembly CIL to Boogie.")]
     public bool Boogie { get; set; }

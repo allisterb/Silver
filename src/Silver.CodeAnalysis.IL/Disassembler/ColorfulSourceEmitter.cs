@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Text;
 using CSharpSourceEmitter;
 using Microsoft.Cci;
 using Microsoft.Cci.MetadataReader;
@@ -30,7 +31,7 @@ using Microsoft.Cci.Contracts;
 public class ColorfulSourceEmitter : SourceEmitter
 {
     #region Constructor
-    public ColorfulSourceEmitter(IColorfulSourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader? pdbReader, bool printCompilerGeneratedMembers, bool noIL)
+    public ColorfulSourceEmitter(IColorfulSourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader? pdbReader, bool printCompilerGeneratedMembers, bool noIL, string? classPattern, string? methodPattern)
       : base(sourceEmitterOutput)
     {
         this.host = host;
@@ -38,16 +39,68 @@ public class ColorfulSourceEmitter : SourceEmitter
         this.noIL = noIL;
         this.printCompilerGeneratedMembers = printCompilerGeneratedMembers;
         this.csourceEmitterOutput = sourceEmitterOutput;
+        if (classPattern is not null) this.classPattern = new Regex(classPattern, RegexOptions.Singleline | RegexOptions.Compiled);
+        if (methodPattern is not null) this.methodPattern = new Regex(methodPattern, RegexOptions.Singleline | RegexOptions.Compiled);
     }
     #endregion
 
     #region Methods
 
     #region Traversers
-    public override void TraverseChildren(ITypeDefinition typeDefinition)
+
+    public override void TraverseChildren(INamespaceTypeDefinition namespaceTypeDefinition)
     {
-        base.TraverseChildren(typeDefinition);
+        //var td = (ITypeDefinition)namespaceTypeDefinition;
+        if (namespaceTypeDefinition.IsClass && classPattern is not null && classPattern.IsMatch(namespaceTypeDefinition.GetName()))
+        {
+            base.TraverseChildren(namespaceTypeDefinition);
+        }
+        else if (namespaceTypeDefinition.IsClass && classPattern is not null && !classPattern.IsMatch(namespaceTypeDefinition.GetName()))
+        {
+            Runtime.Info("Not traversing class {0} that does not match pattern {1}.", namespaceTypeDefinition.GetName(), classPattern);
+            return;
+        }
+        else
+        {
+            base.TraverseChildren(namespaceTypeDefinition);
+        }
     }
+
+    public override void TraverseChildren(IMethodDefinition method)
+    {
+        if (methodPattern is not null && methodPattern.IsMatch(method.Name.Value))
+        {
+            base.TraverseChildren(method);
+        }
+        else if (methodPattern is not null && !methodPattern.IsMatch(method.Name.Value))
+        {
+            Runtime.Info("Not traversing method {0} that does not match pattern {1}.", method.Name, methodPattern);
+            return;
+        }
+        else
+        {
+            base.TraverseChildren(method);
+        }
+    }
+
+    public override void TraverseChildren(IPropertyDefinition prop)
+    {
+        if (methodPattern is not null && methodPattern.IsMatch(prop.Name.Value))
+        {
+            base.TraverseChildren(prop);
+        }
+        else if (methodPattern is not null && !methodPattern.IsMatch(prop.Name.Value))
+        {
+            Runtime.Info("Not traversing property {0} that does not match pattern {1}.", prop.Name, methodPattern);
+            return;
+        }
+        else
+        {
+            base.TraverseChildren(prop);
+        }
+    }
+
+
 
     public override void Traverse(IMethodBody methodBody)
     {
@@ -519,5 +572,7 @@ public class ColorfulSourceEmitter : SourceEmitter
     PdbReader? pdbReader;
     bool noIL;
     IColorfulSourceEmitterOutput csourceEmitterOutput;
+    Regex? classPattern;
+    Regex? methodPattern;
     #endregion
 }
