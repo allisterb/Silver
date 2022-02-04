@@ -43,9 +43,6 @@ public class AnalyzeOptions : Options
 {
     [Value(0, Required = true, HelpText = "The file to analyze.")]
     public string InputFile { get; set; } = String.Empty;
-
-    [Option('a', "all", Required = false, HelpText = "Analyze members in all classes in an assembly, not only smart contract classes.")]
-    public bool AllClasses { get; set; }
 }
 #endregion
 
@@ -56,11 +53,10 @@ public class SummarizeOptions : AnalyzeOptions { }
 [Verb("cg", HelpText = "Get the call graph for Stratis smart contracts in a .NET project or bytecode assembly.")]
 public class CallGraphOptions : AnalyzeOptions 
 {
-
     [Value(1, Required = true, HelpText = "The output file for the operation. Format will be determined by the file extension or if specified by --format.")]
     public string OutputFile { get; set; } = String.Empty;
 
-    [Value(2, Required = false, HelpText = "The format of the output file. Can be xml, svg, dot, dgml, png, or bmp.")]
+    [Option("format", Required = false, HelpText = "The format of the output file. Can be xml, svg, dot, dgml, png, or bmp.")]
     public string OutputFormat { get; set; } = String.Empty;
 }
 
@@ -78,9 +74,6 @@ public class ControlFlowGraphOptions : AnalyzeOptions
 
     [Option('s', "source", Required = false, HelpText = "Only output nodes and edges that have this name pattern as their source method.")]
     public string Source { get; set; } = String.Empty;
-
-
-
 }
 #endregion
 
@@ -129,9 +122,6 @@ public class DisassemblerOptions : Options
     [Value(0, Required = true, HelpText = "The .NET assembly file (usually *.dll or *.exe) to disassemble.")]
     public string File { get; set; } = String.Empty;
 
-    [Option('a', "all", Required = false, HelpText = "Disassemble all classes in an assembly, not only smart contract classes.")]
-    public bool AllClasses { get; set; }
-
     [Option("cs", Required = false, HelpText = "Emit only C# code i.e. decompile.")]
     public bool NoIL { get; set; }
 
@@ -139,10 +129,10 @@ public class DisassemblerOptions : Options
     public bool Stack { get; set; }
 
     [Option('c', "class", Required = false, HelpText = "Only disassemble methods belonging to classes matching this name pattern.")]
-    public bool FilterClasses { get; set; }
+    public bool ClassPattern { get; set; }
 
     [Option('m', "method", Required = false, HelpText = "Only disassemble methods matching this name pattern.")]
-    public bool FilterMethods { get; set; }
+    public bool MethodPattern { get; set; }
 
     [Option('b', "boogie", Required = false, HelpText = "Translate the assembly CIL to Boogie.")]
     public bool Boogie { get; set; }

@@ -30,13 +30,12 @@ using Microsoft.Cci.Contracts;
 public class ColorfulSourceEmitter : SourceEmitter
 {
     #region Constructor
-    public ColorfulSourceEmitter(IColorfulSourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader? pdbReader, bool printCompilerGeneratedMembers, bool noIL, bool all = false)
+    public ColorfulSourceEmitter(IColorfulSourceEmitterOutput sourceEmitterOutput, IMetadataHost host, PdbReader? pdbReader, bool printCompilerGeneratedMembers, bool noIL)
       : base(sourceEmitterOutput)
     {
         this.host = host;
         this.pdbReader = pdbReader;
         this.noIL = noIL;
-        this.all = all;
         this.printCompilerGeneratedMembers = printCompilerGeneratedMembers;
         this.csourceEmitterOutput = sourceEmitterOutput;
     }
@@ -47,14 +46,7 @@ public class ColorfulSourceEmitter : SourceEmitter
     #region Traversers
     public override void TraverseChildren(ITypeDefinition typeDefinition)
     {
-        if (typeDefinition.IsSmartContract() || all)
-        {
-            base.TraverseChildren(typeDefinition);
-        }
-        else
-        {
-            Runtime.Debug("Not traversing non-contract type {0} for disassembly.", TypeHelper.GetTypeName(typeDefinition.ResolvedType));
-        }
+        base.TraverseChildren(typeDefinition);
     }
 
     public override void Traverse(IMethodBody methodBody)
@@ -79,7 +71,6 @@ public class ColorfulSourceEmitter : SourceEmitter
             //     PrintScopes(methodBody);
             //else
             //    PrintLocals(methodBody.LocalVariables);
-
             int currentIndex = -1; // a number no index matches
             foreach (IOperation operation in methodBody.Operations)
             {
@@ -98,11 +89,9 @@ public class ColorfulSourceEmitter : SourceEmitter
             }
             PrintInstructionCount(methodBody.Operations);
         }
-
         PrintToken(CSharpToken.RightCurly);
     }
     #endregion
-
 
     #region Printers
     private void PrintOperation(IOperation operation)
@@ -182,7 +171,6 @@ public class ColorfulSourceEmitter : SourceEmitter
                 csourceEmitterOutput.Write(" [var] ", Color.Cyan);
                 csourceEmitterOutput.Write(_ld.Type.ToString() + " ", Color.Cyan);
                 csourceEmitterOutput.Write(_ld.Name.ToString()!, Color.Yellow);
-
             }
             else
             {
@@ -530,7 +518,6 @@ public class ColorfulSourceEmitter : SourceEmitter
     IMetadataHost host;
     PdbReader? pdbReader;
     bool noIL;
-    bool all;
     IColorfulSourceEmitterOutput csourceEmitterOutput;
     #endregion
 }

@@ -1,13 +1,10 @@
 ﻿
 namespace Silver.CLI.Core
 {
-    using System.Drawing;
-    
     using Silver.CodeAnalysis.IL;
     using Silver.Projects;
     using Silver.Drawing;
-    using Colorful;
-
+    
     public class IL : Runtime
     {
         public static string? GetTargetAssembly(string f)
@@ -41,7 +38,7 @@ namespace Silver.CLI.Core
             }
             else return null;
         }
-        public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack, bool all)
+        public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack, string? classPattern = null, string? methodPattern = null)
         {
             if (boogie)
             {
@@ -61,7 +58,7 @@ namespace Silver.CLI.Core
                 if (InteractiveConsole)
                 {
                     var output = new ColorfulConsoleSourceEmitterOutput();
-                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, all, true);
+                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, true);
                     return true;
                 }
                 else
@@ -71,10 +68,9 @@ namespace Silver.CLI.Core
                     System.Console.WriteLine(output.Data);
                     return true;
                 }
-                
             }
         }
-        public static bool Summarize(string fileName, bool all)
+        public static bool Summarize(string fileName)
         {
             var a = GetTargetAssembly(FailIfFileNotFound(fileName));
             if (a is null)
@@ -83,7 +79,7 @@ namespace Silver.CLI.Core
                 return false;
             }
             
-            var an = new Analyzer(a, all);
+            var an = new Analyzer(a);
             if (!an.Initialized)
             {
                 Error("Could not create an analyzer for {0}.", an);
@@ -95,18 +91,16 @@ namespace Silver.CLI.Core
                 Info("Structs:{0}.", s.Fields);
                 return true;
             }
-            //var cfg = an.GetControlFlowGraphs();
-                
-            
         }
-        public static bool PrintCallGraphs(string fileName, string outputFileName, string format, bool all)
+
+        public static bool PrintCallGraphs(string fileName, string outputFileName, string format)
         {
             if(!Enum.TryParse<GraphFormat>(format.ToUpper(), out var graphFormat))
             {
                 Error("Invalid graph format: {0}.", format);
                 return false;
             }
-            var analyzer = GetAnalyzer(fileName, all);
+            var analyzer = GetAnalyzer(fileName);
             if (analyzer is null) return false;
             var cg = analyzer.GetCallGraph();
             if (cg is null) return false;
@@ -114,21 +108,21 @@ namespace Silver.CLI.Core
             return true;
         }
             
-        public static bool PrintControlFlowGraph(string fileName, string outputFileName, string format, bool all)
+        public static bool PrintControlFlowGraph(string fileName, string outputFileName, string format)
         {
             if (!Enum.TryParse<GraphFormat>(format.ToUpper(), out var graphFormat))
             {
                 Error("Invalid graph format: {0}.", format);
                 return false;
             }
-            var analyzer = GetAnalyzer(fileName, all);
+            var analyzer = GetAnalyzer(fileName);
             if (analyzer is null) return false;
             var cfg = analyzer.GetControlFlowGraph();
             if (cfg is null) return false;
             Graph.Draw(cfg, outputFileName, graphFormat);
             return true;
         }
-        internal static Analyzer? GetAnalyzer(string fileName, bool all)
+        internal static Analyzer? GetAnalyzer(string fileName)
         {
             var a = GetTargetAssembly(FailIfFileNotFound(fileName));
             if (a is null)
@@ -137,7 +131,7 @@ namespace Silver.CLI.Core
                 return null;
             }
 
-            var an = new Analyzer(a, all);
+            var an = new Analyzer(a);
             if (!an.Initialized)
             {
                 Error("Could not create an analyzer for {0}.", an);

@@ -3,7 +3,6 @@
 using Backend.Analyses;
 using Backend.Model;
 
-using Microsoft.Cci.MetadataReader;
 using Microsoft.Msagl.Drawing;
 
 #region Records
@@ -15,7 +14,7 @@ public record Summary(
 public partial class Analyzer : Runtime
 {
     #region Constructors
-    public Analyzer(string fileName, bool all = false, AnalyzerState? state = null)
+    public Analyzer(string fileName, AnalyzerState? state = null)
 	{
 		AssemblyFile = new FileInfo(fileName);
 		Host = new PeReader.DefaultHost();
@@ -27,7 +26,7 @@ public partial class Analyzer : Runtime
 			Error("The file {0} is not a valid CLR module or assembly.", fileName);
 			return;
 		}
-		State.AddIfNotExists("all", all);
+
 		var pdbFileName = Path.ChangeExtension(fileName, "pdb");
 		Types.Initialize(Host);
 		if (File.Exists(pdbFileName))
@@ -160,32 +159,23 @@ public partial class Analyzer : Runtime
 			Info("Created CFG nodes for method {0}.", method.Name);
 		}
 		op.Complete();
-		//Backend
-		//Drawing.Graph.Draw(g, "graph.dgml", Drawing.GraphFormat.DGML);
 		return g;
-	}
-    internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
-	{
-		FailIfNotInitialized();
-		var visitor = new MethodVisitor(action, State);
-		visitor.Traverse(Module);
-		return visitor.state;
 	}
 
 	internal IMethodDefinition[] CollectMethods()
-    {
+	{
 		if (State.ContainsKey("methods"))
-        {
+		{
 			Info("Methods are already collected, reusing...");
 			return State.Get<IMethodDefinition[]>("methods");
-        }
+		}
 		else
-        {
+		{
 			using var op = Begin("Collecting methods");
 			var _methods = from t in moduleTypeDefinitions
-						  from m in t.Members.OfType<IMethodDefinition>()
-						  where m.Body is not null
-						  select m;
+						   from m in t.Members.OfType<IMethodDefinition>()
+						   where m.Body is not null
+						   select m;
 			var methods = _methods.ToArray();
 			foreach (var m in methods)
 			{
@@ -194,9 +184,19 @@ public partial class Analyzer : Runtime
 			}
 			State.Add("methods", methods);
 			op.Complete();
-			return State.Get<IMethodDefinition[]>("methods");
+			return methods;
 		}
 	}
+
+	internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
+	{
+		FailIfNotInitialized();
+		var visitor = new MethodVisitor(action, State);
+		visitor.Traverse(Module);
+		return visitor.state;
+	}
+
+	
 
 	public static void Test(string fileName)
 	{
@@ -342,7 +342,6 @@ public partial class Analyzer : Runtime
 			}
 			sourceEmitterOutput.WriteLine("", false);
 		}
-
 	}
 
 	private string PrintLocation(ILocation l)
@@ -374,7 +373,6 @@ public partial class Analyzer : Runtime
 	public static string SerializeCFGToDGML(ControlFlowGraph g) => Backend.Serialization.DGMLSerializer.Serialize(g);
     #endregion
 
-   
 	#endregion
 
 	

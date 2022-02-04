@@ -4,10 +4,10 @@ using Silver.CLI.Core;
 using static Program;
 internal class ILCmd : Command
 {
-    internal static void Dissassemble(string fileName, bool boogie, bool noIL, bool noStack, bool all)
+    internal static void Dissassemble(string fileName, bool boogie, bool noIL, bool noStack)
     {
         ExitIfFileNotExists(fileName);
-        if (!IL.Disassemble(fileName, boogie, noIL, noStack, all))
+        if (!IL.Disassemble(fileName, boogie, noIL, noStack))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);
         }
@@ -17,10 +17,10 @@ internal class ILCmd : Command
         }
     }
 
-    internal static void Summarize(string fileName, bool all)
+    internal static void Summarize(string fileName)
     {
         ExitIfFileNotExists(fileName);
-        if (!IL.Summarize(fileName, all))
+        if (!IL.Summarize(fileName))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);
         }
@@ -33,7 +33,7 @@ internal class ILCmd : Command
     internal static void PrintCallGraph(CallGraphOptions o)
     {
         ExitIfFileNotExists(o.InputFile);
-        IL.PrintCallGraphs(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
+        IL.PrintCallGraphs(o.InputFile, o.OutputFile, o.OutputFormat);
     }
 
     internal static void PrintControlFlowGraph(ControlFlowGraphOptions o)
@@ -44,7 +44,7 @@ internal class ILCmd : Command
             Error("Invalid graph format: {0}.", o.OutputFormat);
             Exit(ExitResult.INVALID_OPTIONS);
         }
-        IL.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat, o.AllClasses);
+        IL.PrintControlFlowGraph(o.InputFile, o.OutputFile, o.OutputFormat);
     }
 }
 

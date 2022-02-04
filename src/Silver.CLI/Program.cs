@@ -119,12 +119,12 @@ class Program : Runtime
         })
         .WithParsed<DisassemblerOptions>(o =>
         {
-            ILCmd.Dissassemble(o.File, o.Boogie, o.NoIL, !o.Stack, o.AllClasses);
+            ILCmd.Dissassemble(o.File, o.Boogie, o.NoIL, !o.Stack);
         })
         .WithParsed<SummarizeOptions>(o =>
         {
             ExitIfFileNotFound(o.InputFile);
-            ILCmd.Summarize(o.InputFile, o.AllClasses);
+            ILCmd.Summarize(o.InputFile);
 
         })
           .WithParsed<CallGraphOptions>(o =>
