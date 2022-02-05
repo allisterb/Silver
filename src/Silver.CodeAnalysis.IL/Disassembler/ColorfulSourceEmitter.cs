@@ -57,7 +57,7 @@ public class ColorfulSourceEmitter : SourceEmitter
         }
         else if (namespaceTypeDefinition.IsClass && classPattern is not null && !classPattern.IsMatch(namespaceTypeDefinition.GetName()))
         {
-            Runtime.Info("Not traversing class {0} that does not match pattern {1}.", namespaceTypeDefinition.GetName(), classPattern);
+            Runtime.Debug("Not traversing class {0} that does not match pattern {1}.", namespaceTypeDefinition.GetName(), classPattern);
             return;
         }
         else
@@ -74,7 +74,7 @@ public class ColorfulSourceEmitter : SourceEmitter
         }
         else if (methodPattern is not null && !methodPattern.IsMatch(method.Name.Value))
         {
-            Runtime.Info("Not traversing method {0} that does not match pattern {1}.", method.Name, methodPattern);
+            Runtime.Debug("Not traversing method {0} that does not match pattern {1}.", method.Name, methodPattern);
             return;
         }
         else
@@ -91,7 +91,7 @@ public class ColorfulSourceEmitter : SourceEmitter
         }
         else if (methodPattern is not null && !methodPattern.IsMatch(prop.Name.Value))
         {
-            Runtime.Info("Not traversing property {0} that does not match pattern {1}.", prop.Name, methodPattern);
+            Runtime.Debug("Not traversing property {0} that does not match pattern {1}.", prop.Name, methodPattern);
             return;
         }
         else
@@ -99,8 +99,6 @@ public class ColorfulSourceEmitter : SourceEmitter
             base.TraverseChildren(prop);
         }
     }
-
-
 
     public override void Traverse(IMethodBody methodBody)
     {
@@ -125,6 +123,7 @@ public class ColorfulSourceEmitter : SourceEmitter
             //else
             //    PrintLocals(methodBody.LocalVariables);
             int currentIndex = -1; // a number no index matches
+            int gasCost = 0;
             foreach (IOperation operation in methodBody.Operations)
             {
                 if (this.pdbReader != null)
@@ -139,8 +138,17 @@ public class ColorfulSourceEmitter : SourceEmitter
                     }
                 }
                 PrintOperation(operation);
+                if (operation.OperationCode == OperationCode.Call || operation.OperationCode == OperationCode.Callvirt)
+                {
+                    gasCost += 5;
+                }
+                else
+                {
+                    gasCost += 1;
+                }
             }
             PrintInstructionCount(methodBody.Operations);
+            PrintTotalGasCost(gasCost);
         }
         PrintToken(CSharpToken.RightCurly);
     }
@@ -225,9 +233,13 @@ public class ColorfulSourceEmitter : SourceEmitter
                 csourceEmitterOutput.Write(_ld.Type.ToString() + " ", Color.Cyan);
                 csourceEmitterOutput.Write(_ld.Name.ToString()!, Color.Yellow);
             }
+            else if (operation.Value.GetType().FullName == "Microsoft.Cci.CodeModelToIL.TemporaryVariable")
+            {
+                
+            }
             else
             {
-                csourceEmitterOutput.Write(operation.Value.GetType().ToString() + " " + operation.Value);
+                csourceEmitterOutput.Write(/*operation.Value.GetType().ToString() +*/ " " + operation.Value);
             }
         }
         sourceEmitterOutput.WriteLine("", false);
@@ -531,21 +543,20 @@ public class ColorfulSourceEmitter : SourceEmitter
 
     private void PrintSourceLocation(IPrimarySourceLocation psloc)
     {
-        csourceEmitterOutput.Write(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
-        if (psloc.Source.Length > 1)
-        {
-            csourceEmitterOutput.WriteLine(psloc.Source);
-        }
-        else
-        {
-            csourceEmitterOutput.WriteLine("");
-        }
+        csourceEmitterOutput.WriteLine(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
+        //csourceEmitterOutput.WriteLine(psloc.Source);
     }
 
     private void PrintInstructionCount(IEnumerable<IOperation> operations)
     {
-        csourceEmitterOutput.Write("Instructions in method: ",true, Color.Red);
+        csourceEmitterOutput.Write("Total instructions in method: ",true, Color.Red);
         csourceEmitterOutput.WriteLine(operations.Count().ToString(), Color.Magenta);
+    }
+
+    private void PrintTotalGasCost(int gasCount)
+    {
+        csourceEmitterOutput.Write($"Total gas cost: ", true, Color.Red);
+        csourceEmitterOutput.WriteLine(gasCount.ToString(), Color.Magenta);
     }
     #endregion
 

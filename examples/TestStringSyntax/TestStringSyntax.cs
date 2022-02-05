@@ -2,6 +2,9 @@
 
 public class TestStringSyntax : SmartContract
 {
+	const int MAX_LEN = 100;
+
+	public int foo = 0;
 	public TestStringSyntax(ISmartContractState state, string message)
 		: base(state)
 	{
@@ -64,7 +67,30 @@ public class TestStringSyntax : SmartContract
 	
 	public void Test1(string message)
 	{
-		int MAX_LEN = 100;
-		Assert(message.Length <= MAX_LEN, $"Cannot handle more than {MAX_LEN} characters.");
+		// int MAX_LEN = 100;
+		Assert(message.Length <= MAX_LEN, $"Cannot handle more than {MAX_LEN} characters");
+	}
+	
+	public void Test2(string message)
+	{
+		// int MAX_LEN = 100;
+		Assert(message.Length <= MAX_LEN, string.Format("Cannot handle more than {0} characters.", MAX_LEN));
+	}
+
+	public void Test3(string message)
+	{
+		// int MAX_LEN = 100;
+		Assert(message.Length <= MAX_LEN, "Cannot handle more than "+ MAX_LEN + "characters.");
+	}
+
+	public struct TestStruct1
+	{
+		[Index]
+		public Address Address1;
+
+		[Index]
+		public Address Address2;
+
+		public string String1;
 	}
 }

@@ -5,11 +5,14 @@
 /// </summary>
 public class TicketContract : SmartContract
 {
+    #region Constants
     /// <summary>
     /// Maximum number of seats, necessary while construction cost is lower than cost to begin a sale
     /// </summary>
     public const int MAX_SEATS = 65;
+    #endregion
 
+    #region Constructor
     /// <summary>
     /// Creates a new ticketing contract
     /// </summary>
@@ -33,67 +36,20 @@ public class TicketContract : SmartContract
         Owner = Message.Sender;
         Tickets = tickets;
     }
+    #endregion
 
+    #region Public properties
     /// <summary>
     /// Stores ticket data for the contract
     /// </summary>
     public Ticket[] Tickets
     {
-        get => PersistentState.GetArray<Ticket>(nameof(Tickets));
-        private set => PersistentState.SetArray(nameof(Tickets), value);
+        get => State.GetArray<Ticket>(nameof(Tickets));
+        private set => State.SetArray(nameof(Tickets), value);
     }
+    #endregion
 
-    private ulong EndOfSale
-    {
-        get => PersistentState.GetUInt64(nameof(EndOfSale));
-        set => PersistentState.SetUInt64(nameof(EndOfSale), value);
-    }
-
-    private ulong ReleaseFee
-    {
-        get => PersistentState.GetUInt64(nameof(ReleaseFee));
-        set
-        {
-            PersistentState.SetUInt64(nameof(ReleaseFee), value);
-            Log(new TicketReleaseFee { Amount = value });
-        }
-    }
-
-    private ulong NoRefundBlockCount
-    {
-        get => PersistentState.GetUInt64(nameof(NoRefundBlockCount));
-        set
-        {
-            PersistentState.SetUInt64(nameof(NoRefundBlockCount), value);
-            Log(new NoRefundBlocks { Count = value });
-        }
-    }
-
-    private bool RequireIdentityVerification
-    {
-        get => PersistentState.GetBool(nameof(RequireIdentityVerification));
-        set
-        {
-            PersistentState.SetBool(nameof(RequireIdentityVerification), value);
-            Log(new IdentityVerificationPolicy { RequireIdentityVerification = value });
-        }
-    }
-
-    private Address Owner
-    {
-        get => PersistentState.GetAddress(nameof(Owner));
-        set => PersistentState.SetAddress(nameof(Owner), value);
-    }
-
-    private bool SaleOpen
-    {
-        get
-        {
-            var endOfSale = EndOfSale;
-            return endOfSale != default(ulong) && Block.Number < endOfSale;
-        }
-    }
-
+    #region Public methods
     /// <summary>
     /// Starts a ticket sale, when no sale is running
     /// </summary>
@@ -286,6 +242,79 @@ public class TicketContract : SmartContract
         Log(tickets[releaseIndex]);
     }
 
+    public void Test1(int count)
+    {
+        // int MAX_LEN = 100;
+        Assert(count <= MAX_SEATS, $"Cannot handle more than {MAX_SEATS} characters");
+    }
+
+    public void Test2(int count)
+    {
+        // int MAX_LEN = 100;
+        Assert(count <= MAX_SEATS, string.Format("Cannot handle more than {0} characters.", MAX_SEATS));
+    }
+
+    public void Test3(int count)
+    {
+        // int MAX_LEN = 100;
+        Assert(count <= MAX_SEATS, "Cannot handle more than " + MAX_SEATS + "characters.");
+    }
+    #endregion
+
+    #region Private properties
+    private ulong EndOfSale
+    {
+        get => State.GetUInt64(nameof(EndOfSale));
+        set => State.SetUInt64(nameof(EndOfSale), value);
+    }
+
+    private ulong ReleaseFee
+    {
+        get => State.GetUInt64(nameof(ReleaseFee));
+        set
+        {
+            State.SetUInt64(nameof(ReleaseFee), value);
+            Log(new TicketReleaseFee { Amount = value });
+        }
+    }
+
+    private ulong NoRefundBlockCount
+    {
+        get => State.GetUInt64(nameof(NoRefundBlockCount));
+        set
+        {
+            State.SetUInt64(nameof(NoRefundBlockCount), value);
+            Log(new NoRefundBlocks { Count = value });
+        }
+    }
+
+    private bool RequireIdentityVerification
+    {
+        get => State.GetBool(nameof(RequireIdentityVerification));
+        set
+        {
+            State.SetBool(nameof(RequireIdentityVerification), value);
+            Log(new IdentityVerificationPolicy { RequireIdentityVerification = value });
+        }
+    }
+
+    private Address Owner
+    {
+        get => State.GetAddress(nameof(Owner));
+        set => State.SetAddress(nameof(Owner), value);
+    }
+
+    private bool SaleOpen
+    {
+        get
+        {
+            var endOfSale = EndOfSale;
+            return endOfSale != default(ulong) && Block.Number < endOfSale;
+        }
+    }
+    #endregion
+
+    #region Private methods
     private bool IsAvailable(Ticket ticket)
     {
         return ticket.Address == Address.Zero;
@@ -313,7 +342,9 @@ public class TicketContract : SmartContract
 
         return tickets;
     }
+    #endregion
 
+    #region Structs
     /// <summary>
     /// Identifies a specific seat by number and/or letter
     /// </summary>
@@ -430,4 +461,5 @@ public class TicketContract : SmartContract
         /// </summary>
         public bool RequireIdentityVerification;
     }
+    #endregion
 }
