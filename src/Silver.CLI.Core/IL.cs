@@ -40,12 +40,38 @@ namespace Silver.CLI.Core
         }
         public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack, string? classPattern = null, string? methodPattern = null)
         {
+            string targetAssembly = FailIfFileNotFound(fileName);
+            if (SilverProject.HasProjectExtension(fileName))
+            {
+                
+                
+                var proj = SilverProject.GetProject(fileName, "Debug");
+                if (proj is null || !proj.Initialized)
+                {
+                    Error("Could not initialize project {0}.", fileName);
+                    return false;
+                }
+                else
+                {
+                    if (proj.Compile(out var _, out var _))
+                    {
+                        targetAssembly = proj.TargetPath;
+                    }
+                    else
+                    {
+                        Error("Could not compile project {0}.", fileName);
+                        return false;
+                    }
+                }
+                
+            }
+
             if (boogie)
             {
-                var output = Translator.ToBoogie(FailIfFileNotFound(fileName));
+                var output = Translator.ToBoogie(FailIfFileNotFound(targetAssembly));
                 if (output is null)
                 {
-                    Error("Could not disassemble {0} as  Boogie.", fileName);
+                    Error("Could not disassemble {0} as  Boogie.", targetAssembly);
                     return false;
                 }
                 else
@@ -58,13 +84,13 @@ namespace Silver.CLI.Core
                 if (InteractiveConsole)
                 {
                     var output = new ColorfulConsoleSourceEmitterOutput();
-                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, classPattern, methodPattern, true);
+                    Disassembler.Run(targetAssembly, output, noIL, noStack, classPattern, methodPattern, true);
                     return true;
                 }
                 else
                 {
                     var output = new CSharpSourceEmitter.SourceEmitterOutputString();
-                    Disassembler.Run(FailIfFileNotFound(fileName), output, noIL, noStack, classPattern, methodPattern);
+                    Disassembler.Run(targetAssembly, output, noIL, noStack, classPattern, methodPattern);
                     System.Console.WriteLine(output.Data);
                     return true;
                 }

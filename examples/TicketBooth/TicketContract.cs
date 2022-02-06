@@ -245,19 +245,19 @@ public class TicketContract : SmartContract
     public void Test1(int count)
     {
         // int MAX_LEN = 100;
-        Assert(count <= MAX_SEATS, $"Cannot handle more than {MAX_SEATS} characters");
+        Assert(count <= MAX_SEATS, $"Cannot handle more than {MAX_SEATS} seats");
     }
 
     public void Test2(int count)
     {
         // int MAX_LEN = 100;
-        Assert(count <= MAX_SEATS, string.Format("Cannot handle more than {0} characters.", MAX_SEATS));
+        Assert(count <= MAX_SEATS, string.Format("Cannot handle more than {0} seats.", MAX_SEATS));
     }
 
     public void Test3(int count)
     {
         // int MAX_LEN = 100;
-        Assert(count <= MAX_SEATS, "Cannot handle more than " + MAX_SEATS + "characters.");
+        Assert(count <= MAX_SEATS, "Cannot handle more than " + MAX_SEATS + "seats.");
     }
     #endregion
 

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
 
-using Silver;
 using Silver.CLI.Commands;
 
 #region Enums
@@ -237,12 +236,6 @@ class Program : Runtime
     #endregion
 
     #region Methods
-    static void PrintLogo()
-    {
-        Con.Write(new FigletText(font, "Silver").LeftAligned().Color(Spectre.Console.Color.Cyan1));
-        Con.Write(new Text($"v{AssemblyVersion.ToString(3)}\n").LeftAligned());
-    }
-
     public static void Exit(ExitResult result)
     {
         if (Cts != null && !Cts.Token.CanBeCanceled)
@@ -250,6 +243,7 @@ class Program : Runtime
             Cts.Cancel();
             Cts.Dispose();
         }
+        RestoreOriginalConsoleColors();
         Serilog.Log.CloseAndFlush();
         Environment.Exit((int)result);
     }
@@ -272,6 +266,19 @@ class Program : Runtime
             Exit(ExitResult.NOT_FOUND);
         }
     }
+
+    static void PrintLogo()
+    {
+        Con.Write(new FigletText(font, "Silver").LeftAligned().Color(Spectre.Console.Color.Cyan1));
+        Con.Write(new Text($"v{AssemblyVersion.ToString(3)}\n").LeftAligned());
+    }
+
+    static void RestoreOriginalConsoleColors()
+    {
+        Console.ForegroundColor = originalConsoleForegroundColor;
+        Console.BackgroundColor = originalConsoleBackgroundColor;
+    }
+
     static HelpText GetAutoBuiltHelpText(ParserResult<object> result)
     {
         return HelpText.AutoBuild(result, h =>
@@ -315,5 +322,8 @@ class Program : Runtime
     };
     static FigletFont font = FigletFont.Load(Path.Combine(AssemblyLocation, "chunky.flf"));
     static Dictionary<string, Type> optionTypesMap = new Dictionary<string, Type>();
+
+    static ConsoleColor originalConsoleForegroundColor = Console.ForegroundColor;
+    static ConsoleColor originalConsoleBackgroundColor = Console.BackgroundColor;
     #endregion
 }

@@ -75,7 +75,6 @@ namespace Silver.CLI.Core
                 {
                     return c;
                 }
-                
             }
             else
             {
