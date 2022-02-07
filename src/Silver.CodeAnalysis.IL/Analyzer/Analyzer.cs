@@ -7,7 +7,7 @@ using Microsoft.Msagl.Drawing;
 
 #region Records
 public record Summary(
-	ITypeDefinition[] Types, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
+	ITypeDefinition[] Classes, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
 	IPropertyDefinition[] Properties, IFieldDefinition[] Fields);
 #endregion
 
@@ -109,6 +109,7 @@ public partial class Analyzer : Runtime
 		}
 		return g;
 	}
+
 	public Graph GetControlFlowGraph()
 	{
 		FailIfNotInitialized();
@@ -167,7 +168,31 @@ public partial class Analyzer : Runtime
 		return g;
 	}
 
-	internal T[] Collect<T>(string name, Func<T, bool> pred, Func<T, T> func)
+	internal ITypeDefinition[] CollectTypes(string name, Func<ITypeDefinition, bool> pred, Func<ITypeDefinition, ITypeDefinition> func)
+	{
+		if (State.ContainsKey(name.ToLower()))
+		{
+			Info("{0} are already collected, reusing...", name);
+			return State.Get<ITypeDefinition[]>(name.ToLower());
+		}
+		else
+		{
+			using var op = Begin("Collecting {0}", name);
+			var data = moduleTypeDefinitions.Where(t => pred(t)).Select(t => func(t)).ToArray();
+			State.Add(name.ToLower(), data);
+			op.Complete();
+			Info("Got {0} objects.", data.Length);
+			return data;
+		}
+	}
+
+	internal ITypeDefinition[] CollectTypes(string name, Func<ITypeDefinition, bool> pred) => CollectTypes(name, pred, Identity<ITypeDefinition>());
+
+	internal ITypeDefinition[] CollectTypes(string name, Func<ITypeDefinition, ITypeDefinition> func) => CollectTypes(name, All<ITypeDefinition>(), func);
+
+	internal ITypeDefinition[] CollectTypes(string name) => CollectTypes(name, All<ITypeDefinition>(), Identity<ITypeDefinition>());
+
+	internal T[] CollectMembers<T>(string name, Func<T, bool> pred, Func<T, T> func)
 	{
 		if (State.ContainsKey(name.ToLower()))
 		{
@@ -180,37 +205,39 @@ public partial class Analyzer : Runtime
 			var _data = from t in moduleTypeDefinitions
 						from d in t.Members.OfType<T>()
 						where d is not null && pred(d)
-						select d;
-			var data = _data.Select(d => func(d)).ToArray();
+						select func(d);
+			var data = _data.ToArray();
 			State.Add(name.ToLower(), data);
 			op.Complete();
+			Info("Got {0} objects.", data.Length);
 			return data;
 		}
 	}
 
-	internal T[] Collect<T>(string name, Func<T, bool> pred) => Collect<T>(name, pred, Identity<T>());
+	internal T[] CollectMembers<T>(string name, Func<T, bool> pred) => CollectMembers<T>(name, pred, Identity<T>());
 
-	internal T[] Collect<T>(string name, Func<T, T> func) => Collect<T>(name, All<T>(), func);
+	internal T[] CollectMembers<T>(string name, Func<T, T> func) => CollectMembers<T>(name, All<T>(), func);
 
-	internal T[] Collect<T>(string name) => Collect<T>(name, All<T>(), Identity<T>());
+	internal T[] CollectMembers<T>(string name) => CollectMembers<T>(name, All<T>(), Identity<T>());
 
-	internal ITypeDefinition[] CollectClasses() => Collect<ITypeDefinition>("Classes", c => c.IsClass);
+	internal ITypeDefinition[] CollectClasses() => CollectTypes("Classes", (t => t.IsClass && t.GetName() != "<Module>")).ToArray();
 
-	internal IMethodDefinition[] CollectMethods() => Collect<IMethodDefinition>("Methods", m =>
+	internal ITypeDefinition[] CollectStructs() => CollectTypes("Structs", (t => t.IsStruct)).ToArray();
+
+	internal ITypeDefinition[] CollectEnums() => CollectTypes("Enums", (t => t.IsEnum)).ToArray();
+
+	internal IMethodDefinition[] CollectMethods() => CollectMembers<IMethodDefinition>("Methods", m =>
 	{
 		var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
 		MethodBodyProvider.Instance.AddBody(m, disassembler.Execute());
 		return m;
 	});
 
-	internal IFieldDefinition[] CollectFields() => Collect<IFieldDefinition>("Fields");
+	internal IFieldDefinition[] CollectFields() => CollectMembers<IFieldDefinition>("Fields");
 
-	internal ITypeDefinition[] CollectStructs() => Collect<ITypeDefinition>("Structs", t => t.IsStruct);
+	internal IPropertyDefinition[] CollectProperties() => CollectMembers<IPropertyDefinition>("Properties");
 
-	internal IPropertyDefinition[] CollectProperties() => Collect<IPropertyDefinition>("Properties");
-
-	internal ITypeDefinition[] CollectEnums() => Collect<ITypeDefinition>("Enums", t => t.IsEnum);
-
+	
 	internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
 		FailIfNotInitialized();
@@ -219,7 +246,6 @@ public partial class Analyzer : Runtime
 		return visitor.state;
 	}
 
-	
 	public static void Test(string fileName)
 	{
 		var analyzer = new Analyzer(fileName);
