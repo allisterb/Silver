@@ -7,14 +7,14 @@ using Microsoft.Msagl.Drawing;
 
 #region Records
 public record Summary(
-	List<ITypeDefinition> Types, List<ITypeDefinition> Structs, List<ITypeDefinition> Enums, List<IMethodDefinition> Methods,
-	List<IPropertyDefinition> Properties, List<IFieldDefinition> Fields);
+	ITypeDefinition[] Types, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
+	IPropertyDefinition[] Properties, IFieldDefinition[] Fields);
 #endregion
 
 public partial class Analyzer : Runtime
 {
-    #region Constructors
-    public Analyzer(string fileName, AnalyzerState? state = null)
+	#region Constructors
+	public Analyzer(string fileName, AnalyzerState? state = null)
 	{
 		AssemblyFile = new FileInfo(fileName);
 		Host = new PeReader.DefaultHost();
@@ -33,16 +33,17 @@ public partial class Analyzer : Runtime
 		{
 			PdbReader = new PdbReader(fileName, pdbFileName, this.Host, true);
 		}
-		moduleTypeDefinitions = from a in Host.LoadedUnits.OfType<IModule>()
-									from t in a.GetAllTypes()
-									select t;
+		var _moduleTypeDefinitions = from a in Host.LoadedUnits.OfType<IModule>()
+								from t in a.GetAllTypes()
+								select t;
+		moduleTypeDefinitions = _moduleTypeDefinitions.ToArray();
 		Initialized = true;
 	}
-    #endregion
+	#endregion
 
-    #region Properties
-    public FileInfo AssemblyFile { get; init; }
-	
+	#region Properties
+	public FileInfo AssemblyFile { get; init; }
+
 	public IMetadataHost Host { get; init; }
 	public IModule? Module { get; init; }
 	public PdbReader? PdbReader { get; init; }
@@ -51,15 +52,19 @@ public partial class Analyzer : Runtime
 
 	#region Methods
 	public Summary GetSummary()
-    {
+	{
 		FailIfNotInitialized();
-		var summary = new SummaryVisitor(this.State);
-		summary.Traverse(Module);
-		return new(summary.types, summary.structs, summary.enums, summary.methods, summary.properties, summary.fields);
-    }
+		var classes = CollectClasses();
+		var methods = CollectMethods();
+		var structs = CollectStructs();
+		var enums = CollectEnums();
+		var properties = CollectProperties();
+		var fields = CollectFields();	
+		return new(classes, structs, enums, methods, properties, fields);
+	}
 
 	public Graph GetCallGraph()
-    {
+	{
 		FailIfNotInitialized();
 		using var op = Begin("Creating call graph for methods in assembly {0}", AssemblyFile.Name);
 		var cha = new ClassHierarchyCallGraphAnalysis(Host);
@@ -74,52 +79,52 @@ public partial class Analyzer : Runtime
 		var cg = cha.Analyze();
 		var g = new Graph();
 		foreach (var method in cg.Roots)
-        {
+		{
 			Node? rootNode = null;
 			var calllsites = cg.GetCallSites(method);
 			var inv = cg.GetInvocations(method);
 			var nid = MemberHelper.GetMethodSignature(method);
 			if (!g.Nodes.Any(n => n.Id == nid))
-            {
+			{
 				rootNode = g.AddNode(nid);
 			}
 			else
-            {
+			{
 				rootNode = g.FindNode(nid);
-            }
-			foreach(var cs in calllsites)
-            {
+			}
+			foreach (var cs in calllsites)
+			{
 				Node? csNode = null;
 				var csid = MemberHelper.GetMethodSignature(cs.Caller);
 				if (!g.Nodes.Any(n => nid == csid))
-                {
+				{
 					csNode = g.AddNode(csid);
 				}
 				else
-                {
+				{
 					csNode = g.FindNode(csid);
-                }
+				}
 				g.AddEdge(csNode.Id, rootNode.Id);
-            }
+			}
 		}
 		return g;
-    }
+	}
 	public Graph GetControlFlowGraph()
 	{
 		FailIfNotInitialized();
 		if (State.ContainsKey("cfg"))
-        {
+		{
 			Info("Using cached control-flow graphs.");
-        }
+		}
 		using var op = Begin("Creating control-flow graph for methods in assembly {0}", AssemblyFile.Name);
 		var methods = CollectMethods();
 		Graph g = new Graph();
 		var sourceEmitterOutput = new MonochromeSourceEmitterOutput();
 		foreach (var method in methods)
-        {
+		{
 			var cfg = new ControlFlowAnalysis(MethodBodyProvider.Instance.GetBody(method)).GenerateNormalControlFlow();
-			foreach(var cfgNode in cfg.Nodes)
-            {
+			foreach (var cfgNode in cfg.Nodes)
+			{
 				var nid = method.GetUniqueId(cfgNode.Id);
 				var node = g.Nodes.FirstOrDefault(n => n.Id == nid);
 				if (node is null)
@@ -132,11 +137,11 @@ public partial class Analyzer : Runtime
 							node = new Node(nid);
 							node.LabelText = PrintCFGNodeLabel(method, cfgNode, sourceEmitterOutput);
 							if (method.IsSmartContractMethod() && cfgNode.Kind == CFGNodeKind.Entry)
-                            {
+							{
 								node.Attr.FillColor = Color.Yellow;
-                            }
+							}
 							else
-                            {
+							{
 								node.Attr.FillColor = Color.White;
 							}
 							g.AddNode(node);
@@ -144,11 +149,11 @@ public partial class Analyzer : Runtime
 					}
 				}
 			}
-			foreach(var cfgNode in cfg.Nodes)
-            {
-				var node = g.FindNode(method.GetUniqueId(cfgNode.Id));	
-				foreach(var successor in cfgNode.Successors)
-                {
+			foreach (var cfgNode in cfg.Nodes)
+			{
+				var node = g.FindNode(method.GetUniqueId(cfgNode.Id));
+				foreach (var successor in cfgNode.Successors)
+				{
 					if (successor.Kind == CFGNodeKind.Exit) continue;
 					var snid = method.GetUniqueId(successor.Id);
 					var snode = g.FindNode(snid);
@@ -162,31 +167,49 @@ public partial class Analyzer : Runtime
 		return g;
 	}
 
-	internal IMethodDefinition[] CollectMethods()
+	internal T[] Collect<T>(string name, Func<T, bool> pred, Func<T, T> func)
 	{
-		if (State.ContainsKey("methods"))
+		if (State.ContainsKey(name.ToLower()))
 		{
-			Info("Methods are already collected, reusing...");
-			return State.Get<IMethodDefinition[]>("methods");
+			Info("{0} are already collected, reusing...", name);
+			return State.Get<T[]>(name.ToLower());
 		}
 		else
 		{
-			using var op = Begin("Collecting methods");
-			var _methods = from t in moduleTypeDefinitions
-						   from m in t.Members.OfType<IMethodDefinition>()
-						   where m.Body is not null
-						   select m;
-			var methods = _methods.ToArray();
-			foreach (var m in methods)
-			{
-				var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
-				MethodBodyProvider.Instance.AddBody(m, disassembler.Execute());
-			}
-			State.Add("methods", methods);
+			using var op = Begin("Collecting {0}", name);
+			var _data = from t in moduleTypeDefinitions
+						from d in t.Members.OfType<T>()
+						where d is not null && pred(d)
+						select d;
+			var data = _data.Select(d => func(d)).ToArray();
+			State.Add(name.ToLower(), data);
 			op.Complete();
-			return methods;
+			return data;
 		}
 	}
+
+	internal T[] Collect<T>(string name, Func<T, bool> pred) => Collect<T>(name, pred, Identity<T>());
+
+	internal T[] Collect<T>(string name, Func<T, T> func) => Collect<T>(name, All<T>(), func);
+
+	internal T[] Collect<T>(string name) => Collect<T>(name, All<T>(), Identity<T>());
+
+	internal ITypeDefinition[] CollectClasses() => Collect<ITypeDefinition>("Classes", c => c.IsClass);
+
+	internal IMethodDefinition[] CollectMethods() => Collect<IMethodDefinition>("Methods", m =>
+	{
+		var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
+		MethodBodyProvider.Instance.AddBody(m, disassembler.Execute());
+		return m;
+	});
+
+	internal IFieldDefinition[] CollectFields() => Collect<IFieldDefinition>("Fields");
+
+	internal ITypeDefinition[] CollectStructs() => Collect<ITypeDefinition>("Structs", t => t.IsStruct);
+
+	internal IPropertyDefinition[] CollectProperties() => Collect<IPropertyDefinition>("Properties");
+
+	internal ITypeDefinition[] CollectEnums() => Collect<ITypeDefinition>("Enums", t => t.IsEnum);
 
 	internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
@@ -197,7 +220,6 @@ public partial class Analyzer : Runtime
 	}
 
 	
-
 	public static void Test(string fileName)
 	{
 		var analyzer = new Analyzer(fileName);

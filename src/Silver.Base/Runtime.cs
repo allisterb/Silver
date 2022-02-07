@@ -78,6 +78,11 @@ public abstract class Runtime
     #endregion
 
     #region Methods
+
+    public static Func<T, bool> All<T>() => (x_ => true);
+
+    public static Func<T, T> Identity<T>() => (x => x);
+    
     public static void SetLogger(Logger logger)
     {
         Logger = logger;

@@ -122,7 +122,7 @@ public class ColorfulSourceEmitter : SourceEmitter
             //     PrintScopes(methodBody);
             //else
             //    PrintLocals(methodBody.LocalVariables);
-            int currentIndex = -1; // a number no index matches
+            
             int gasCost = 0;
             foreach (IOperation operation in methodBody.Operations)
             {

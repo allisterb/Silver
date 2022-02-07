@@ -104,7 +104,6 @@ namespace Silver.CLI.Core
                 Error("Could not get target assembly to analyze.");
                 return false;
             }
-            
             var an = new Analyzer(a);
             if (!an.Initialized)
             {
