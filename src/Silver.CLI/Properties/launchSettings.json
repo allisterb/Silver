@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": " dis c:\\Projects\\Silver\\examples\\TestStringSyntax\\bin\\Debug\\netcoreapp3.1\\TestStringSyntax.dll -m Bar"
+      "commandLineArgs": " dis c:\\Projects\\Silver\\examples\\TestStringSyntax\\bin\\Debug\\netcoreapp3.1\\TestStringSyntax.dll"
     }
   }
 }

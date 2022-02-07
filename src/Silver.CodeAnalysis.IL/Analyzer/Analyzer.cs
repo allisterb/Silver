@@ -336,7 +336,8 @@ public partial class Analyzer : Runtime
 					}
 					else
 					{
-						sourceEmitterOutput.Write(" " + operation.Value.GetType().FullName);
+						sourceEmitterOutput.Write(" " + operation.Value);
+						//sourceEmitterOutput.Write(" " + operation.Value.GetType().FullName);
 					}
 				}
 			}

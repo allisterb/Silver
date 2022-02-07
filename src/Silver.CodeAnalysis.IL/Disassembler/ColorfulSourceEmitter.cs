@@ -543,8 +543,15 @@ public class ColorfulSourceEmitter : SourceEmitter
 
     private void PrintSourceLocation(IPrimarySourceLocation psloc)
     {
-        csourceEmitterOutput.WriteLine(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
-        //csourceEmitterOutput.WriteLine(psloc.Source);
+        csourceEmitterOutput.Write(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
+        if (psloc.Source.Length > 1)
+        {
+            csourceEmitterOutput.WriteLine(psloc.Source);
+        }
+        else
+        {
+            csourceEmitterOutput.WriteLine("");
+        }
     }
 
     private void PrintInstructionCount(IEnumerable<IOperation> operations)

@@ -259,6 +259,25 @@ public class TicketContract : SmartContract
         // int MAX_LEN = 100;
         Assert(count <= MAX_SEATS, "Cannot handle more than " + MAX_SEATS + "seats.");
     }
+
+    public void Test4(string name)
+    {
+        var v = new TestStruct { Name = name, Time = 1000 };
+    }
+
+    public void Test5(string name)
+    {
+        var v = new TestStruct (name, 1000);
+        //v.Name = name;
+        //v.Time = 1000;
+    }
+
+    public void Test6(string name)
+    {
+        TestStruct v;
+        v.Name = name;
+        v.Time = 1000;
+    }
     #endregion
 
     #region Private properties
@@ -460,6 +479,19 @@ public class TicketContract : SmartContract
         /// Whether the venue requires identity verification
         /// </summary>
         public bool RequireIdentityVerification;
+    }
+
+    public struct TestStruct
+    {
+        public TestStruct(string name, ulong time)
+        {
+            this.Name = name;
+            this.Time = time;  
+        }
+        public string Name;
+
+        public ulong Time;
+
     }
     #endregion
 }
