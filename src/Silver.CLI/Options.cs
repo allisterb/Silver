@@ -125,9 +125,6 @@ public class DisassemblerOptions : Options
     [Option("cs", Required = false, HelpText = "Emit only C# code i.e. decompile.")]
     public bool NoIL { get; set; }
 
-    [Option('k', "stack", Required = false, HelpText = "Emit code that retains a stack.")]
-    public bool Stack { get; set; }
-
     [Option('c', "class", Required = false, HelpText = "Only disassemble methods belonging to classes matching this name pattern.")]
     public string? ClassPattern { get; set; }
 

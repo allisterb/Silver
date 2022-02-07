@@ -38,7 +38,7 @@ namespace Silver.CLI.Core
             }
             else return null;
         }
-        public static bool Disassemble(string fileName, bool boogie, bool noIL, bool noStack, string? classPattern = null, string? methodPattern = null)
+        public static bool Disassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
         {
             string targetAssembly = FailIfFileNotFound(fileName);
             if (SilverProject.HasProjectExtension(fileName))
@@ -84,13 +84,13 @@ namespace Silver.CLI.Core
                 if (InteractiveConsole)
                 {
                     var output = new ColorfulConsoleSourceEmitterOutput();
-                    Disassembler.Run(targetAssembly, output, noIL, noStack, classPattern, methodPattern, true);
+                    Disassembler.Run(targetAssembly, output, noIL, classPattern, methodPattern, true);
                     return true;
                 }
                 else
                 {
                     var output = new CSharpSourceEmitter.SourceEmitterOutputString();
-                    Disassembler.Run(targetAssembly, output, noIL, noStack, classPattern, methodPattern);
+                    Disassembler.Run(targetAssembly, output, noIL, classPattern, methodPattern);
                     System.Console.WriteLine(output.Data);
                     return true;
                 }

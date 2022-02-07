@@ -131,11 +131,7 @@ public class ColorfulSourceEmitter : SourceEmitter
                     
                     foreach (IPrimarySourceLocation psloc in this.pdbReader.GetPrimarySourceLocationsFor(operation.Location))
                     {
-                        if (psloc.StartIndex != currentIndex)
-                        {
-                            PrintSourceLocation(psloc);
-                            currentIndex = psloc.StartIndex;
-                        }
+                        PrintSourceLocation(psloc);
                     } 
                 }
                 PrintOperation(operation);
@@ -546,14 +542,6 @@ public class ColorfulSourceEmitter : SourceEmitter
     {
         var source = psloc.Source.Trim() != "{" ? " " + psloc.Source.TrimEnd(';') : "";
         csourceEmitterOutput.WriteLine(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + ")" + source + ":", true, Color.Red);
-        //if (psloc.Source.Length > 1)
-        //{
-        //csourceEmitterOutput.WriteLine(psloc.Source, true);
-        //}
-        //else
-        //{
-        //    csourceEmitterOutput.WriteLine("");
-        //}
     }
 
     private void PrintInstructionCount(IEnumerable<IOperation> operations)
