@@ -128,6 +128,7 @@ public class ColorfulSourceEmitter : SourceEmitter
             {
                 if (this.pdbReader != null)
                 {
+                    
                     foreach (IPrimarySourceLocation psloc in this.pdbReader.GetPrimarySourceLocationsFor(operation.Location))
                     {
                         if (psloc.StartIndex != currentIndex)
@@ -135,7 +136,7 @@ public class ColorfulSourceEmitter : SourceEmitter
                             PrintSourceLocation(psloc);
                             currentIndex = psloc.StartIndex;
                         }
-                    }
+                    } 
                 }
                 PrintOperation(operation);
                 if (operation.OperationCode == OperationCode.Call || operation.OperationCode == OperationCode.Callvirt)
@@ -543,15 +544,16 @@ public class ColorfulSourceEmitter : SourceEmitter
 
     private void PrintSourceLocation(IPrimarySourceLocation psloc)
     {
-        csourceEmitterOutput.Write(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + "): ", true, Color.Red);
-        if (psloc.Source.Length > 1)
-        {
-            csourceEmitterOutput.WriteLine(psloc.Source);
-        }
-        else
-        {
-            csourceEmitterOutput.WriteLine("");
-        }
+        var source = psloc.Source.Trim() != "{" ? " " + psloc.Source.TrimEnd(';') : "";
+        csourceEmitterOutput.WriteLine(psloc.Document.Name.Value + "(" + psloc.StartLine + ":" + psloc.StartColumn + ")-(" + psloc.EndLine + ":" + psloc.EndColumn + ")" + source + ":", true, Color.Red);
+        //if (psloc.Source.Length > 1)
+        //{
+        //csourceEmitterOutput.WriteLine(psloc.Source, true);
+        //}
+        //else
+        //{
+        //    csourceEmitterOutput.WriteLine("");
+        //}
     }
 
     private void PrintInstructionCount(IEnumerable<IOperation> operations)
