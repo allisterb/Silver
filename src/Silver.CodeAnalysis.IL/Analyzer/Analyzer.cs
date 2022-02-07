@@ -168,7 +168,8 @@ public partial class Analyzer : Runtime
 		return g;
 	}
 
-	internal ITypeDefinition[] CollectTypes(string name, Func<ITypeDefinition, bool> pred, Func<ITypeDefinition, ITypeDefinition> func)
+    #region Collecters
+    internal ITypeDefinition[] CollectTypes(string name, Func<ITypeDefinition, bool> pred, Func<ITypeDefinition, ITypeDefinition> func)
 	{
 		if (State.ContainsKey(name.ToLower()))
 		{
@@ -181,7 +182,7 @@ public partial class Analyzer : Runtime
 			var data = moduleTypeDefinitions.Where(t => pred(t)).Select(t => func(t)).ToArray();
 			State.Add(name.ToLower(), data);
 			op.Complete();
-			Info("Got {0} objects.", data.Length);
+			Info("Collected {0} type(s).", data.Length);
 			return data;
 		}
 	}
@@ -209,7 +210,7 @@ public partial class Analyzer : Runtime
 			var data = _data.ToArray();
 			State.Add(name.ToLower(), data);
 			op.Complete();
-			Info("Got {0} objects.", data.Length);
+			Info("Collected {0} member(s).", data.Length);
 			return data;
 		}
 	}
@@ -236,9 +237,9 @@ public partial class Analyzer : Runtime
 	internal IFieldDefinition[] CollectFields() => CollectMembers<IFieldDefinition>("Fields");
 
 	internal IPropertyDefinition[] CollectProperties() => CollectMembers<IPropertyDefinition>("Properties");
+    #endregion
 
-	
-	internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
+    internal AnalyzerState AnalyzeMethods(System.Action<IMethodDefinition, AnalyzerState> action)
 	{
 		FailIfNotInitialized();
 		var visitor = new MethodVisitor(action, State);
@@ -424,7 +425,6 @@ public partial class Analyzer : Runtime
 
 	#endregion
 
-	
 	#region Fields
 	internal IEnumerable<INamedTypeDefinition> moduleTypeDefinitions;
 	#endregion

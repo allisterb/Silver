@@ -1,5 +1,7 @@
 ﻿namespace Silver.CLI.Core;
 
+using Microsoft.Cci;
+
 using Silver.CodeAnalysis.IL;
 using Silver.Projects;
 using Silver.Drawing;
@@ -114,7 +116,28 @@ public class IL : Runtime
         var tree = new Tree("Summary");
         foreach (var c in summary.Classes)
         {
-            tree.AddNodes(c.GetName().ToString());
+            var contract = tree.AddNode($"Contract [royalblue1]{c.GetName().EscapeMarkup()}[/]");
+            var methods = contract.AddNode("[yellow]Methods[/]");
+            List<TreeNode> publicMethodNodes = new();
+            List<TreeNode> notpublicMethodNodes = new();
+            foreach(var method in summary.Methods
+                .Where(m => m.ContainingTypeDefinition == c && !m.IsConstructor)
+                .OrderBy(m => m.Visibility)
+                .OrderByDescending(m => m.Visibility))
+            {
+                var parameters = method.Parameters is not null && method.Parameters.Any() ? 
+                    "[blue]" + method.Parameters.Select(p => p.Type.ToString()!.EscapeMarkup()).JoinWith(",") +"[/]" : "";
+                if (method.Visibility == Microsoft.Cci.TypeMemberVisibility.Public)
+                {
+                    publicMethodNodes.Add(methods.AddNode("[cyan]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[cyan]{MemberHelper.GetMethodSignature(method).EscapeMarkup()}[/]({parameters})"));
+                }
+                else
+                {
+                    notpublicMethodNodes.Add(methods.AddNode("[fuchsia]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[lime]{method.GetUniqueName().EscapeMarkup()}[/]({parameters})"));
+                }
+            }
+           TreeNode[] nodes = publicMethodNodes.Concat(notpublicMethodNodes).ToArray();
+
         }
         Con.Write(tree);
         
