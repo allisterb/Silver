@@ -22,5 +22,27 @@ public static class Extensions
         => md.GetUniqueName() + "::" + id;
 
     public static IEnumerable<IOperation> GetILFromBody(this Instruction i, IMethodBody body) => body.Operations.Where(il => il.Offset == i.Offset);
+
+    public static int GasCost(this IEnumerable<IOperation> ops)
+    {
+        int cost = 0;
+        foreach (var op in ops)
+        {
+            if (op.OperationCode == OperationCode.Call || op.OperationCode == OperationCode.Callvirt)
+            {
+                cost += 5;
+            }
+            else
+            {
+                cost += 1;
+            }
+        }
+        return cost;
+    }
+
+    //public static bool ReadsState(this IEnumerable<IOperation> ops) 
+    //{ ops.Any(op => (op.OperationCode == OperationCode.Call || op.OperationCode== OperationCode.Callvirt) &&
+    //    );
+    //}
 }
 

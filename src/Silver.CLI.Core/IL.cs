@@ -117,26 +117,55 @@ public class IL : Runtime
         foreach (var c in summary.Classes)
         {
             var contract = tree.AddNode($"Contract [royalblue1]{c.GetName().EscapeMarkup()}[/]");
+            var ctors = contract.AddNode("[yellow]Constructors[/]");
             var methods = contract.AddNode("[yellow]Methods[/]");
             List<TreeNode> publicMethodNodes = new();
             List<TreeNode> notpublicMethodNodes = new();
             foreach(var method in summary.Methods
-                .Where(m => m.ContainingTypeDefinition == c && !m.IsConstructor)
-                .OrderBy(m => m.Visibility)
+                .Where(m => m.ContainingTypeDefinition == c)
                 .OrderByDescending(m => m.Visibility))
             {
-                var parameters = method.Parameters is not null && method.Parameters.Any() ? 
-                    "[blue]" + method.Parameters.Select(p => p.Type.ToString()!.EscapeMarkup()).JoinWith(",") +"[/]" : "";
-                if (method.Visibility == Microsoft.Cci.TypeMemberVisibility.Public)
+                TreeNode? node = null;
+                if (method.Visibility == TypeMemberVisibility.Public)
                 {
-                    publicMethodNodes.Add(methods.AddNode("[cyan]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[cyan]{MemberHelper.GetMethodSignature(method).EscapeMarkup()}[/]({parameters})"));
+                    var parameters = method.Parameters is not null && method.Parameters.Any() ?
+                    "[blue](" + method.Parameters.Select(p => p.Type.ToString()!.EscapeMarkup()).JoinWith(", ") + ")[/]"
+                    : "[cyan]()[/]";
+                    if (!method.IsConstructor)
+                    {
+                        node = methods.AddNode("[cyan]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[cyan]{MemberHelper.GetMethodSignature(method).EscapeMarkup()}[/]{parameters}");
+                    }
+                    else
+                    {
+                        node = ctors.AddNode("[cyan]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[cyan]{MemberHelper.GetMethodSignature(method).EscapeMarkup()}[/]{parameters}");
+                    }
+                    publicMethodNodes.Add(node);
                 }
                 else
                 {
-                    notpublicMethodNodes.Add(methods.AddNode("[fuchsia]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[lime]{method.GetUniqueName().EscapeMarkup()}[/]({parameters})"));
+                    var parameters = method.Parameters is not null && method.Parameters.Any() ?
+                    "[blue](" + method.Parameters.Select(p => p.Type.ToString()!.EscapeMarkup()).JoinWith(", ") + ")[/]"
+                    : "[lime]()[/]";
+                    if (!method.IsConstructor)
+                    {
+                        node = methods.AddNode("[lime]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[lime]{MemberHelper.GetMethodSignature(method).EscapeMarkup()}[/]{parameters}");
+                    }
+                    else
+                    {
+                        node = ctors.AddNode("[lime]" + $"[{method.Visibility.ToString().ToLower()}] ".EscapeMarkup() + "[/]" + $"[lime]{MemberHelper.GetMethodSignature(method).EscapeMarkup()}[/]{parameters}");
+                    }
+                    notpublicMethodNodes.Add(node);
+
                 }
+                node.AddNode($"Parameters: [fuchsia]{method.ParameterCount}[/]");
+                node.AddNode($"Instructions: [fuchsia]{method.Body.Operations.Count()}[/]");
+                node.AddNode($"Gas cost: [fuchsia]{method.Body.Operations.GasCost()}[/]");
             }
-           TreeNode[] nodes = publicMethodNodes.Concat(notpublicMethodNodes).ToArray();
+            TreeNode[] nodes = publicMethodNodes.Concat(notpublicMethodNodes).ToArray();
+            foreach(var node in nodes)
+            {
+                //node.AddNode("Parameters: {0}", me)
+            }
 
         }
         Con.Write(tree);

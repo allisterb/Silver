@@ -278,6 +278,14 @@ public class TicketContract : SmartContract
         v.Name = name;
         v.Time = 1000;
     }
+
+    public void Test7(string name)
+    {
+        var d = State.GetBool("foo");
+        //TestStruct v;
+        //v.Name = name;
+        //v.Time = 1000;
+    }
     #endregion
 
     #region Private properties
