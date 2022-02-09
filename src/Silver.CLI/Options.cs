@@ -92,6 +92,9 @@ public class CompileOptions : Options
     [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the build configuration for compiling the source files or project file. Defaults to 'Debug'.")]
     public string BuildConfig { get; set; } = string.Empty;
 
+    [Option("validate", Required = false, HelpText = "Validate the assembly after compilation using the Stratis SCT.")]
+    public bool Validate { get; set; }
+
     [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file after compilation.")]
     public bool Verify { get; set; }
 

@@ -36,7 +36,7 @@ namespace Silver.CLI.Core
             }
         }
 
-        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, params string[] additionalFiles)
+        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, params string[] additionalFiles)
         {
             var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
@@ -66,15 +66,25 @@ namespace Silver.CLI.Core
                         }
                     }
                 }
-                if (verify)
+                if (validate)
+                {
+                    var op = Begin("Validating {0} source files using Stratis SCT tool", proj.SourceFiles.Count);
+                    if (Tools.Sct("validate", proj.SourceFiles.JoinWithSpaces()))
+                    {
+                        op.Complete();
+                    }
+                    else
+                    {
+                        op.Abandon();
+                    }
+                }
+                if (c && verify)
                 {
                     c = proj.SscCompile(rewrite, out var sscc);
                     return c;
                 }
-                else
-                {
-                    return c;
-                }
+                return c;
+               
             }
             else
             {

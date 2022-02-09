@@ -176,7 +176,6 @@ public abstract class SilverProject : Runtime
         if (((diags is null || diags.Any(d => d.Severity == DiagnosticSeverity.Error))))
         {
             op.Abandon();
-            Error("Compilation failed.");
             result = null;
             return false;
         }
@@ -195,7 +194,8 @@ public abstract class SilverProject : Runtime
             else
             {
                 op.Abandon();
-                Error("Compilation failed.");
+                Error("Could not emit code for compilation at {0}.", TargetPath);
+
             }
             return result.Success;
         }
