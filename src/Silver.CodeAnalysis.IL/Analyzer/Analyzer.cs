@@ -178,11 +178,9 @@ public partial class Analyzer : Runtime
 		}
 		else
 		{
-			using var op = Begin("Collecting {0}", name);
 			var data = moduleTypeDefinitions.Where(t => pred(t)).Select(t => func(t)).ToArray();
 			State.Add(name.ToLower(), data);
-			op.Complete();
-			Info("Collected {0} type(s).", data.Length);
+			Debug("Collected {0} type(s).", data.Length);
 			return data;
 		}
 	}
@@ -202,15 +200,13 @@ public partial class Analyzer : Runtime
 		}
 		else
 		{
-			using var op = Begin("Collecting {0}", name);
 			var _data = from t in moduleTypeDefinitions
 						from d in t.Members.OfType<T>()
 						where d is not null && pred(d)
 						select func(d);
 			var data = _data.ToArray();
 			State.Add(name.ToLower(), data);
-			op.Complete();
-			Info("Collected {0} member(s).", data.Length);
+			Debug("Collected {0} member(s).", data.Length);
 			return data;
 		}
 	}

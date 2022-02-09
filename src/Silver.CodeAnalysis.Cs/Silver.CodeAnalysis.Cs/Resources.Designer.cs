@@ -196,7 +196,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Field declarations are not allowed in smart contract code https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
+        ///   Looks up a localized string similar to Field declarations are not allowed in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md.
         /// </summary>
         internal static string SC0006_Description {
             get {

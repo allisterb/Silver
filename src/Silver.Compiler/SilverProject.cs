@@ -190,7 +190,6 @@ public abstract class SilverProject : Runtime
             if (result.Success)
             {
                 op.Complete();
-                Info("Compilation succeded.");
                 Info("Assembly is at {0}", TargetPath);               
             }
             else

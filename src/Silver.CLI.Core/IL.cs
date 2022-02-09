@@ -25,7 +25,8 @@ public class IL : Runtime
             }
             if (proj.BuildUpToDate)
             {
-                Info("Project {0} is up-to-date. Target assembly is {1}.", ViewFilePath(f), proj.TargetPath);
+                Info("Project {0} is up-to-date. Last build was on {1}.", ViewFilePath(f), File.GetLastWriteTime(proj.TargetPath));
+                Info("Target assembly is {0}.", proj.TargetPath);
                 return proj.TargetPath;
             }
             else if (proj.Compile(out var _, out var _))

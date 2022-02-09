@@ -29,10 +29,9 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().OfType<NameSyntax>().FirstOrDefault();  
-            if (!WhitelistedNamespaces.Contains(ns.ToFullString()))
+            if (ns != null && !WhitelistedNamespaces.Contains(ns.ToFullString()))
             {
-                return Diagnostic.Create(GetErrorDescriptor("SC0001"), ns.GetLocation(), ns.ToFullString());
-                //var n = typeof(int[]).getM
+                return CreateDiagnostic("SC0001", ns.GetLocation(), ns.ToFullString());
             }
             else
             {
@@ -44,7 +43,7 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().First();
-            return Diagnostic.Create(GetErrorDescriptor("SC0002"), ns.GetLocation(), ns.ToFullString());
+            return CreateDiagnostic("SC0002", ns.GetLocation(), ns.ToFullString());
         }
 
         // Declared classes must inherit from Stratis.SmartContracts.SmartContract
@@ -53,7 +52,7 @@ namespace Silver.CodeAnalysis.Cs
             var classSymbol = model.GetDeclaredSymbol(node) as ITypeSymbol;
             if (classSymbol.BaseType is null || classSymbol.BaseType.ToDisplayString() != "Stratis.SmartContracts.SmartContract")
             {
-                return Diagnostic.Create(GetErrorDescriptor("SC0003"), node.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).GetLocation(), classSymbol.Name);
+                return CreateDiagnostic("SC0003", node.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).GetLocation(), classSymbol.Name);
             }
             else
             {
@@ -83,7 +82,7 @@ namespace Silver.CodeAnalysis.Cs
             var classSymbol = model.GetSymbolInfo(fpt).Symbol as ITypeSymbol;
             if (classSymbol.ToDisplayString() != "Stratis.SmartContracts.ISmartContractState")
             {
-                return Diagnostic.Create(GetErrorDescriptor("SC0004"), fpn.GetLocation(), classSymbol.Name);
+                return CreateDiagnostic("SC0004", fpn.GetLocation(), classSymbol.Name);
             }
             else
             {
@@ -93,14 +92,14 @@ namespace Silver.CodeAnalysis.Cs
 
         public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SemanticModel model)
         {
-            return null;
+            return CreateDiagnostic("SC0006", node.GetLocation());
         }
         // New object creation not allowed
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {
             var t = objectCreation.Type;
             if (t.IsValueType) return null;
-            return Diagnostic.Create(GetErrorDescriptor("SC0005"), objectCreation.Syntax.GetLocation(), t.ToDisplayString());
+            return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
         }
 
         // Only whitelisted types allowed in variable declarations
@@ -113,7 +112,7 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return Diagnostic.Create(GetErrorDescriptor("SC0006"), v.Syntax.GetLocation(), v.Type.ToDisplayString());
+                return CreateDiagnostic("SC0006", v.Syntax.GetLocation(), v.Type.ToDisplayString());
             }
         }
         #region Overloads
@@ -142,6 +141,8 @@ namespace Silver.CodeAnalysis.Cs
             new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,
                 DiagnosticSeverity.Error, true, RM.GetString($"{id}_Description"));
         
+        public static Diagnostic CreateDiagnostic(string id, Location location, params object[] args) =>
+            Diagnostic.Create(GetErrorDescriptor(id), location, args);
         #endregion
 
         #region Fields

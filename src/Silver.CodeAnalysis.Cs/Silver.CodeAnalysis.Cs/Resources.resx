@@ -169,7 +169,7 @@
     <value>New object creation of reference type not allowed</value>
   </data>
   <data name="SC0006_Description" xml:space="preserve">
-    <value>Field declarations are not allowed in smart contract code https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md</value>
+    <value>Field declarations are not allowed in smart contract code. See https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md</value>
   </data>
   <data name="SC0006_MessageFormat" xml:space="preserve">
     <value>A field declaration cannot be made here</value>
