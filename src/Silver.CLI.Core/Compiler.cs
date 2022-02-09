@@ -69,9 +69,23 @@ namespace Silver.CLI.Core
                 if (validate)
                 {
                     var op = Begin("Validating {0} source files using Stratis SCT tool", proj.SourceFiles.Count);
-                    if (Tools.Sct("validate", proj.SourceFiles.JoinWithSpaces()))
+                    var ret = Tools.Sct(false, "validate", proj.SourceFiles.JoinWithSpaces());
+                    if (ret is not null)
                     {
                         op.Complete();
+                        var retl = ret.Split(Environment.NewLine);
+                        if (ret.Contains("Compilation OK: True") && ret.Contains("Format Valid: True") && ret.Contains("Determinism Valid: True") &&
+                            !retl.Any(r => r.StartsWith("Error: ")))
+                        {
+                            Info("SCT: Assembly is valid smart contract assembly.");
+                        }
+                        else
+                        {
+                            foreach(var l in retl.Where(l => l.StartsWith("Error: ")))
+                            {
+                                Error("SCT: {0}.", l.Replace("Error: ", ""));
+                            }
+                        }
                     }
                     else
                     {

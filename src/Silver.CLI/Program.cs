@@ -98,7 +98,7 @@ class Program : Runtime
         })
         .WithParsed<SctOptions>(o =>
         {
-            if (Core.Tools.Sct(o.Options.ToArray()))
+            if (Core.Tools.Sct(true, o.Options.ToArray()) is not null)
             {
                 Exit(ExitResult.SUCCESS);
             }

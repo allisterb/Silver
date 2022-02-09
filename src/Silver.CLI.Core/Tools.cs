@@ -39,7 +39,7 @@ public class Tools : Runtime
         }
     }
 
-    public static bool Sct(params string[] args)
+    public static string? Sct(bool echo = false, params string[] args)
     {
         var ret = RunCmd(
                    Path.Combine(AssemblyLocation, "sct", "Stratis.SmartContracts.Tools.Sct.exe"),
@@ -48,15 +48,14 @@ public class Tools : Runtime
                );
         if (ret is not null)
         {
-            Info("Executed {0} command with args {1}.\n", "sct", args.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "--") : a).JoinWithSpaces());
-            Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
-            return true;
+            Info("Executed {0} command with args {1}.", "sct", args.Select(a => a.StartsWith("/") ? a.TrimStart('/').Insert(0, "--") : a).JoinWithSpaces());
+            if (echo) Con.Write($"[bold white]{ret.EscapeMarkup()}[/]".ToMarkup());
         }
         else
         {
-            Error("Error executing sct.");
-            return false;
+            Error("Error executing SCT too.");
         }
+        return ret;
     }
 }
 
