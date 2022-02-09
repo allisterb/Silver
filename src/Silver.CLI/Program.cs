@@ -257,16 +257,6 @@ class Program : Runtime
         }
     }
 
-    public static void ExitIfNoTargetAssembly(string filePath)
-    {
-        ExitIfFileNotFound(filePath);
-        if (Core.IL.GetTargetAssembly(filePath) is null)
-        {
-            Error("Could not get target assembly {0}.", filePath);
-            Exit(ExitResult.NOT_FOUND);
-        }
-    }
-
     static void PrintLogo()
     {
         Con.Write(new FigletText(font, "Silver").LeftAligned().Color(Spectre.Console.Color.Cyan1));

@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "summarize c:\\Projects\\Silver\\examples\\TicketBooth\\bin\\Debug\\netcoreapp3.1\\Ticketbooth.Contract.dll"
+      "commandLineArgs": "summarize c:\\Projects\\Silver\\examples\\TicketBooth\\Ticketbooth.Contract.csproj"
     }
   }
 }

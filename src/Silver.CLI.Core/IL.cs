@@ -12,6 +12,7 @@ public class IL : Runtime
     {
         if (f.HasPeExtension())
         {
+            Info("Target assembly is {0}.", f);
             return f;
         }
         else if (SilverProject.HasProjectExtension(f))
@@ -24,11 +25,12 @@ public class IL : Runtime
             }
             if (proj.BuildUpToDate)
             {
-                Info("Project {0} is up-to-date.", f);
+                Info("Project {0} is up-to-date. Target assembly is {1}.", ViewFilePath(f), proj.TargetPath);
                 return proj.TargetPath;
             }
             else if (proj.Compile(out var _, out var _))
             {
+                Info("Target assembly is {0}.", proj.TargetPath);
                 return proj.TargetPath;
             }
             else
@@ -41,32 +43,8 @@ public class IL : Runtime
     }
     public static bool Disassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
     {
-        string targetAssembly = FailIfFileNotFound(fileName);
-        if (SilverProject.HasProjectExtension(fileName))
-        {
-                
-                
-            var proj = SilverProject.GetProject(fileName, "Debug");
-            if (proj is null || !proj.Initialized)
-            {
-                Error("Could not initialize project {0}.", fileName);
-                return false;
-            }
-            else
-            {
-                if (proj.Compile(out var _, out var _))
-                {
-                    targetAssembly = proj.TargetPath;
-                }
-                else
-                {
-                    Error("Could not compile project {0}.", fileName);
-                    return false;
-                }
-            }
-                
-        }
-
+        var targetAssembly = GetTargetAssembly(FailIfFileNotFound(fileName));
+        if (targetAssembly is null) return false;
         if (boogie)
         {
             var output = Translator.ToBoogie(FailIfFileNotFound(targetAssembly));
@@ -99,19 +77,8 @@ public class IL : Runtime
     }
     public static bool Summarize(string fileName)
     {
-        var a = GetTargetAssembly(FailIfFileNotFound(fileName));
-        if (a is null)
-        {
-            Error("Could not get target assembly to analyze.");
-            return false;
-        }
-        var an = new Analyzer(a);
-        if (!an.Initialized)
-        {
-            Error("Could not create an analyzer for {0}.", an);
-            return false;
-        }
-        
+        var an = GetAnalyzer(FailIfFileNotFound(fileName));
+        if (an is null) return false;
         var summary =  an.GetSummary();
         var tree = new Tree("Summary");
         foreach (var c in summary.Classes)
@@ -208,14 +175,14 @@ public class IL : Runtime
         var a = GetTargetAssembly(FailIfFileNotFound(fileName));
         if (a is null)
         {
-            Error("Could not get target assembly to analyze.");
+            Error("Could not get target assembly for file {0} to analyze.", fileName);
             return null;
         }
 
         var an = new Analyzer(a);
         if (!an.Initialized)
         {
-            Error("Could not create an analyzer for {0}.", an);
+            Error("Could not create an analyzer for file {0}.", fileName);
             return null;
         }
         else return an;
