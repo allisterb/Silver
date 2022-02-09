@@ -22,7 +22,7 @@ public class Translator : Runtime
             {
                 Error("Translation failed.");
                 if (File.Exists(o)) File.Delete(o);
-                op.Cancel();
+                op.Abandon();
                 return null;
             }
             else

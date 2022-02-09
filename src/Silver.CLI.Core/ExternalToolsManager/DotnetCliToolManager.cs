@@ -52,7 +52,7 @@ namespace Silver
                 if (!String.IsNullOrEmpty(errorMsg))
                 {
                     Error("Installation error: {0}", errorMsg);
-                    op.Cancel();
+                    op.Abandon();
                     return output;
                 }
                 else

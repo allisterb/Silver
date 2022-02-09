@@ -62,13 +62,14 @@ public class SerilogOp : Logger.Op
     public SerilogOp(SerilogLogger logger, Operation op) : base(logger)
     {
         Op = op;
+        this.logger = logger;
     }
 
     [DebuggerStepThrough]
-    public override void Cancel()
+    public override void Abandon()
     {
-        Op.Cancel();
-        isCancelled = true;
+        Op.Abandon();
+        isAbandoned = true;
     }
 
     [DebuggerStepThrough]
@@ -81,13 +82,15 @@ public class SerilogOp : Logger.Op
     [DebuggerStepThrough]
     public override void Dispose()
     {
-        if (!(isCancelled || isCompleted))
+        if (!(isAbandoned || isCompleted))
         {
             Op.Cancel();
         }
     }
 
     protected Operation Op;
+
+    protected Logger logger;
 }
 
 

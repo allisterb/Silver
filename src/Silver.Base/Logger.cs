@@ -13,11 +13,11 @@ public abstract class Logger
 
         protected bool isCompleted = false;
 
-        protected bool isCancelled = false;
+        protected bool isAbandoned = false;
 
         public abstract void Complete();
 
-        public abstract void Cancel();
+        public abstract void Abandon();
 
         public abstract void Dispose();
     }
@@ -51,17 +51,17 @@ public class ConsoleOp : Logger.Op
         isCompleted = true;
     }
 
-    public override void Cancel()
+    public override void Abandon()
     {
-        isCancelled = true;
-        L.Error("Cancelled");
+        isAbandoned = true;
+        L.Error("Abandoned.");
     }
 
     public override void Dispose()
     {
-        if (!(isCompleted || isCancelled))
+        if (!(isCompleted || isAbandoned))
         {
-            L.Error("Cancelled.");
+            L.Error("Abandoned.");
         }
     }
 }

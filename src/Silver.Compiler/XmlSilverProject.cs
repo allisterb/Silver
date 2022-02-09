@@ -17,7 +17,7 @@ namespace Silver.Projects
                     if (Model is null)
                     {
                         Fatal("This file is not a valid Spec# XML project file.");
-                        op.Cancel();
+                        op.Abandon();
                         return;
                     }
                     AssemblyName = Model.XEN.Build.Settings.AssemblyName;
@@ -35,7 +35,7 @@ namespace Silver.Projects
                             if (!string.IsNullOrEmpty(r.Project) && Guid.TryParse(r.Project, out var _))
                             {
                                 Fatal("Project reference using a GUID is not supported. Use a project file reference for {0} with GUID {1}.", r.Name, r.Project);
-                                op.Cancel();
+                                op.Abandon();
                                 return;
                             }
                             else if (!string.IsNullOrEmpty(r.Project))
@@ -44,14 +44,14 @@ namespace Silver.Projects
                                 if (!File.Exists(prf))
                                 {
                                     Fatal("The project reference {0} does not exist.", prf);
-                                    op.Cancel();
+                                    op.Abandon();
                                     return;
                                 }
                                 var pr = new XmlSilverProject(prf, buildConfig, this);
                                 if (!pr.Initialized)
                                 {
                                     Fatal("The project reference {0} could not be loaded.", pr.ProjectFile.FullName);
-                                    op.Cancel();
+                                    op.Abandon();
                                     return;
                                 }
                                 if (!File.Exists(pr.TargetPath) || !pr.BuildUpToDate)
@@ -59,7 +59,7 @@ namespace Silver.Projects
                                     if(!pr.SscCompile(false, out var sscc))
                                     {
                                         Fatal("The project reference {0} could not be built and is not up-to-date.", pr.ProjectFile.FullName);
-                                        op.Cancel();
+                                        op.Abandon();
                                         return;
                                     }
                                 }
@@ -83,7 +83,7 @@ namespace Silver.Projects
                                 if (!File.Exists(hp))
                                 {
                                     Fatal("The file reference {0} does not exist.", hp);
-                                    op.Cancel();
+                                    op.Abandon();
                                     return;
                                 }
                                 References.Add(hp);
@@ -104,7 +104,7 @@ namespace Silver.Projects
                             if(!File.Exists(s))
                             {
                                 Fatal("The file {0} does not exist.", s);
-                                op.Cancel();
+                                op.Abandon();
                                 return;
                             }
                             SourceFiles.Add(s);
@@ -133,7 +133,7 @@ namespace Silver.Projects
                     else
                     {
                         Fatal("The requested build configuration {0} does not exist in the project file.", RequestedBuildConfig);
-                        op.Cancel();
+                        op.Abandon();
                     }
                 }
             }

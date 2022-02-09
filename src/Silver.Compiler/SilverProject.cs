@@ -160,7 +160,7 @@ public abstract class SilverProject : Runtime
             .GetCompilationAsync(Ct).Result;
         if (c is null)
         {
-            op.Cancel();
+            op.Abandon();
             Error("Could not get Roslyn compilation for project {0}.", RoslynWorkspace.CurrentSolution.Projects.First().Name);
             diags = Array.Empty<Diagnostic>();
             result = null;
@@ -175,7 +175,7 @@ public abstract class SilverProject : Runtime
         diags = ca.GetAllDiagnosticsAsync(Ct).Result;
         if (((diags is null || diags.Any(d => d.Severity == DiagnosticSeverity.Error))))
         {
-            op.Cancel();
+            op.Abandon();
             Error("Compilation failed.");
             result = null;
             return false;
@@ -194,14 +194,14 @@ public abstract class SilverProject : Runtime
             }
             else
             {
-                op.Cancel();
+                op.Abandon();
                 Error("Compilation failed.");
             }
             return result.Success;
         }
         else
         {
-            op.Cancel();
+            op.Abandon();
             Error("Could not emit code for compilation at {0}.", TargetPath);
             return false;
         }
@@ -360,7 +360,7 @@ public abstract class SilverProject : Runtime
             if (output is null || output.Contains(" error "))
             {
                 Error("Compile failed.");
-                op.Cancel();
+                op.Abandon();
                 sscc = new SscCompilation(this, false, Verify, compilerErrors, compilerWarnings);
                 return false;
             }

@@ -35,7 +35,7 @@ public class MSBuildSilverProject : SilverProject
             if (!_results.Any(r => r.Succeeded))
             {
                 Fatal("Design-time build of {0} failed.", ProjectFile.FullName);
-                op.Cancel();
+                op.Abandon();
                 return;
             }
             Debug("Target .NET frameworks are {0}.", _results.Where(r => r.Succeeded && !string.IsNullOrEmpty(r.TargetFramework)).Select(r => r.TargetFramework));
