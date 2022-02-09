@@ -161,6 +161,7 @@ public abstract class SilverProject : Runtime
         if (c is null)
         {
             op.Cancel();
+            Error("Could not get Roslyn compilation for project {0}.", RoslynWorkspace.CurrentSolution.Projects.First().Name);
             diags = Array.Empty<Diagnostic>();
             result = null;
             return false;
@@ -172,14 +173,21 @@ public abstract class SilverProject : Runtime
         var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
             new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
         diags = ca.GetAllDiagnosticsAsync(Ct).Result;
+        if (((diags is null || diags.Any(d => d.Severity == DiagnosticSeverity.Error))))
+        {
+            op.Cancel();
+            Error("Compilation failed.");
+            result = null;
+            return false;
+        }
         var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
         if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting...", ViewFilePath(TargetPath));
         using FileStream pestream = File.OpenWrite(TargetPath);
         using FileStream pdbstream = File.OpenWrite(Path.ChangeExtension(TargetPath, ".pdb")); 
         result = c.Emit(pestream, pdbstream, options: emitOptions);
-        if(result is not null)
+        if (result is not null)
         {
-            if (result.Success && (diags is null || (diags is not null && !diags.Any(d => d.Severity == DiagnosticSeverity.Error))))
+            if (result.Success)
             {
                 op.Complete();
                 Info("Compilation succeded.");
@@ -195,6 +203,7 @@ public abstract class SilverProject : Runtime
         else
         {
             op.Cancel();
+            Error("Could not emit code for compilation at {0}.", TargetPath);
             return false;
         }
     }
