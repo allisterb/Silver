@@ -221,5 +221,32 @@ namespace Silver.CodeAnalysis.Cs {
                 return ResourceManager.GetString("SC0006_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only certain variable types can be used in smart contract code.
+        /// </summary>
+        internal static string SC0007_Description {
+            get {
+                return ResourceManager.GetString("SC0007_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot declare a variable of type {0} here.
+        /// </summary>
+        internal static string SC0007_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0007_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Variable declaration not allowed.
+        /// </summary>
+        internal static string SC0007_Title {
+            get {
+                return ResourceManager.GetString("SC0007_Title", resourceCulture);
+            }
+        }
     }
 }

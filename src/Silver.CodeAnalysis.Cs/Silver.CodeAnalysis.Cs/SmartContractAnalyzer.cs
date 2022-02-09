@@ -19,6 +19,7 @@
         #region Overriden members
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = Validator.Errors;
 
+        
         public override void Initialize(AnalysisContext context)
         {
             if (!System.Diagnostics.Debugger.IsAttached) context.EnableConcurrentExecution();
@@ -29,18 +30,21 @@
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeClassDecl((ClassDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeConstructor((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeFieldDecl((FieldDeclarationSyntax)ctx.Node, ctx), SyntaxKind.FieldDeclaration);
-
-
-            context.RegisterOperationAction(
-                ctx =>
+            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeLocalDecl((LocalDeclarationStatementSyntax)ctx.Node, ctx), SyntaxKind.LocalDeclarationStatement);
+            
+            context.RegisterOperationAction(ctx =>
                 {
                     switch (ctx.Operation)
                     {
                         case IObjectCreationOperation objectCreation:
                             Validator.AnalyzeObjectCreation(objectCreation, ctx);
                             break;
+                        case ILocalSymbol localSymbol:
+                            break;
                         case IVariableDeclarationOperation variableDeclaration: 
                             Validator.AnalyzeVariableDecl(variableDeclaration, ctx);
+                            break;
+                        default:
                             break;
                     }
                 }, OperationKind.ObjectCreation);

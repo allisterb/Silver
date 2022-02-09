@@ -94,12 +94,36 @@ namespace Silver.CodeAnalysis.Cs
         {
             return CreateDiagnostic("SC0006", node.GetLocation());
         }
-        // New object creation not allowed
-        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
+
+        // Only 
+        public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SemanticModel model)
         {
+            var t = model.GetSymbolInfo(node.Declaration.Type).Symbol.ToDisplayString();
+            if (PrimitiveTypeNames.Contains(t) || SmartContractTypeNames.Contains(t) || PrimitiveArrayTypeNames.Contains(t) || SmartContractArrayTypeNames.Contains(t))
+            {
+                return null;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0007", node.GetLocation(), t);
+
+            }
+        }
+
+        // New object creation not allowed except for structs and array types
+        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
+        {            
             var t = objectCreation.Type;
-            if (t.IsValueType) return null;
             return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
+            if (t.IsValueType || PrimitiveArrayTypeNames.Contains(t.Name))
+            {
+                return null;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
+            }
+            
         }
 
         // Only whitelisted types allowed in variable declarations
@@ -130,6 +154,9 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeFieldDecl(node, ctx.SemanticModel)?.Report(ctx);
 
+        public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SyntaxNodeAnalysisContext ctx) =>
+           AnalyzeLocalDecl(node, ctx.SemanticModel)?.Report(ctx);
+
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation, OperationAnalysisContext ctx) =>
             AnalyzeObjectCreation(objectCreation).Report(ctx);
         
@@ -146,10 +173,11 @@ namespace Silver.CodeAnalysis.Cs
         #endregion
 
         #region Fields
-        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005", "SC0006" };
+        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005", "SC0006", "SC0007" };
         internal static ImmutableArray<DiagnosticDescriptor> Errors;
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
+        
         public static Type[] PrimitiveTypes =
         {
             typeof(void),
@@ -163,7 +191,11 @@ namespace Silver.CodeAnalysis.Cs
             typeof(UInt64),
             typeof(String),
             typeof(UInt128),
-            typeof(UInt256),
+            typeof(UInt256)
+        };
+
+        public static Type[] PrimitiveArrayTypes =
+       {
             typeof(Byte[]),
             typeof(SByte[]),
             typeof(Boolean[]),
@@ -174,9 +206,10 @@ namespace Silver.CodeAnalysis.Cs
             typeof(UInt32[]),
             typeof(Int64[]),
             typeof(UInt64[]),
-            typeof(String[])
+            typeof(String[]),
+            typeof(UInt128[]),
+            typeof(UInt256[])
         };
-        public static string[] PrimitiveTypeNames =PrimitiveTypes.Select(t => t.Name).ToArray();
 
         public static Type[] SmartContractTypes =
         {
@@ -188,9 +221,24 @@ namespace Silver.CodeAnalysis.Cs
             typeof(IMessage),
             typeof(IPersistentState),
             typeof(ISmartContractState),
+            typeof(ISerializer),
             typeof(ITransferResult),
             typeof(Message),
             typeof(SmartContract)
+        };
+
+        public static Type[] SmartContractArrayTypes =
+        {
+            typeof(Address[]),
+            typeof(Block[]),
+            typeof(IBlock[]),
+            typeof(IContractLogger[]),
+            typeof(ICreateResult[]),
+            typeof(IMessage[]),
+            typeof(IPersistentState[]),
+            typeof(ISmartContractState[]),
+            typeof(ITransferResult[]),
+            typeof(Message[]),
         };
 
         public static Type[] SmartContractAttributeTypes =
@@ -199,9 +247,15 @@ namespace Silver.CodeAnalysis.Cs
             typeof(IndexAttribute)
         };
 
-        
+        public static string[] PrimitiveTypeNames = PrimitiveTypes.Select(t => t.FullName).ToArray();
 
-        public static string[] WhitelistedTypeNames = PrimitiveTypes.Concat(SmartContractTypes).Select(t => t.Name).ToArray();
+        public static string[] PrimitiveArrayTypeNames = PrimitiveArrayTypes.Select(t => t.FullName).ToArray();
+
+        public static string[] SmartContractTypeNames = SmartContractTypes.Select(t => t.FullName).ToArray();
+
+        public static string[] SmartContractArrayTypeNames = SmartContractArrayTypes.Select(t => t.FullName).ToArray();
+    
+        public static string[] WhitelistedTypeNames = PrimitiveTypes.Concat(SmartContractTypes).Select(t => t.FullName).ToArray();
 
         public static Dictionary<string, string[]> WhiteListedMemberNames = new Dictionary<string, string[]>
         {

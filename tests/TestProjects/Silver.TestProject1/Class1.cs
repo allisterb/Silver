@@ -5,8 +5,8 @@ public class We : SmartContract
     public We(ISmartContractState state) : base(state) { }
     public int Add(int a, int b)
     {
-        var x = new string[] {"jj"};
-        //var xx = new System.Collections.Generic.List<string> { "foo" };
+        var x = new Address[4];
+        var xx = new System.Collections.Generic.List<string> { "foo" };
         return a + b; 
     }
 
