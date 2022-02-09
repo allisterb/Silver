@@ -179,7 +179,7 @@ public abstract class SilverProject : Runtime
         result = c.Emit(pestream, pdbstream, options: emitOptions);
         if(result is not null)
         {
-            if (result.Success)
+            if (result.Success && (diags is null || (diags is not null && !diags.Any(d => d.Severity == DiagnosticSeverity.Error))))
             {
                 op.Complete();
                 Info("Compilation succeded.");
