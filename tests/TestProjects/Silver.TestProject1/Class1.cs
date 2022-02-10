@@ -6,7 +6,9 @@ public class We : SmartContract
     public int Add(int a, int b)
     {
         var x = new Address[4];
-        var xx = new System.Collections.Generic.List<string> { "foo" };
+        //var xx = new System.Collections.Generic.List<string> { "foo" };
+        var tt = new string("h".ToCharArray());
+        var len = tt.Length;
         return a + b; 
     }
 

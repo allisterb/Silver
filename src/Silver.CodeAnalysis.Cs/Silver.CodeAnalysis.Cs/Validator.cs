@@ -90,12 +90,28 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
+        // New object creation not allowed except for structs, primitives, annd array of primitives types
+        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
+        {            
+            var t = objectCreation.Type;
+            if (t.IsValueType || PrimitiveTypeNames.Contains(t.Name) || PrimitiveArrayTypeNames.Contains(t.Name))
+            {
+                return null;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
+            }
+            
+        }
+
+        // Field declarations not allowed in smart contract classes
         public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SemanticModel model)
         {
             return CreateDiagnostic("SC0006", node.GetLocation());
         }
 
-        // Only 
+        // Only primitive types or smart contract types or arrays of these kinds of types can be used as variables in a method
         public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SemanticModel model)
         {
             var t = model.GetSymbolInfo(node.Declaration.Type).Symbol.ToDisplayString();
@@ -110,35 +126,11 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        // New object creation not allowed except for structs and array types
-        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
-        {            
-            var t = objectCreation.Type;
-            return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
-            if (t.IsValueType || PrimitiveArrayTypeNames.Contains(t.Name))
-            {
-                return null;
-            }
-            else
-            {
-                return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
-            }
-            
+        public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SemanticModel model)
+        {
+            return null;
         }
 
-        // Only whitelisted types allowed in variable declarations
-        public static Diagnostic AnalyzeVariableDecl(IVariableDeclarationOperation variableDeclaration)
-        {
-            var v = variableDeclaration.Declarators.FirstOrDefault(d => d.Type != null && !d.Type.IsValueType && !WhitelistedTypeNames.Contains(d.Type.Name));
-            if (v == null)
-            {
-                return null;
-            }
-            else
-            {
-                return CreateDiagnostic("SC0006", v.Syntax.GetLocation(), v.Type.ToDisplayString());
-            }
-        }
         #region Overloads
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeUsingDirective(node, ctx.SemanticModel)?.Report(ctx);
@@ -157,11 +149,12 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeLocalDecl(node, ctx.SemanticModel)?.Report(ctx);
 
+        public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext ctx) =>
+           AnalyzeInvocation(node, ctx.SemanticModel)?.Report(ctx);
+
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation, OperationAnalysisContext ctx) =>
             AnalyzeObjectCreation(objectCreation).Report(ctx);
         
-        public static Diagnostic AnalyzeVariableDecl(IVariableDeclarationOperation variableDeclaration, OperationAnalysisContext ctx) =>
-            AnalyzeVariableDecl(variableDeclaration).Report(ctx);
         #endregion
 
         public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
