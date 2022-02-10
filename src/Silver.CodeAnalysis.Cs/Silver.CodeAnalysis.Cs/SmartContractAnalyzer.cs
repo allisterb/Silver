@@ -32,6 +32,7 @@
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeFieldDecl((FieldDeclarationSyntax)ctx.Node, ctx), SyntaxKind.FieldDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeLocalDecl((LocalDeclarationStatementSyntax)ctx.Node, ctx), SyntaxKind.LocalDeclarationStatement);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeInvocation((InvocationExpressionSyntax) ctx.Node, ctx), SyntaxKind.InvocationExpression);
+            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeMemberAccess((MemberAccessExpressionSyntax)ctx.Node, ctx), SyntaxKind.SimpleMemberAccessExpression);
 
             context.RegisterOperationAction(ctx =>
                 {

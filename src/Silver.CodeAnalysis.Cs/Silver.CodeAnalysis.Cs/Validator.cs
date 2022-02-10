@@ -90,11 +90,11 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        // New object creation not allowed except for structs, primitives, annd array of primitives types
+        // New object creation not allowed except for structs and array of primitives types
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {            
             var t = objectCreation.Type;
-            if (t.IsValueType || PrimitiveTypeNames.Contains(t.Name) || PrimitiveArrayTypeNames.Contains(t.Name))
+            if (t.IsValueType || PrimitiveArrayTypeNames.Contains(t.Name))
             {
                 return null;
             }
@@ -115,6 +115,7 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SemanticModel model)
         {
             var t = model.GetSymbolInfo(node.Declaration.Type).Symbol.ToDisplayString();
+
             if (PrimitiveTypeNames.Contains(t) || SmartContractTypeNames.Contains(t) || PrimitiveArrayTypeNames.Contains(t) || SmartContractArrayTypeNames.Contains(t))
             {
                 return null;
@@ -128,9 +129,18 @@ namespace Silver.CodeAnalysis.Cs
 
         public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SemanticModel model)
         {
+            var symbol = model.GetSymbolInfo(node.Expression).Symbol as IMethodSymbol;
+            var t = symbol.ContainingType;
             return null;
         }
 
+        public static Diagnostic AnalyzeMemberAccess(MemberAccessExpressionSyntax node, SemanticModel model)
+        {
+            var symbol = (ILocalSymbol) model.GetSymbolInfo(node.Expression).Symbol;
+            var member = node.Name.ToFullString();
+            //var t = symbol.ContainingType;
+            return null;
+        }
         #region Overloads
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeUsingDirective(node, ctx.SemanticModel)?.Report(ctx);
@@ -152,6 +162,9 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeInvocation(node, ctx.SemanticModel)?.Report(ctx);
 
+        public static Diagnostic AnalyzeMemberAccess(MemberAccessExpressionSyntax node, SyntaxNodeAnalysisContext ctx) =>
+           AnalyzeMemberAccess(node, ctx.SemanticModel)?.Report(ctx);
+
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation, OperationAnalysisContext ctx) =>
             AnalyzeObjectCreation(objectCreation).Report(ctx);
         
@@ -171,35 +184,33 @@ namespace Silver.CodeAnalysis.Cs
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
         
-        public static Type[] PrimitiveTypes =
+        public static Type[] BoxedPrimitiveTypes =
         {
             typeof(void),
-            typeof(Boolean),
-            typeof(Byte),
-            typeof(SByte),
-            typeof(Char),
-            typeof(Int32),
-            typeof(UInt32),
-            typeof(Int64),
-            typeof(UInt64),
-            typeof(String),
+            typeof(bool),
+            typeof(byte),
+            typeof(sbyte),
+            typeof(char),
+            typeof(int),
+            typeof(uint),
+            typeof(long),
+            typeof(ulong),
+            typeof(string),
             typeof(UInt128),
             typeof(UInt256)
         };
 
-        public static Type[] PrimitiveArrayTypes =
+        public static Type[] BoxedPrimitiveArrayTypes =
        {
-            typeof(Byte[]),
-            typeof(SByte[]),
-            typeof(Boolean[]),
-            typeof(Byte[]),
-            typeof(SByte[]),
-            typeof(Char[]),
-            typeof(Int32[]),
-            typeof(UInt32[]),
-            typeof(Int64[]),
-            typeof(UInt64[]),
-            typeof(String[]),
+            typeof(bool[]),
+            typeof(byte[]),
+            typeof(sbyte[]),
+            typeof(char[]),
+            typeof(int[]),
+            typeof(uint[]),
+            typeof(long[]),
+            typeof(ulong[]),
+            typeof(string[]),
             typeof(UInt128[]),
             typeof(UInt256[])
         };
@@ -240,15 +251,29 @@ namespace Silver.CodeAnalysis.Cs
             typeof(IndexAttribute)
         };
 
-        public static string[] PrimitiveTypeNames = PrimitiveTypes.Select(t => t.FullName).ToArray();
+        public static string[] UnboxedPrimitiveTypeNames =
+        {
+            "void",
+            "bool",
+            "byte",
+            "sbyte",
+            "char",
+            "int",
+            "uint",
+            "long",
+            "ulong",
+            "string",
+            "String"
+        };
 
-        public static string[] PrimitiveArrayTypeNames = PrimitiveArrayTypes.Select(t => t.FullName).ToArray();
+        public static string[] PrimitiveTypeNames = UnboxedPrimitiveTypeNames.Concat(BoxedPrimitiveTypes.Select(t => t.FullName)).ToArray();
+
+        public static string[] PrimitiveArrayTypeNames = UnboxedPrimitiveTypeNames.Select(t => t + "[]").Concat(BoxedPrimitiveArrayTypes.Select(t => t.FullName)).ToArray();
 
         public static string[] SmartContractTypeNames = SmartContractTypes.Select(t => t.FullName).ToArray();
 
         public static string[] SmartContractArrayTypeNames = SmartContractArrayTypes.Select(t => t.FullName).ToArray();
     
-        public static string[] WhitelistedTypeNames = PrimitiveTypes.Concat(SmartContractTypes).Select(t => t.FullName).ToArray();
 
         public static Dictionary<string, string[]> WhiteListedMemberNames = new Dictionary<string, string[]>
         {

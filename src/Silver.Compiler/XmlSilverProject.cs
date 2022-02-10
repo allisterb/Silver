@@ -1,7 +1,7 @@
 using System.Xml.Serialization;
 using System.Xml;
 
-namespace Silver.Projects
+namespace Silver.Compiler
 {
     public class XmlSilverProject : SilverProject
     {

@@ -1,4 +1,4 @@
-namespace Silver.Projects;
+namespace Silver.Compiler;
 
 using System.Collections.Immutable;
 using System.Text.RegularExpressions;

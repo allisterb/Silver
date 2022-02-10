@@ -1,4 +1,4 @@
-namespace Silver.Projects;
+namespace Silver.Compiler;
 
 using System.Reflection;
 using Roslyn = Microsoft.CodeAnalysis;

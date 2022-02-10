@@ -1,4 +1,4 @@
-namespace Silver.Projects.Models;
+namespace Silver.Compiler.Models;
 
 
 #nullable disable
