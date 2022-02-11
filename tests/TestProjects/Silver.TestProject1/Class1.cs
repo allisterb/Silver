@@ -6,10 +6,10 @@ public class We : SmartContract
     public int Add(int a, int b)
     {
         var x = new Address[4];
-        var gg = x[0].GetType();
+        //var gg = x[0].GetType();
         
         int[] ii = { 1, 2, 3, 4, };
-        var ll = ii.GetEnumerator();
+        //var ll = ii.GetEnumerator();
         
         return a + b; 
     }
