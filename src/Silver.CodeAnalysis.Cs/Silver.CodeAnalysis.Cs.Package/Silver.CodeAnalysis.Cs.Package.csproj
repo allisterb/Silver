@@ -8,22 +8,32 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Silver.CodeAnalysis.Cs</PackageId>
-    <PackageVersion>1.0.0.0</PackageVersion>
-    <Authors>Allister</Authors>
-    <PackageLicenseUrl>http://LICENSE_URL_HERE_OR_DELETE_THIS_LINE</PackageLicenseUrl>
-    <PackageProjectUrl>http://PROJECT_URL_HERE_OR_DELETE_THIS_LINE</PackageProjectUrl>
-    <PackageIconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</PackageIconUrl>
-    <RepositoryUrl>http://REPOSITORY_URL_HERE_OR_DELETE_THIS_LINE</RepositoryUrl>
+    <PackageId>Silver.CodeAnalysis</PackageId>
+    <PackageVersion>0.1.13.0</PackageVersion>
+    <Authors>Allister Beharry</Authors>
+    <PackageProjectUrl>https://github.com/allisterb/Silver</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/allisterb/Silver.git</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>Silver.CodeAnalysis.Cs</Description>
-    <PackageReleaseNotes>Summary of changes made in this release of the package.</PackageReleaseNotes>
-    <Copyright>Copyright</Copyright>
-    <PackageTags>Silver.CodeAnalysis.Cs, analyzers</PackageTags>
+    <Description>A static analyzer and formal verifier for Stratis smart contracts </Description>
+    <PackageReleaseNotes>First public release contains several rules for validating smart contract code</PackageReleaseNotes>
+    <Copyright>Copyright © 2021,2022 Allister Beharry</Copyright>
+    <PackageTags>analyzers, smart contracts, stratis</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>
     <NoPackageAnalysis>true</NoPackageAnalysis>
 
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);_AddAnalyzersToOutput</TargetsForTfmSpecificContentInPackage>
+
+    <PackageIcon>icon.png</PackageIcon>
+
+    <AssemblyVersion>0.1.13</AssemblyVersion>
+
+    <FileVersion>0.1.13</FileVersion>
+
+    <PackageLicenseExpression> MIT</PackageLicenseExpression>
+
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+
+    <Product>Silver</Product>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,6 +43,17 @@
 
   <ItemGroup>
     <None Update="tools\*.ps1" CopyToOutputDirectory="Always" Pack="true" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="_AddAnalyzersToOutput">
