@@ -7,12 +7,10 @@ public class We : SmartContract
     {
         var x = new Address[4];
         var gg = x[0].GetType();
-        //var xx = new System.Collections.Generic.List<string> { "foo" };
-        //var tt = new string("h".ToCharArray());
-        var len = "ll".Length;
+        
         int[] ii = { 1, 2, 3, 4, };
-        //var ll = ii.GetEnumerator();
-        //var l = ii.GetEnumerator();
+        var ll = ii.GetEnumerator();
+        
         return a + b; 
     }
 
