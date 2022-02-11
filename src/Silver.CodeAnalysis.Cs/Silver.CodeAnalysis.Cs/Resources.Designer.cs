@@ -248,5 +248,59 @@ namespace Silver.CodeAnalysis.Cs {
                 return ResourceManager.GetString("SC0007_Title", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only certain types and members are allowed in smart contract code.
+        /// </summary>
+        internal static string SC0008_Description {
+            get {
+                return ResourceManager.GetString("SC0008_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Member {0} from type {1} cannot be used here.
+        /// </summary>
+        internal static string SC0008_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0008_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use this member here.
+        /// </summary>
+        internal static string SC0008_Title {
+            get {
+                return ResourceManager.GetString("SC0008_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot use this method here.
+        /// </summary>
+        internal static string SC0009_Description {
+            get {
+                return ResourceManager.GetString("SC0009_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method {0} from type {1} cannot be used here.
+        /// </summary>
+        internal static string SC0009_MessageFormat {
+            get {
+                return ResourceManager.GetString("SC0009_MessageFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Method invocation not allowed.
+        /// </summary>
+        internal static string SC0009_Title {
+            get {
+                return ResourceManager.GetString("SC0009_Title", resourceCulture);
+            }
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Silver.Projects;
+﻿using Silver.Compiler;
 
 namespace Silver.CLI.Core
 {
@@ -68,7 +68,7 @@ namespace Silver.CLI.Core
                 }
                 if (validate)
                 {
-                    var op = Begin("Validating {0} source files using Stratis SCT tool", proj.SourceFiles.Count);
+                    var op = Begin("Validating {0} source file(s) using Stratis SCT tool", proj.SourceFiles.Count);
                     var ret = Tools.Sct(false, "validate", proj.SourceFiles.JoinWithSpaces());
                     if (ret is not null)
                     {
@@ -79,11 +79,19 @@ namespace Silver.CLI.Core
                         {
                             Info("SCT: Assembly is valid smart contract assembly.");
                         }
-                        else
+                        else if (!ret.Contains("Determinism Valid: False"))
                         {
                             foreach(var l in retl.Where(l => l.StartsWith("Error: ")))
                             {
                                 Error("SCT: {0}.", l.Replace("Error: ", ""));
+                            }
+                        }
+                        else
+                        {
+                            var deterrors = retl.SkipWhile(l => l != "Determinism Valid: False").Skip(1).Where(l => !(string.IsNullOrEmpty(l) || l.StartsWith("==")));
+                            foreach (var error in deterrors)
+                            {
+                                Error("SCT: {0}", error);
                             }
                         }
                     }

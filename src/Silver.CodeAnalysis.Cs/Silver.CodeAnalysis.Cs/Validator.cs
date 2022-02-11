@@ -35,7 +35,7 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return null;
+                return NoDiagnostic;
             }
         }
 
@@ -56,7 +56,7 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return null;
+                return NoDiagnostic;
             }
         }
 
@@ -71,7 +71,7 @@ namespace Silver.CodeAnalysis.Cs
                 .OfType<ParameterSyntax>()
                 .FirstOrDefault();
 
-            if (fp == null) return null;
+            if (fp == null) return NoDiagnostic;
 
             var fpt = fp.Type;
             
@@ -86,17 +86,17 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return null;
+                return NoDiagnostic;
             }
         }
 
-        // New object creation not allowed except for structs and array of primitives types
+        // New object creation not allowed except for structs and arrays of primitives types
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {            
             var t = objectCreation.Type;
             if (t.IsValueType || PrimitiveArrayTypeNames.Contains(t.Name))
             {
-                return null;
+                return NoDiagnostic;
             }
             else
             {
@@ -118,7 +118,7 @@ namespace Silver.CodeAnalysis.Cs
 
             if (PrimitiveTypeNames.Contains(t) || SmartContractTypeNames.Contains(t) || PrimitiveArrayTypeNames.Contains(t) || SmartContractArrayTypeNames.Contains(t))
             {
-                return null;
+                return NoDiagnostic;
             }
             else
             {
@@ -127,19 +127,54 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
+        // Only members on primitive types and smart contract types and some whitelisted array members can be accessed
+        public static Diagnostic AnalyzeMemberAccess(MemberAccessExpressionSyntax node, SemanticModel model)
+        {
+            switch(node.Kind())
+            {
+                case SyntaxKind.StringLiteralExpression:
+                case SyntaxKind.NumericLiteralExpression:
+                    return NoDiagnostic;
+                default:
+                    var si = model.GetSymbolInfo(node.Expression).Symbol;
+                    if (si is null || si.Kind != SymbolKind.Local) return NoDiagnostic;
+                    var symbol = (ILocalSymbol)model.GetSymbolInfo(node.Expression).Symbol;
+                    var type = symbol.Type.ToDisplayString();
+                    var member = node.Name.ToFullString();
+                    if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type))
+                    {
+                        return NoDiagnostic;
+                    }
+                    else if ((PrimitiveArrayTypeNames.Contains(type) || SmartContractArrayTypeNames.Contains(type)) && WhiteListedArrayMemberNames.Contains(member))
+                    {
+                        return NoDiagnostic;
+                    }
+                    else
+                    {
+                        return CreateDiagnostic("SC0008", node.GetLocation(), member, type);
+                    }
+            }
+        }
+
+        // Only methods on primitive and smart contract types and some whitelisted System.Object methods can be invoked.
         public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SemanticModel model)
         {
             var symbol = model.GetSymbolInfo(node.Expression).Symbol as IMethodSymbol;
-            var t = symbol.ContainingType;
-            return null;
-        }
+            var method = symbol.Name;
+            var type = symbol.ContainingType.ToDisplayString();
+            if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type))
+            {
+                return NoDiagnostic;
+            }
+            else if (WhitelistedMethodNames.ContainsKey(type) && WhitelistedMethodNames[type].Contains(method))
+            {
+                return NoDiagnostic;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0009", node.GetLocation(), method, type);
+            }
 
-        public static Diagnostic AnalyzeMemberAccess(MemberAccessExpressionSyntax node, SemanticModel model)
-        {
-            var symbol = (ILocalSymbol) model.GetSymbolInfo(node.Expression).Symbol;
-            var member = node.Name.ToFullString();
-            //var t = symbol.ContainingType;
-            return null;
         }
         #region Overloads
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SyntaxNodeAnalysisContext ctx) =>
@@ -179,7 +214,8 @@ namespace Silver.CodeAnalysis.Cs
         #endregion
 
         #region Fields
-        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005", "SC0006", "SC0007" };
+        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005", "SC0006", "SC0007", "SC0008", "SC0009" };
+        internal static Diagnostic NoDiagnostic = null;
         internal static ImmutableArray<DiagnosticDescriptor> Errors;
         internal static string Category = "Smart Contract";
         internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
@@ -273,14 +309,13 @@ namespace Silver.CodeAnalysis.Cs
         public static string[] SmartContractTypeNames = SmartContractTypes.Select(t => t.FullName).ToArray();
 
         public static string[] SmartContractArrayTypeNames = SmartContractArrayTypes.Select(t => t.FullName).ToArray();
-    
 
-        public static Dictionary<string, string[]> WhiteListedMemberNames = new Dictionary<string, string[]>
+        public static string[] WhiteListedArrayMemberNames = { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" };
+
+        public static Dictionary<string, string[]> WhitelistedMethodNames = new Dictionary<string, string[]>() 
         {
-            {typeof(System.Array).Name, new[] { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" } },
-            {typeof(string[]).Name, new[] { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" } },
+            { "object", new string [] {"ToString" } }
         };
-
         public static string[] WhitelistedNamespaces = { "System", "Stratis.SmartContracts", "Stratis.SmartContracts.Standards" };
         #endregion
     }
