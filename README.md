@@ -3,7 +3,7 @@
   <img src="https://static.wikia.nocookie.net/zelda_gamepedia_en/images/5/5a/BotW_Silver_Shield_Model.png/revision/latest/scale-to-width-down/400?cb=20210118165032&format=original" />
 </p>
 
-![img](https://img.shields.io/nuget/v/Silver.CodeAnalysis?style=plastic)
+[![img](https://img.shields.io/nuget/v/Silver.CodeAnalysis?style=plastic)](https://www.nuget.org/packages/Silver.CodeAnalysis/)
 
 ## About
 
