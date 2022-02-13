@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    
+  </PropertyGroup>
+
+  <ItemGroup>
+    
+    <PackageReference Include="Stratis.SmartContracts" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Silver.TestProject1\Silver.TestProject1.csproj" />
+  </ItemGroup>
+
+</Project>

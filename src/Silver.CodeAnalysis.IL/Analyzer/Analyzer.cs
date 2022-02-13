@@ -16,9 +16,9 @@ public partial class Analyzer : Runtime
 	#region Constructors
 	public Analyzer(string fileName, AnalyzerState? state = null)
 	{
-		AssemblyFile = new FileInfo(fileName);
+		AssemblyFile = new FileInfo(FailIfFileNotFound(fileName));
 		Host = new PeReader.DefaultHost();
-		Module = this.Host.LoadUnitFrom(fileName) as IModule;
+		Module = (IModule) this.Host.LoadUnitFrom(fileName);
 		State = state ?? new();
 		if (Module is null || Module == Dummy.Module || Module == Dummy.Assembly)
 		{
@@ -67,15 +67,8 @@ public partial class Analyzer : Runtime
 	{
 		FailIfNotInitialized();
 		using var op = Begin("Creating call graph for methods in assembly {0}", AssemblyFile.Name);
-		var cha = new ClassHierarchyCallGraphAnalysis(Host);
-		cha.OnNewMethodFound = (m =>
-		{
-			//var disassembler = new Backend.Transformations.Disassembler(Host, m, PdbReader);
-			//var methodBody = disassembler.Execute();
-			//MethodBodyProvider.Instance.AddBody(m, methodBody);
-			return true;
-		});
 		var methods = CollectMethods();
+		var cha = new ClassHierarchyCallGraphAnalysis(Host);
 		var cg = cha.Analyze();
 		var g = new Graph();
 		foreach (var method in cg.Roots)

@@ -27,12 +27,12 @@
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeUsingDirective((UsingDirectiveSyntax)ctx.Node, ctx), SyntaxKind.UsingDirective);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeNamespaceDecl((NamespaceDeclarationSyntax)ctx.Node, ctx), SyntaxKind.NamespaceDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeClassDecl((ClassDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ClassDeclaration);
-            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeConstructor((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
+            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeConstructorDecl((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeFieldDecl((FieldDeclarationSyntax)ctx.Node, ctx), SyntaxKind.FieldDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeLocalDecl((LocalDeclarationStatementSyntax)ctx.Node, ctx), SyntaxKind.LocalDeclarationStatement);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeMemberAccess((MemberAccessExpressionSyntax)ctx.Node, ctx), SyntaxKind.SimpleMemberAccessExpression);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeInvocation((InvocationExpressionSyntax)ctx.Node, ctx), SyntaxKind.InvocationExpression);
-
+            
             context.RegisterOperationAction(ctx =>
                 {
                     switch (ctx.Operation)
@@ -40,8 +40,12 @@
                         case IObjectCreationOperation objectCreation:
                             Validator.AnalyzeObjectCreation(objectCreation, ctx);
                             break;
+
+                        case IMemberReferenceOperation memberReference:
+                            Validator.AnalyzeMemberReference(memberReference, ctx);
+                            break;
                     }
-                }, OperationKind.ObjectCreation);
+                }, OperationKind.ObjectCreation, OperationKind.PropertyReference, OperationKind.MethodReference);
             //context.RegisterCompilationStartAction(OnCompilationStart);
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
             #endregion

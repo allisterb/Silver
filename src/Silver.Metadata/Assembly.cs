@@ -25,7 +25,6 @@ public class Assembly : Runtime
     public DirectoryInfo Directory { get; init; }
     public PeReader.DefaultHost Host { get; init; }
     public IModule Module { get; init; }
-
     public IEnumerable<AssemblyReference> References { get; init; }
   
     internal static DefaultResolver DefaultResolver { get; } = new DefaultResolver(VersionMatchingStrategies.SemVer, SearchOption.AllDirectories);
@@ -44,6 +43,7 @@ public class Assembly : Runtime
         name.SetPublicKeyToken(r.PublicKeyToken.Any() ? r.PublicKeyToken.ToArray() : null);
         return name;
     }
+
     public static IAssemblyResolverData? TryResolve(AssemblyName name, string searchPath)
     {
         var defaultResolverData = System.IO.Directory.Exists(searchPath) ? DefaultResolver.CoreResolver.Resolve(name, new DirectoryInfo(searchPath), SearchOption.AllDirectories, VersionMatchingStrategies.Strict) : null;

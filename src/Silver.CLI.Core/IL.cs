@@ -8,40 +8,6 @@ using Silver.Drawing;
     
 public class IL : Runtime
 {
-    public static string? GetTargetAssembly(string f)
-    {
-        if (f.HasPeExtension())
-        {
-            Info("Target assembly is {0}.", f);
-            return f;
-        }
-        else if (SilverProject.HasProjectExtension(f))
-        {
-            var proj = SilverProject.GetProject(f, "Debug");
-            if (proj is null || !proj.Initialized)
-            {
-                Error("Could not load project {0}.", f);
-                return null;
-            }
-            if (proj.BuildUpToDate)
-            {
-                Info("Project {0} is up-to-date. Last build was on {1}.", ViewFilePath(f), File.GetLastWriteTime(proj.TargetPath));
-                Info("Target assembly is {0}.", proj.TargetPath);
-                return proj.TargetPath;
-            }
-            else if (proj.Compile(out var _, out var _))
-            {
-                Info("Target assembly is {0}.", proj.TargetPath);
-                return proj.TargetPath;
-            }
-            else
-            {
-                Error("Could not build project {0}.", f);
-                return null;
-            }
-        }
-        else return null;
-    }
     public static bool Disassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
     {
         var targetAssembly = GetTargetAssembly(FailIfFileNotFound(fileName));
@@ -171,7 +137,43 @@ public class IL : Runtime
         Graph.Draw(cfg, outputFileName, graphFormat);
         return true;
     }
-    internal static Analyzer? GetAnalyzer(string fileName)
+
+    public static string? GetTargetAssembly(string f)
+    {
+        if (f.HasPeExtension())
+        {
+            Info("Target assembly is {0}.", f);
+            return f;
+        }
+        else if (SilverProject.HasProjectExtension(f))
+        {
+            var proj = SilverProject.GetProject(f, "Debug");
+            if (proj is null || !proj.Initialized)
+            {
+                Error("Could not load project {0}.", f);
+                return null;
+            }
+            if (proj.BuildUpToDate)
+            {
+                Info("Project {0} is up-to-date. Last build was on {1}.", ViewFilePath(f), File.GetLastWriteTime(proj.TargetPath));
+                Info("Target assembly is {0}.", proj.TargetPath);
+                return proj.TargetPath;
+            }
+            else if (proj.Compile(out var _, out var _))
+            {
+                Info("Target assembly is {0}.", proj.TargetPath);
+                return proj.TargetPath;
+            }
+            else
+            {
+                Error("Could not build project {0}.", f);
+                return null;
+            }
+        }
+        else return null;
+    }
+
+    public static Analyzer? GetAnalyzer(string fileName)
     {
         var a = GetTargetAssembly(FailIfFileNotFound(fileName));
         if (a is null)

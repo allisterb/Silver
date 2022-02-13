@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.Emit;
 using SharpSyntaxRewriter.Rewriters;
 using SharpSyntaxRewriter.Rewriters.Types;
 using Silver.CodeAnalysis.Cs;
+
 #region Records
 internal readonly record struct AssemblyFileReference(string Name, string HintPath, bool isprivate);
 

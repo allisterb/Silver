@@ -22,11 +22,12 @@ using System.Drawing;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
-using CSharpSourceEmitter;
+
 using Microsoft.Cci;
 using Microsoft.Cci.MetadataReader;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.Contracts;
+using CSharpSourceEmitter;
 
 public class ColorfulSourceEmitter : SourceEmitter
 {
@@ -115,14 +116,15 @@ public class ColorfulSourceEmitter : SourceEmitter
             this.Traverse(sourceMethodBody.Block.Statements);
         else
         {
-            //this.Traverse(sourceMethodBody.Block);
-            //PrintToken(CSharpToken.NewLine);
+            /*
+            this.Traverse(sourceMethodBody.Block);
+            PrintToken(CSharpToken.NewLine);
 
-            //if (this.pdbReader != null)
-            //     PrintScopes(methodBody);
-            //else
-            //    PrintLocals(methodBody.LocalVariables);
-            
+            if (this.pdbReader != null)
+                 PrintScopes(methodBody);
+            else
+                PrintLocals(methodBody.LocalVariables);
+            */
             int gasCost = 0;
             foreach (IOperation operation in methodBody.Operations)
             {
@@ -229,10 +231,6 @@ public class ColorfulSourceEmitter : SourceEmitter
                 csourceEmitterOutput.Write(" [var] ", Color.Cyan);
                 csourceEmitterOutput.Write(_ld.Type.ToString() + " ", Color.Cyan);
                 csourceEmitterOutput.Write(_ld.Name.ToString()!, Color.Yellow);
-            }
-            else if (operation.Value.GetType().FullName == "Microsoft.Cci.CodeModelToIL.TemporaryVariable")
-            {
-                
             }
             else
             {
@@ -483,7 +481,6 @@ public class ColorfulSourceEmitter : SourceEmitter
     public override void PrintTypeReferenceName(ITypeReference typeReference)
     {
         Contract.Requires(typeReference != null);
-
         var typeName = TypeHelper.GetTypeName(typeReference,
           NameFormattingOptions.ContractNullable | NameFormattingOptions.UseTypeKeywords |
           NameFormattingOptions.TypeParameters | NameFormattingOptions.EmptyTypeParameterList |

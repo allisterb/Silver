@@ -25,25 +25,25 @@ namespace Silver.CodeAnalysis.Cs
 
         #region Methods
 
-        // Only allow using Stratis.SmartContracts namespace in smart contract code
+        // Namespace declarations not allowed in smart contract code
+        public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SemanticModel model)
+        {
+            var ns = node.DescendantNodes().First();
+            return CreateDiagnostic("SC0001", ns.GetLocation(), ns.ToFullString());
+        }
+
+        // Only allow using Stratis.SmartContract namespace in smart contract code
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().OfType<NameSyntax>().FirstOrDefault();  
             if (ns != null && !WhitelistedNamespaces.Contains(ns.ToFullString()))
             {
-                return CreateDiagnostic("SC0001", ns.GetLocation(), ns.ToFullString());
+                return CreateDiagnostic("SC0002", ns.GetLocation(), ns.ToFullString());
             }
             else
             {
                 return NoDiagnostic;
             }
-        }
-
-        // Namespace declarations not allowed in smart contract code
-        public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SemanticModel model)
-        {
-            var ns = node.DescendantNodes().First();
-            return CreateDiagnostic("SC0002", ns.GetLocation(), ns.ToFullString());
         }
 
         // Declared classes must inherit from Stratis.SmartContracts.SmartContract
@@ -90,39 +90,39 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        // New object creation not allowed except for structs and arrays of primitives types
-        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
-        {            
-            var t = objectCreation.Type;
-            if (t.IsValueType || PrimitiveArrayTypeNames.Contains(t.Name))
+        // Non-const field declarations outside structs not allowed in smart contract classes
+        public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SemanticModel model)
+        {
+            if (node.Parent.IsKind(SyntaxKind.StructDeclaration))
             {
+                return NoDiagnostic;
+            }
+            else if (node.Modifiers.Any(m => m.IsKind(SyntaxKind.ConstKeyword)))
+            {
+
                 return NoDiagnostic;
             }
             else
             {
-                return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
+                return CreateDiagnostic("SC0006", node.GetLocation());
             }
-            
-        }
-
-        // Field declarations not allowed in smart contract classes
-        public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SemanticModel model)
-        {
-            return CreateDiagnostic("SC0006", node.GetLocation());
         }
 
         // Only primitive types or smart contract types or arrays of these kinds of types can be used as variables in a method
         public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SemanticModel model)
         {
-            var t = model.GetSymbolInfo(node.Declaration.Type).Symbol.ToDisplayString();
-
-            if (PrimitiveTypeNames.Contains(t) || SmartContractTypeNames.Contains(t) || PrimitiveArrayTypeNames.Contains(t) || SmartContractArrayTypeNames.Contains(t))
+            var type = model.GetSymbolInfo(node.Declaration.Type).Symbol.ContainingType;
+            var basetype = type.BaseType;
+            var typename = type.ToDisplayString();
+            var basetypename = basetype?.ToDisplayString() ?? "";
+            if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || PrimitiveArrayTypeNames.Contains(typename) || 
+                SmartContractArrayTypeNames.Contains(typename) || SmartContractTypeNames.Contains(basetypename))
             {
                 return NoDiagnostic;
             }
             else
             {
-                return CreateDiagnostic("SC0007", node.GetLocation(), t);
+                return CreateDiagnostic("SC0007", node.GetLocation(), typename);
 
             }
         }
@@ -130,39 +130,43 @@ namespace Silver.CodeAnalysis.Cs
         // Only members on primitive types and smart contract types and some whitelisted array members can be accessed
         public static Diagnostic AnalyzeMemberAccess(MemberAccessExpressionSyntax node, SemanticModel model)
         {
-            switch(node.Kind())
+            string member = node.Name.ToFullString();
+            var _symbol = model.GetSymbolInfo(node).Symbol;
+            ISymbol symbol = _symbol.IsStatic ? _symbol : model.GetSymbolInfo(node.Expression).Symbol;
+            var type = symbol.ContainingType;
+            var basetype = type.BaseType;
+            var typename = type.ToDisplayString();
+            var basetypename = basetype?.ToDisplayString() ?? "";
+            if  (type.IsValueType || basetype.Name == "System.Enum")
             {
-                case SyntaxKind.StringLiteralExpression:
-                case SyntaxKind.NumericLiteralExpression:
-                    return NoDiagnostic;
-                default:
-                    var si = model.GetSymbolInfo(node.Expression).Symbol;
-                    if (si is null || si.Kind != SymbolKind.Local) return NoDiagnostic;
-                    var symbol = (ILocalSymbol)model.GetSymbolInfo(node.Expression).Symbol;
-                    var type = symbol.Type.ToDisplayString();
-                    var member = node.Name.ToFullString();
-                    if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type))
-                    {
-                        return NoDiagnostic;
-                    }
-                    else if ((PrimitiveArrayTypeNames.Contains(type) || SmartContractArrayTypeNames.Contains(type)) && WhiteListedArrayMemberNames.Contains(member))
-                    {
-                        return NoDiagnostic;
-                    }
-                    else
-                    {
-                        return CreateDiagnostic("SC0008", node.GetLocation(), member, type);
-                    }
+                return NoDiagnostic;
             }
+            if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || (basetype != null && SmartContractTypeNames.Contains(basetypename)))
+            {
+                return NoDiagnostic;
+            }
+            else if ((PrimitiveArrayTypeNames.Contains(typename) || SmartContractArrayTypeNames.Contains(typename)) && WhiteListedArrayMemberNames.Contains(member))
+            {
+                return NoDiagnostic;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0008", node.GetLocation(), member, type);
+            }
+            
+            
         }
 
         // Only methods on primitive and smart contract types and some whitelisted System.Object methods can be invoked.
         public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SemanticModel model)
         {
-            var symbol = model.GetSymbolInfo(node.Expression).Symbol as IMethodSymbol;
+            if (WhitelistedOperators.Contains(node.Expression.ToFullString())) return NoDiagnostic;
+           
+            var symbol = model.GetSymbolInfo(node.Expression).Symbol;
             var method = symbol.Name;
             var type = symbol.ContainingType.ToDisplayString();
-            if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type))
+            var basetype = symbol.ContainingType.BaseType?.ToDisplayString();
+            if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type) || (basetype != null && SmartContractTypeNames.Contains(basetype)))
             {
                 return NoDiagnostic;
             }
@@ -176,6 +180,45 @@ namespace Silver.CodeAnalysis.Cs
             }
 
         }
+
+        // New object creation not allowed except for structs and arrays of primitives types
+        public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
+        {
+            var t = objectCreation.Type;
+            if (t.IsValueType || PrimitiveArrayTypeNames.Contains(t.Name))
+            {
+                return NoDiagnostic;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), t.ToDisplayString());
+            }
+
+        }
+
+        public static Diagnostic AnalyzeMemberReference(IMemberReferenceOperation memberReference)
+        {
+            
+            if (memberReference.Type == null) return NoDiagnostic;
+            var member = memberReference.Member.Name;
+            var type = memberReference.Member.ContainingType.ToDisplayString();
+            var baseType = memberReference.Member.ContainingType.BaseType?.ToDisplayString();
+            if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type))
+            {
+                return NoDiagnostic;
+            }
+            else if ((PrimitiveArrayTypeNames.Contains(type) || SmartContractArrayTypeNames.Contains(type)) && WhiteListedArrayMemberNames.Contains(member))
+            {
+                return NoDiagnostic;
+            }
+            else
+            {
+                return NoDiagnostic;
+                //return CreateDiagnostic("SC0008", node.GetLocation(), member, type);
+
+            }
+        }
+
         #region Overloads
         public static Diagnostic AnalyzeUsingDirective(UsingDirectiveSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeUsingDirective(node, ctx.SemanticModel)?.Report(ctx);
@@ -185,7 +228,7 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeClassDecl(ClassDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeClassDecl(node, ctx.SemanticModel)?.Report(ctx);
 
-        public static Diagnostic AnalyzeConstructor(ConstructorDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
+        public static Diagnostic AnalyzeConstructorDecl(ConstructorDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
             AnalyzeConstructorDecl(node, ctx.SemanticModel)?.Report(ctx);
 
         public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
@@ -202,7 +245,9 @@ namespace Silver.CodeAnalysis.Cs
 
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation, OperationAnalysisContext ctx) =>
             AnalyzeObjectCreation(objectCreation).Report(ctx);
-        
+
+        public static Diagnostic AnalyzeMemberReference(IMemberReferenceOperation memberReference, OperationAnalysisContext ctx) =>
+            AnalyzeMemberReference(memberReference).Report(ctx);
         #endregion
 
         public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
@@ -317,6 +362,8 @@ namespace Silver.CodeAnalysis.Cs
             { "object", new string [] {"ToString" } }
         };
         public static string[] WhitelistedNamespaces = { "System", "Stratis.SmartContracts", "Stratis.SmartContracts.Standards" };
+
+        public static string[] WhitelistedOperators = { "nameof" };
         #endregion
     }
 }
