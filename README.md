@@ -3,7 +3,10 @@
   <img src="https://static.wikia.nocookie.net/zelda_gamepedia_en/images/5/5a/BotW_Silver_Shield_Model.png/revision/latest/scale-to-width-down/400?cb=20210118165032&format=original" />
 </p>
 
+[![img](https://img.shields.io/nuget/v/Silver.CodeAnalysis?style=plastic)](https://www.nuget.org/packages/Silver.CodeAnalysis/)
+
 ## About
+
 Silver is a [static analysis](https://en.wikipedia.org/wiki/Static_program_analysis) and [formal verification](https://en.wikipedia.org/wiki/Formal_verification) 
 tool for Stratis smart contracts. Silver can analyze both C# source code using a Roslyn diagnostic analyzer and CIL code in a bytecode assembly 
 and can run both inside Visual Studio and on the command line.
