@@ -108,79 +108,6 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        // Only primitive types or smart contract types or arrays of these kinds of types can be used as variables in a method
-        public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SemanticModel model)
-        {
-            var type = model.GetSymbolInfo(node.Declaration.Type).Symbol.ContainingType;
-            var basetype = type.BaseType;
-            var typename = type.ToDisplayString();
-            var basetypename = basetype?.ToDisplayString() ?? "";
-            if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || PrimitiveArrayTypeNames.Contains(typename) || 
-                SmartContractArrayTypeNames.Contains(typename) || SmartContractTypeNames.Contains(basetypename))
-            {
-                return NoDiagnostic;
-            }
-            else
-            {
-                return CreateDiagnostic("SC0007", node.GetLocation(), typename);
-
-            }
-        }
-
-        // Only members on primitive types and smart contract types and some whitelisted array members can be accessed
-        public static Diagnostic AnalyzeMemberAccess(MemberAccessExpressionSyntax node, SemanticModel model)
-        {
-            string member = node.Name.ToFullString();
-            var _symbol = model.GetSymbolInfo(node).Symbol;
-            ISymbol symbol = _symbol.IsStatic ? _symbol : model.GetSymbolInfo(node.Expression).Symbol;
-            var type = symbol.ContainingType;
-            var basetype = type.BaseType;
-            var typename = type.ToDisplayString();
-            var basetypename = basetype?.ToDisplayString() ?? "";
-            if  (type.IsValueType || basetype.Name == "System.Enum")
-            {
-                return NoDiagnostic;
-            }
-            if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || (basetype != null && SmartContractTypeNames.Contains(basetypename)))
-            {
-                return NoDiagnostic;
-            }
-            else if ((PrimitiveArrayTypeNames.Contains(typename) || SmartContractArrayTypeNames.Contains(typename)) && WhiteListedArrayMemberNames.Contains(member))
-            {
-                return NoDiagnostic;
-            }
-            else
-            {
-                return CreateDiagnostic("SC0008", node.GetLocation(), member, type);
-            }
-            
-            
-        }
-
-        // Only methods on primitive and smart contract types and some whitelisted System.Object methods can be invoked.
-        public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SemanticModel model)
-        {
-            if (WhitelistedOperators.Contains(node.Expression.ToFullString())) return NoDiagnostic;
-           
-            var symbol = model.GetSymbolInfo(node.Expression).Symbol;
-            var method = symbol.Name;
-            var type = symbol.ContainingType.ToDisplayString();
-            var basetype = symbol.ContainingType.BaseType?.ToDisplayString();
-            if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type) || (basetype != null && SmartContractTypeNames.Contains(basetype)))
-            {
-                return NoDiagnostic;
-            }
-            else if (WhitelistedMethodNames.ContainsKey(type) && WhitelistedMethodNames[type].Contains(method))
-            {
-                return NoDiagnostic;
-            }
-            else
-            {
-                return CreateDiagnostic("SC0009", node.GetLocation(), method, type);
-            }
-
-        }
-
         // New object creation not allowed except for structs and arrays of primitives types
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {
@@ -196,18 +123,61 @@ namespace Silver.CodeAnalysis.Cs
 
         }
 
-        public static Diagnostic AnalyzeMemberReference(IMemberReferenceOperation memberReference)
+        public static Diagnostic AnalyzePropertyReference(IPropertyReferenceOperation propReference)
         {
-            
-            if (memberReference.Type == null) return NoDiagnostic;
-            var member = memberReference.Member.Name;
-            var type = memberReference.Member.ContainingType.ToDisplayString();
-            var baseType = memberReference.Member.ContainingType.BaseType?.ToDisplayString();
+            string propname = propReference.Property.Name;
+            var type = propReference.Type;
+            var basetype = type.BaseType;
+            var typename = type.ToDisplayString();
+            var basetypename = basetype?.ToDisplayString() ?? "";
+            if (type.IsValueType || (basetypename == "System.Enum"))
+            {
+                return NoDiagnostic;
+            }
+            if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || (basetype != null && SmartContractTypeNames.Contains(basetypename)))
+            {
+                return NoDiagnostic;
+            }
+            else if ((PrimitiveArrayTypeNames.Contains(typename) || SmartContractArrayTypeNames.Contains(typename)) && WhiteListedArrayMemberNames.Contains(propname))
+            {
+                return NoDiagnostic;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0008", propReference.Syntax.GetLocation(), propname, type);
+            }
+        }
+
+        public static Diagnostic AnalyzeMethodInvocation(IInvocationOperation methodInvocation)
+        {
+            //if (WhitelistedOperators.Contains(node.Expression.ToFullString())) return NoDiagnostic;
+            var node = methodInvocation.Syntax;
+            var method = methodInvocation.TargetMethod;
+            var type = method.ContainingType.ToDisplayString();
+            var basetype = method.ContainingType.BaseType?.ToDisplayString();
+            if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type) || (basetype != null && SmartContractTypeNames.Contains(basetype)))
+            {
+                return NoDiagnostic;
+            }
+            else if (WhitelistedMethodNames.ContainsKey(type) && WhitelistedMethodNames[type].Contains(method.Name))
+            {
+                return NoDiagnostic;
+            }
+            else
+            {
+                return CreateDiagnostic("SC0009", node.GetLocation(), method, type);
+            }
+        }
+
+        public static Diagnostic AnalyzeLocalReference(ILocalReferenceOperation localReference)
+        {
+            var type = localReference.Type.ToDisplayString();
+            var baseType = localReference.Type.BaseType?.ToDisplayString();
             if (PrimitiveTypeNames.Contains(type) || SmartContractTypeNames.Contains(type))
             {
                 return NoDiagnostic;
             }
-            else if ((PrimitiveArrayTypeNames.Contains(type) || SmartContractArrayTypeNames.Contains(type)) && WhiteListedArrayMemberNames.Contains(member))
+            else if ((PrimitiveArrayTypeNames.Contains(type) || SmartContractArrayTypeNames.Contains(type)) && WhiteListedArrayMemberNames.Contains(type))
             {
                 return NoDiagnostic;
             }
@@ -234,20 +204,17 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeFieldDecl(FieldDeclarationSyntax node, SyntaxNodeAnalysisContext ctx) =>
            AnalyzeFieldDecl(node, ctx.SemanticModel)?.Report(ctx);
 
-        public static Diagnostic AnalyzeLocalDecl(LocalDeclarationStatementSyntax node, SyntaxNodeAnalysisContext ctx) =>
-           AnalyzeLocalDecl(node, ctx.SemanticModel)?.Report(ctx);
-
-        public static Diagnostic AnalyzeInvocation(InvocationExpressionSyntax node, SyntaxNodeAnalysisContext ctx) =>
-           AnalyzeInvocation(node, ctx.SemanticModel)?.Report(ctx);
-
-        public static Diagnostic AnalyzeMemberAccess(MemberAccessExpressionSyntax node, SyntaxNodeAnalysisContext ctx) =>
-           AnalyzeMemberAccess(node, ctx.SemanticModel)?.Report(ctx);
-
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation, OperationAnalysisContext ctx) =>
             AnalyzeObjectCreation(objectCreation).Report(ctx);
 
-        public static Diagnostic AnalyzeMemberReference(IMemberReferenceOperation memberReference, OperationAnalysisContext ctx) =>
-            AnalyzeMemberReference(memberReference).Report(ctx);
+        public static Diagnostic AnalyzePropertyReference(IPropertyReferenceOperation propertyReference, OperationAnalysisContext ctx) =>
+            AnalyzePropertyReference(propertyReference).Report(ctx);
+
+        public static Diagnostic AnalyzeMethodInvocation(IInvocationOperation methodInvocation, OperationAnalysisContext ctx) =>
+            AnalyzeMethodInvocation(methodInvocation).Report(ctx);
+
+        public static Diagnostic AnalyzeLocalReference(ILocalReferenceOperation localReference, OperationAnalysisContext ctx) =>
+            AnalyzeLocalReference(localReference).Report(ctx);
         #endregion
 
         public static DiagnosticDescriptor GetErrorDescriptor(string id) =>

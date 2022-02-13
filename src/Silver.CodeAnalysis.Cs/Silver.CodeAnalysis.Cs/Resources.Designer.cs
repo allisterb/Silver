@@ -250,7 +250,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Only certain types and members are allowed in smart contract code.
+        ///   Looks up a localized string similar to Only certain types and members can be used in smart contract code.
         /// </summary>
         internal static string SC0008_Description {
             get {
@@ -259,7 +259,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Member {0} from type {1} cannot be used here.
+        ///   Looks up a localized string similar to Property {0} from type {1} cannot be used here.
         /// </summary>
         internal static string SC0008_MessageFormat {
             get {
@@ -268,7 +268,7 @@ namespace Silver.CodeAnalysis.Cs {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cannot use this member here.
+        ///   Looks up a localized string similar to Cannot use this property here.
         /// </summary>
         internal static string SC0008_Title {
             get {

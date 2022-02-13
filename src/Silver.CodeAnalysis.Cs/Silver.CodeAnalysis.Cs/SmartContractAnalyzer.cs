@@ -29,9 +29,6 @@
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeClassDecl((ClassDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeConstructorDecl((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeFieldDecl((FieldDeclarationSyntax)ctx.Node, ctx), SyntaxKind.FieldDeclaration);
-            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeLocalDecl((LocalDeclarationStatementSyntax)ctx.Node, ctx), SyntaxKind.LocalDeclarationStatement);
-            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeMemberAccess((MemberAccessExpressionSyntax)ctx.Node, ctx), SyntaxKind.SimpleMemberAccessExpression);
-            context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeInvocation((InvocationExpressionSyntax)ctx.Node, ctx), SyntaxKind.InvocationExpression);
             
             context.RegisterOperationAction(ctx =>
                 {
@@ -41,11 +38,19 @@
                             Validator.AnalyzeObjectCreation(objectCreation, ctx);
                             break;
 
-                        case IMemberReferenceOperation memberReference:
-                            Validator.AnalyzeMemberReference(memberReference, ctx);
+                        case IPropertyReferenceOperation propReference:
+                            Validator.AnalyzePropertyReference(propReference, ctx);
+                            break;
+
+                        case IInvocationOperation methodInvocation:
+                            Validator.AnalyzeMethodInvocation(methodInvocation, ctx);
+                            break;
+                        
+                        case ILocalReferenceOperation localReference:
+                            Validator.AnalyzeLocalReference(localReference, ctx);
                             break;
                     }
-                }, OperationKind.ObjectCreation, OperationKind.PropertyReference, OperationKind.MethodReference);
+                }, OperationKind.ObjectCreation, OperationKind.Invocation, OperationKind.PropertyReference, OperationKind.LocalReference);
             //context.RegisterCompilationStartAction(OnCompilationStart);
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
             #endregion
