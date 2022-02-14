@@ -5,6 +5,8 @@ using Backend.Model;
 
 using Microsoft.Msagl.Drawing;
 
+using Silver.Metadata;
+
 #region Records
 public record Summary(
     ITypeDefinition[] Classes, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
@@ -14,7 +16,7 @@ public record Summary(
 public partial class Analyzer : Runtime
 {
     #region Constructors
-    public Analyzer(string fileName, AnalyzerState? state = null)
+    public Analyzer(string fileName, AnalyzerState? state = null, bool loadrefs = false)
     {
         AssemblyFile = new FileInfo(FailIfFileNotFound(fileName));
         Host = new PeReader.DefaultHost();
@@ -26,8 +28,25 @@ public partial class Analyzer : Runtime
             Error("The file {0} is not a valid CLR module or assembly.", fileName);
             return;
         }
-
         var pdbFileName = Path.ChangeExtension(fileName, "pdb");
+        if (loadrefs)
+        {
+            var refs = Module.AssemblyReferences;
+            foreach (var r in refs)
+            {
+                var a = AssemblyMetadata.TryResolve(r, AssemblyFile.DirectoryName!);
+                if (a is not null)
+                {
+                    Host.LoadUnitFrom(a.File.FullName);
+                    Info("Resolved assembly reference {0} to {1}.", r.Name.Value, a.File.FullName);
+                }
+                else
+                {
+                    Warn("Did not resolve assembly reference {0}.", a.AssemblyName);
+                }
+            }
+        }
+        
         Types.Initialize(Host);
         if (File.Exists(pdbFileName))
         {
@@ -76,20 +95,17 @@ public partial class Analyzer : Runtime
         var cha = new ClassHierarchyCallGraphAnalysis(Host);
         cha.OnNewMethodFound = (m) =>
         {
-            if (m is Dummy)
+            if (PdbReader is not null && m.Locations.Any() && PdbReader.GetPrimarySourceLocationsFor(m.Locations).Any())
             {
-                throw new InvalidOperationException("A method was not resolved. An assembly reference is missing.");
-            }
-            else if (!methods.Contains(m))
-            {
-                throw new InvalidOperationException($"Method {m.GetUniqueName()} is not in the methods collection. An assembly reference is missing.");
+                Warn("The method {0} at location(s) {1} was not analyzed.", m.GetUniqueName(), PdbReader.GetPrimarySourceLocationsFor(m.Locations).Select(l => PrintLocation(l)));
             }
             else
             {
-                return true;
+                Warn("The method {0} was not analyzed.", m.GetUniqueName());
             }
+            return false;            
         };
-        var cg = cha.Analyze();
+        var cg = cha.Analyze(methods);
         var g = new Graph();
         foreach (var method in cg.Roots)
         {
@@ -176,7 +192,7 @@ public partial class Analyzer : Runtime
                 }
             }
             //File.WriteAllText(Path.Combine(AssemblyFile.DirectoryName!, method.Name.Value), SerializeCFGToDGML(cfg));
-            Info("Created CFG nodes for method {0}.", method.Name);
+            Info("Created CFG nodes for method {0}.", method.GetUniqueName());
         }
         op.Complete();
         return g;
@@ -205,7 +221,7 @@ public partial class Analyzer : Runtime
 
     internal ITypeDefinition[] CollectTypes(string name) => CollectTypes(name, All<ITypeDefinition>(), Identity<ITypeDefinition>());
 
-    internal T[] CollectMembers<T>(string name, Func<T, bool> pred, Func<T, T> func)
+    internal T[] CollectMembers<T>(string name, Func<T, bool> pred, Func<T, T> func) where T : ITypeDefinitionMember
     {
         if (State.ContainsKey(name.ToLower()))
         {
@@ -225,11 +241,11 @@ public partial class Analyzer : Runtime
         }
     }
 
-    internal T[] CollectMembers<T>(string name, Func<T, bool> pred) => CollectMembers<T>(name, pred, Identity<T>());
+    internal T[] CollectMembers<T>(string name, Func<T, bool> pred) where T : ITypeDefinitionMember => CollectMembers<T>(name, pred, Identity<T>());
 
-    internal T[] CollectMembers<T>(string name, Func<T, T> func) => CollectMembers<T>(name, All<T>(), func);
+    internal T[] CollectMembers<T>(string name, Func<T, T> func) where T : ITypeDefinitionMember  => CollectMembers<T>(name, All<T>(), func);
 
-    internal T[] CollectMembers<T>(string name) => CollectMembers<T>(name, All<T>(), Identity<T>());
+    internal T[] CollectMembers<T>(string name) where T : ITypeDefinitionMember => CollectMembers<T>(name, All<T>(), Identity<T>());
 
     internal ITypeDefinition[] CollectClasses() => CollectTypes("Classes", (t => t.IsClass && t.GetName() != "<Module>")).ToArray();
 
@@ -329,7 +345,7 @@ public partial class Analyzer : Runtime
         {
             case CFGNodeKind.Entry:
                 var name = method.GetUniqueName();
-                var loc = this.PdbReader is not null && method.Locations is not null && method.Locations.Any() ?
+                var loc = this.PdbReader is not null && method.Locations is not null && method.Locations.Any() && PdbReader.GetPrimarySourceLocationsFor(method.Locations.First()).Any() ?
                     Environment.NewLine + "Location: " + PrintSourceLocation(PdbReader.GetPrimarySourceLocationsFor(method.Locations.First())) : "";
                 return name + loc;
 
@@ -437,6 +453,12 @@ public partial class Analyzer : Runtime
 
     #region Fields
     internal IEnumerable<INamedTypeDefinition> moduleTypeDefinitions;
+    public static HashSet<System.Reflection.Assembly> systemAssemblies = new HashSet<System.Reflection.Assembly>
+    {
+        System.Reflection.Assembly.Load("System.Runtime"),
+        typeof(object).Assembly,
+        typeof(Enumerable).Assembly,
+    };
     #endregion
 }
 

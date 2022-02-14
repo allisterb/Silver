@@ -13,11 +13,14 @@ public static class Extensions
         return t.HaseBaseClass() && t.BaseClasses.Any(t => t.ToString() == "Stratis.SmartContracts.SmartContract");
     }
 
+    public static bool IsDummyName(this ITypeDefinitionMember method) =>
+        method.Name.ToString() == "Microsoft.Cci.DummyName";
+
     public static bool IsSmartContractMethod(this IMethodDefinition method)
         => method.ContainingTypeDefinition.IsSmartContract() && method.Visibility == TypeMemberVisibility.Public;
-        
+    
     public static string GetUniqueName(this IMethodDefinition md)
-        => MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature);
+        => !md.IsDummyName() ? MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature) : MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature).TrimStart('.');
     public static string GetUniqueId(this IMethodDefinition md, int id)
         => md.GetUniqueName() + "::" + id;
 

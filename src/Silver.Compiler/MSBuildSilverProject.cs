@@ -1,8 +1,6 @@
 namespace Silver.Compiler;
 
 using System.Reflection;
-using Roslyn = Microsoft.CodeAnalysis;
-
 using Buildalyzer;
 using Buildalyzer.Environment;
 using Buildalyzer.Workspaces;
@@ -74,7 +72,7 @@ public class MSBuildSilverProject : SilverProject
             PackageReferences =
                 MsBuildProject.PackageReferences
                 .Select(r => new AssemblyName(r.Key) { Version = r.Value.ContainsKey("Version") ? r.Value["Version"].ToVersion() : null })
-                .Select(n => new AssemblyReference(n, Metadata.Assembly.TryResolve(n, ProjectFile.DirectoryName!)))
+                .Select(n => new AssemblyReference(n, AssemblyMetadata.TryResolve(n, ProjectFile.DirectoryName!)))
                 .ToList();
             //References = MsBuildProject.References.Where(r => !r.Contains("Microsoft.NETCore.App.Ref")).ToList();
             //if ((MsBuildProject.Items.ContainsKey("Reference")) && MsBuildProject.Items["Reference"].Any(r => r.Metadata["IsImplicitlyDefined"] == "true"))

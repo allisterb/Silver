@@ -9,10 +9,10 @@ using Nuclear.Assemblies.Resolvers;
 using Nuclear.Assemblies.ResolverData;
 using Nuclear.Assemblies.Resolvers.Internal;
 public readonly record struct AssemblyReference(AssemblyName Name, IAssemblyResolverData? ResolverData);
-public class Assembly : Runtime
+public class AssemblyMetadata : Runtime
 {
     #region Constructors
-    public Assembly(string assemblyPath)
+    public AssemblyMetadata(string assemblyPath)
     { 
         Directory = new FileInfo(assemblyPath).Directory!;
         Host = new PeReader.DefaultHost();
@@ -68,7 +68,6 @@ public class Assembly : Runtime
     }
 
     public static IAssemblyResolverData? TryResolve(IAssemblyReference r, string searchPath) => TryResolve(GetAssemblyName(r), searchPath);
-    
     #endregion
 }
 

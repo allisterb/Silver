@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": " compile $(SolutionDir)..\\ext\\StratisSmartContractsSamples\\src\\Solutions\\DecentralizedID\\DecentralizedIDContract\\DecentralizedIDContract.csproj"
+      "commandLineArgs": " cfg C:\\Projects\\Silver\\ext\\StratisSmartContractsSamples\\src\\Solutions\\DecentralizedID\\DecentralizedIDContract\\DecentralizedIDContract.csproj dcidc.png"
     }
   }
 }
