@@ -31,12 +31,12 @@
   },
   "sct": {
     "Name": "sct",
-    "Version": "2.0.0-silver",
+    "Version": "2.0.0.1-silver",
     "Directory": "sct",
     "DownloadURLs": {
-      "windows": "https://github.com/allisterb/Stratis.SmartContracts.Tools.Sct/releases/download/2.0.0-silver/sct-2.0.0-silver.zip",
-      "linux": "https://github.com/allisterb/Stratis.SmartContracts.Tools.Sct/releases/download/2.0.0-silver/sct-2.0.0-silver.zip",
-      "osx": "https://github.com/allisterb/Stratis.SmartContracts.Tools.Sct/releases/download/2.0.0-silver/sct-2.0.0-silver.zip"
+      "windows": "https://github.com/allisterb/Stratis.SmartContracts.Tools.Sct/releases/download/2.0.0.1-silver/sct-2.0.0.1-silver.zip",
+      "linux": "https://github.com/allisterb/Stratis.SmartContracts.Tools.Sct/releases/download/2.0.0-silver/sct-2.0.0.1-silver.zip",
+      "osx": "https://github.com/allisterb/Stratis.SmartContracts.Tools.Sct/releases/download/2.0.0-silver/sct-2.0.0.1-silver.zip"
     },
     "ExePathsWithinZip": {
       "windows": "sct\\*.*",
