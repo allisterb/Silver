@@ -282,7 +282,11 @@ public abstract class Runtime
     {
         if (!DebugEnabled)
         {
-            if (relativeTo is null)
+            if (path is null)
+            {
+                return string.Empty;
+            }
+            else if (relativeTo is null)
             {
                 return (Path.GetFileName(path) ?? path);
             }

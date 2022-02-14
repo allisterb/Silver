@@ -61,7 +61,7 @@ public class Player : SmartContract
         Assert(State == (uint)StateType.SentPing || State == (uint)StateType.Provisioned);
 
         State = (uint)StateType.ReceivedPing;
-        var xx = typeof(object);
+
         // We want to overflow the counter here.
         unchecked
         {

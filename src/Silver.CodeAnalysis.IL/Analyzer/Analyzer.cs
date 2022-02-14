@@ -74,6 +74,21 @@ public partial class Analyzer : Runtime
         using var op = Begin("Creating call graph for methods in assembly {0}", AssemblyFile.Name);
         var methods = CollectMethods();
         var cha = new ClassHierarchyCallGraphAnalysis(Host);
+        cha.OnNewMethodFound = (m) =>
+        {
+            if (m is Dummy)
+            {
+                throw new InvalidOperationException("A method was not resolved. An assembly reference is missing.");
+            }
+            else if (!methods.Contains(m))
+            {
+                throw new InvalidOperationException($"Method {m.GetUniqueName()} is not in the methods collection. An assembly reference is missing.");
+            }
+            else
+            {
+                return true;
+            }
+        };
         var cg = cha.Analyze();
         var g = new Graph();
         foreach (var method in cg.Roots)

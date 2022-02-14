@@ -63,6 +63,10 @@ namespace Silver.CodeAnalysis.Cs
         // Class constructor must have a ISmartContractState as first parameter.
         public static Diagnostic AnalyzeConstructorDecl(ConstructorDeclarationSyntax node, SemanticModel model)
         {
+            if (node.Parent is StructDeclarationSyntax) return NoDiagnostic;
+            var parent = (ClassDeclarationSyntax) node.Parent;
+            var parentSymbol = model.GetDeclaredSymbol(parent) as ITypeSymbol;
+
             var fp = node
                 .DescendantNodes()
                 .OfType<ParameterListSyntax>()
@@ -74,7 +78,7 @@ namespace Silver.CodeAnalysis.Cs
             if (fp == null) return NoDiagnostic;
 
             var fpt = fp.Type;
-
+           
             var fpn = fp
                 .ChildTokens()
                 .First(t => t.IsKind(SyntaxKind.IdentifierToken));
@@ -82,7 +86,7 @@ namespace Silver.CodeAnalysis.Cs
             var classSymbol = model.GetSymbolInfo(fpt).Symbol as ITypeSymbol;
             if (classSymbol.ToDisplayString() != "Stratis.SmartContracts.ISmartContractState")
             {
-                return CreateDiagnostic("SC0004", fpn.GetLocation(), classSymbol.Name);
+                return CreateDiagnostic("SC0004", fpn.GetLocation(), fp.Identifier.Text);
             }
             else
             {

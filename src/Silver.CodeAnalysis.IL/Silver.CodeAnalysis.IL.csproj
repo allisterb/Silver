@@ -14,6 +14,7 @@
     <ProjectReference Include="..\..\ext\TinyBCT\TinyBCT\TinyBCT.NET6.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
+    <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
   </ItemGroup>
 
 </Project>
