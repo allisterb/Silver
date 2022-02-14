@@ -1,4 +1,4 @@
 #!/bin/bash
 git fetch
 git pull --recurse-submodules
-./update
+./build
