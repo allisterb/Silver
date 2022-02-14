@@ -42,7 +42,7 @@ public partial class Analyzer : Runtime
                 }
                 else
                 {
-                    Warn("Did not resolve assembly reference {0}.", a.AssemblyName);
+                    Warn("Did not resolve assembly reference {0}.", r.Name.Value);
                 }
             }
         }
