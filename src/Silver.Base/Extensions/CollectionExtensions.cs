@@ -12,7 +12,6 @@ public static class CollectionExtensions
             stack.Pop();
         }
     }
-
 }
 
 public static class CollectionUtils
@@ -34,8 +33,4 @@ public static class CollectionUtils
             d.Add(k, v);
         }
     }
-
-
-
-
 }

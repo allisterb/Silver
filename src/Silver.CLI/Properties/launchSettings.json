@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "compile $(SolutionDir)..\\examples\\TicketBooth\\Ticketbooth.Contract.csproj"
+      "commandLineArgs": "compile $(SolutionDir)..\\examples\\PingPongContract\\PingPongContract.csproj"
     }
   }
 }

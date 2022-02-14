@@ -46,11 +46,11 @@
                             Validator.AnalyzeMethodInvocation(methodInvocation, ctx);
                             break;
                         
-                        case ILocalReferenceOperation localReference:
-                            Validator.AnalyzeLocalReference(localReference, ctx);
+                        case IVariableDeclaratorOperation variableDeclarator:
+                            Validator.AnalyzeVariableDeclaration(variableDeclarator, ctx);
                             break;
                     }
-                }, OperationKind.ObjectCreation, OperationKind.Invocation, OperationKind.PropertyReference, OperationKind.LocalReference);
+                }, OperationKind.ObjectCreation, OperationKind.Invocation, OperationKind.PropertyReference, OperationKind.VariableDeclarator);
             //context.RegisterCompilationStartAction(OnCompilationStart);
             //context.RegisterSymbolAction(AnalyzeSymbol, SymbolKind.Namespace, SymbolKind.NamedType);
             #endregion
