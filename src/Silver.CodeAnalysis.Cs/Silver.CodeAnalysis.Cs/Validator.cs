@@ -179,6 +179,10 @@ namespace Silver.CodeAnalysis.Cs
         {
             var node = variableDeclarator.Syntax;
             var type = variableDeclarator.Symbol.Type;
+            if (type.Kind == SymbolKind.ArrayType)
+            {
+                var ii = (IArrayTypeSymbol)type;
+            }
             var typename = type.ToDisplayString();
             var basetype = type.BaseType;
             var basetypename = basetype?.ToDisplayString() ?? string.Empty;

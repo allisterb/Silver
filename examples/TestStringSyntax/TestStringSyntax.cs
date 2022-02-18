@@ -4,13 +4,14 @@ public class TestStringSyntax : SmartContract
 {
 	const int MAX_LEN = 100;
 
-	public int foo = 0;
+	
 	public TestStringSyntax(ISmartContractState state, string message)
 		: base(state)
 	{
 		Requestor = Message.Sender;
 		RequestMessage = message;
 		ContractState = (uint)StateType.Request;
+		int[] foo = new int[2];
 	}
 
 	public enum StateType : uint

@@ -397,7 +397,7 @@ public abstract class SilverProject : Runtime
                     }
                 }
 
-                if (!File.Exists(Path.Combine(Path.GetDirectoryName(TargetPath)!, "system.Compiler.Runtime.dll")))
+                if (!File.Exists(Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.dll")))
                 { 
                     var scr = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.dll");
                     var scrd = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.pdb");
@@ -405,7 +405,7 @@ public abstract class SilverProject : Runtime
                     var cscr = Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.dll");
                     var cscrd = Path.Combine(Path.GetDirectoryName(TargetPath)!, "System.Compiler.Runtime.pdb");
                     if (!File.Exists(cscr)) File.Copy(scr, cscr);
-                    if (!File.Exists(cscrd)) File.Copy(cscrd, cscrd);  
+                    if (!File.Exists(cscrd)) File.Copy(scrd, cscrd);  
                 }
                 op.Complete();
                 if (!DebugEnabled && rewrite)
@@ -543,7 +543,7 @@ public abstract class SilverProject : Runtime
         //new SharpSyntaxRewriter.Rewriters.ReplicateLocalInitialization(),
         //new SharpSyntaxRewriter.Rewriters.StoreObjectCreation(),
         new TranslateLinq(),
-        new UncoalesceCoalescedNull(),
+        //new UncoalesceCoalescedNull(),
         new UninterpolateString(),
         new NoNameof()
         //new SharpSyntaxRewriter.Rewriters.UnparameterizeRecordDeclaration()
