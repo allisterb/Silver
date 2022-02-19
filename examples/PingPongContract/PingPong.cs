@@ -1,8 +1,11 @@
 using Stratis.SmartContracts;
+//^ using Microsoft.Contracts;
+
 
 public class Player : SmartContract
 {
-    public Player(ISmartContractState state, Address player, Address opponent, string gameName)
+    //^ [NotDelayed]
+	public Player(ISmartContractState state, Address player, Address opponent, string gameName)
         : base(state)
     {
         PlayerAddress = player;
@@ -114,6 +117,7 @@ public class Starter : SmartContract
     public Starter(ISmartContractState state)
         : base(state)
     {
+        
     }
 
     /// <summary>

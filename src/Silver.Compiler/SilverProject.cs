@@ -135,7 +135,9 @@ public abstract class SilverProject : Runtime
             var scr = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.dll");
             
             sb.AppendFormat("-r:{0} ", References.Prepend(scr).JoinWith(";"));
-            
+
+            sb.Append("-nn ");
+
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
