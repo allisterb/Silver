@@ -100,6 +100,9 @@ public class CompileOptions : Options
 
     [Option("ssc", Required = false, HelpText = "Use the SSC compiler instead of MSBuild.")]
     public bool Ssc { get; set; }
+
+    [Option("rewrite", Required = false, HelpText = "Use the Roslyn rewiters.")]
+    public bool Rewrite { get; set; } = false;
 }
 
 [Verb("verify", HelpText = "Verify a .NET assembly compiled with Spec#.")]

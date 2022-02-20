@@ -423,6 +423,10 @@ public abstract class SilverProject : Runtime
                     Debug("Not deleting temporary files in debug mode.");
                 }
                 Info("Compile succeded. Assembly is at {0}.", TargetPath);
+                if (Verify)
+                {
+                    Info("Run `silver verify {0}` to view the details of verification.", TargetPath);
+                }
                 sscc = new SscCompilation(this, true, Verify, compilerErrors, compilerWarnings);
                 return true;
             }

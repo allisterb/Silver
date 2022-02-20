@@ -46,7 +46,7 @@ namespace Silver.CLI.Core
                 proj.Verify = verify;
                 if (ssc || Path.GetExtension(filePath).StartsWith(".ssc"))
                 {
-                    var sscret = proj.SscCompile(false, out var sscc);
+                    var sscret = proj.SscCompile(rewrite, out var sscc);
                     targetPath = proj.TargetPath;
                     return sscret;
                 }
