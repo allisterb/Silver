@@ -162,7 +162,7 @@ class Program : Runtime
          .WithParsed<VerifyOptions>(o =>
          {
              ExitIfFileNotFound(o.File);
-             VerifierCmd.Verify(o.File);
+             VerifierCmd.Verify(o.File, o.Output);
          })
         #endregion
 

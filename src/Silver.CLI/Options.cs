@@ -107,6 +107,9 @@ public class VerifyOptions : Options
 {
     [Value(0, Required = true, HelpText = "The .NET assembly or project file to translate.")]
     public string File { get; set; } = String.Empty;
+
+    [Option('o', "output", Required = false, HelpText = "Save the verifier XML output to this file.")]
+    public string? Output { get; set; }
 }
 
 [Verb("metadata", HelpText = "Get metadata for a .NET bytecode assembly.")]

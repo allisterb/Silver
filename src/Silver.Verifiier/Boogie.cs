@@ -6,10 +6,11 @@ using System.Xml.Serialization;
 using Silver.Verifier.Models;
 public class Boogie : Runtime
 {
-    public static BoogieResults? Verify(string path)
+    public static BoogieResults? Verify(string path, string? output)
     {
-        var f = DateTime.Now.Ticks.ToString() + Path.GetFileName(FailIfFileNotFound(path)) + ".xml";
+        var f = output ?? DateTime.Now.Ticks.ToString() + Path.GetFileName(FailIfFileNotFound(path)) + ".xml";
         Debug("XML output will be written to file {0}.", Path.GetFullPath(f));
+        WarnIfFileExists(f);
         var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), path + " " + "/xml:"+ f, isNETFxTool: true);
         if (ret is null)
         {
@@ -20,7 +21,7 @@ public class Boogie : Runtime
         else if(!ret.Contains("Spec# program verifier finished"))
         {
             Error("Program verifier did not complete successfully");
-            File.Delete(f);
+            if (output is null) File.Delete(f);
             return null;
         }
         else
@@ -30,8 +31,11 @@ public class Boogie : Runtime
             var results =  (BoogieResults?)ser.Deserialize(reader);
             reader.Close();
             reader.Dispose();
-            Debug("Deleting file {0}.", Path.GetFullPath(f));
-            File.Delete(f);
+            if (output is null)
+            {
+                Debug("Deleting file {0}.", Path.GetFullPath(f));
+                File.Delete(f);
+            }
             return results;
         }
     }

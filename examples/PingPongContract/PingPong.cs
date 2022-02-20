@@ -21,7 +21,7 @@ public class Player : SmartContract
         ReceivedPing = 2,
         Finished = 3
     }
-
+	//@ public string Foo;
     public uint State
     {
         get => PersistentState.GetUInt32(nameof(State));

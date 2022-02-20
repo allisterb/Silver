@@ -6,9 +6,9 @@ using Silver.Verifier;
 using Silver.Verifier.Models;
 public class Verifier : Runtime
 {
-    public static bool Verify(string path)
+    public static bool Verify(string path, string? output)
     {
-        var results = Boogie.Verify(FailIfFileNotFound(path));
+        var results = Boogie.Verify(FailIfFileNotFound(path), output);
         if (results is null)
         {
             Error("Could not read the verifier response.");
