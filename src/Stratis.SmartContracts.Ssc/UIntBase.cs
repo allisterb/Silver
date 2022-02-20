@@ -134,9 +134,10 @@ namespace Stratis.SmartContracts
 
     internal BigInteger Mod(BigInteger value2) => this.value % value2;
 
-    public int CompareTo(object b) => this.value.CompareTo(((UIntBase) b).value);
+    int System.IComparable.CompareTo(object/*?*/ b) => this.value.CompareTo(((UIntBase) b).value);
 
-    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object) b);
+    public int CompareTo(object b) => this.value.CompareTo(((UIntBase)b).value);
+    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object/*?*/)b);
 
     public override int GetHashCode()
     {
@@ -147,7 +148,7 @@ namespace Stratis.SmartContracts
       return (int) hashCode;
     }
 
-    public override bool Equals(object obj) => this.CompareTo(obj) == 0;
+    //public override bool Equals(object obj) => this.CompareTo(obj) == 0;
 
     private static string ByteArrayToString(byte[] ba) => BitConverter.ToString(ba).Replace("-", "");
 

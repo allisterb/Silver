@@ -134,7 +134,7 @@ public abstract class SilverProject : Runtime
             }
             var scr = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.dll");
             
-            sb.AppendFormat("-r:{0} ", References.Prepend(scr).JoinWith(";"));
+            sb.AppendFormat("-r:{0} ", References.Prepend(scr).Prepend(systemContractAssemblies[0]).Prepend(systemContractAssemblies[1]).JoinWith(";"));
 
             sb.Append("-nn ");
 
@@ -313,6 +313,7 @@ public abstract class SilverProject : Runtime
             if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
             TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
         }
+
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
@@ -329,7 +330,7 @@ public abstract class SilverProject : Runtime
                        
                             
                             Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
-                                "               Msg: {1}", errmsg[0], errmsg[1]);
+                                "               Msg: {1}", errmsg[0], errmsg.Skip(1).JoinWith(""));
                         
                     }
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("error"))
@@ -362,7 +363,7 @@ public abstract class SilverProject : Runtime
 
             if (output is null || output.Contains(" error "))
             {
-                Error("Compile failed.");
+                Error("Compile failed with {0} errors.", compilerErrors.Count);
                 op.Abandon();
                 sscc = new SscCompilation(this, false, Verify, compilerErrors, compilerWarnings);
                 return false;
@@ -544,6 +545,11 @@ public abstract class SilverProject : Runtime
 
     };
 
+    internal static string[] systemContractAssemblies =
+    {
+        Path.Combine(AssemblyLocation, "ssc", "Mscorlib.Contracts.dll"),
+        Path.Combine(AssemblyLocation, "ssc", "System.Contracts.dll")
+    };
     private static string[] rewriterNames = rewriters.Select(r => r.GetType().Name).ToArray();
 
     private static Regex assertStmt = new Regex(@"Assert\((.*)\)", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
