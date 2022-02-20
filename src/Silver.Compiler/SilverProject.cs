@@ -423,18 +423,6 @@ public abstract class SilverProject : Runtime
                     Debug("Not deleting temporary files in debug mode.");
                 }
                 Info("Compile succeded. Assembly is at {0}.", TargetPath);
-                if (Verify) 
-                {
-                    var vwarn = compilerWarnings.Where(w => w.Msg.ToLower().Contains("unsatisfied"));
-                    if (vwarn.Count() > 0)
-                    {
-                        Info("Verification completed with {0} warnings.", vwarn.Count());
-                    }
-                    else
-                    {
-                        Info("Verification succeded.");
-                    }
-                }
                 sscc = new SscCompilation(this, true, Verify, compilerErrors, compilerWarnings);
                 return true;
             }

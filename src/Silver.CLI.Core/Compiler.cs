@@ -36,36 +36,23 @@ namespace Silver.CLI.Core
             }
         }
 
-        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, params string[] additionalFiles)
+        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, out string? targetPath, params string[] additionalFiles)
         {
+            targetPath = null;
             var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
+                
                 proj.Verify = verify;
                 if (ssc || Path.GetExtension(filePath).StartsWith(".ssc"))
                 {
-                    return proj.SscCompile(false, out var sscc);
+                    var sscret = proj.SscCompile(false, out var sscc);
+                    targetPath = proj.TargetPath;
+                    return sscret;
                 }
                 var c = proj.Compile(out var diags, out var result);
-                if (diags.Count(d => d.WarningLevel == 0) > 0 || (DebugEnabled && diags.Count() > 0))
-                {
-                    Info("Printing diagnostics...");
-                    foreach (var d in diags)
-                    {
-                        var f = d.Location.GetLineSpan().Path;
-                        var line = d.Location.GetLineSpan().StartLinePosition.Line;
-                        var col = d.Location.GetLineSpan().StartLinePosition.Character;
-
-                        if (d.WarningLevel == 0)
-                        {
-                            Error("Id:   {0}\n               Msg:  {1}\n               File: {2} ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
-                        }
-                        else if (DebugEnabled)
-                        {
-                            Warn("Id:   {0}\n               Msg:  {1}\n               File: {2} ({3},{4})\n", d.Id, d.GetMessage(), ViewFilePath(f, proj.ProjectFile.Directory?.FullName), line, col);
-                        }
-                    }
-                }
+                targetPath = proj.TargetPath;
+                SilverProject.LogDiagnostics(diags, proj.ProjectFile.Directory!.FullName);
                 if (validate)
                 {
                     var op = Begin("Validating {0} source file(s) using Stratis SCT tool", proj.SourceFiles.Count);
@@ -103,6 +90,7 @@ namespace Silver.CLI.Core
                 if (c && verify)
                 {
                     c = proj.SscCompile(rewrite, out var sscc);
+                    targetPath = proj.TargetPath;
                     return c;
                 }
                 return c;

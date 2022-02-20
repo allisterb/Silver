@@ -2,13 +2,23 @@
 
 using Spectre.Console;
 
+using Silver.Compiler;
 using Silver.Verifier;
 using Silver.Verifier.Models;
 public class Verifier : Runtime
 {
     public static bool Verify(string path, string? output)
     {
-        var results = Boogie.Verify(FailIfFileNotFound(path), output);
+        var target = FailIfFileNotFound(path);
+        if (SilverProject.HasProjectExtension(path))
+        {
+            if (!Compiler.Compile(path, "Debug", true, false, true, true, out target) || target is null)
+            {
+                Error("One or more errors occurred compiling project {0}.", path);
+                return false;
+            }
+        }
+        var results = Boogie.Verify(FailIfFileNotFound(target), output);
         if (results is null)
         {
             Error("Could not read the verifier response.");

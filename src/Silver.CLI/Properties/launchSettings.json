@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": " compile $(SolutionDir)..\\examples\\DAOContract\\DAOContract.csproj --verify"
+      "commandLineArgs": " verify $(SolutionDir)..\\examples\\PingPongContract\\PingPongContract.csproj"
     }
   }
 }

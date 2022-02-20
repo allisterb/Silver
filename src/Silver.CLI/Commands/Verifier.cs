@@ -16,5 +16,7 @@ internal class VerifierCmd : Command
             Exit(ExitResult.SUCCESS);
         }
     }
+
+
 }
 
