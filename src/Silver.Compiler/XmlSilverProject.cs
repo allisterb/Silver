@@ -72,11 +72,6 @@ namespace Silver.Compiler
                                 }
                                 ProjectReferences.Add(new(r.Project, pr, r.Private));
                             }
-                            else if(r.AssemblyName.StartsWith("System"))
-                            {
-                                Debug("Not adding system assembly to references.", r.AssemblyName);
-                                continue;
-                            }
                             else if (!string.IsNullOrEmpty(r.AssemblyName) && !string.IsNullOrEmpty(r.HintPath))
                             {
                                 var hp = Path.Combine(ProjectFile.DirectoryName!, r.HintPath.NormalizeFilePath());
@@ -91,6 +86,7 @@ namespace Silver.Compiler
                             }
                             else if (!string.IsNullOrEmpty(r.AssemblyName))
                             {
+                                Debug("Adding GAC assembly {0} to references.", r.AssemblyName);
                                 GACReferences.Add(new(r.AssemblyName + ".dll", r.Private));
                                 References.Add(r.AssemblyName + ".dll");
                             }

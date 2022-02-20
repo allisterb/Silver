@@ -156,7 +156,7 @@ class Program : Runtime
              }
              else
              {
-                 CompilerCmd.Compile(file, buildConfig, o.Verify,o.Ssc, o.Rewrite, o.Validate, additionalFiles);
+                 CompilerCmd.Compile(file, buildConfig, o.Verify, o.Ssc, o.Rewrite || ! o.Ssc, o.Validate, additionalFiles);
              }
          })
          .WithParsed<VerifyOptions>(o =>

@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": " verify $(SolutionDir)..\\examples\\PingPongContract\\PingPongContract.csproj"
+      "commandLineArgs": " compile $(SolutionDir)Stratis.SmartContracts.Ssc\\Stratis.SmartContracts.Ssc.csproj --ssc --rewrite"
     }
   }
 }
