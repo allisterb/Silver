@@ -86,7 +86,17 @@ namespace Stratis.SmartContracts
 
     public byte[] ToBytes() => this.value.ToBytes(true);
 
-    public int CompareTo(object/*?*/ b) => this.value.CompareTo((object) ((UInt256) b).value);
+    public int CompareTo(object/*?*/ b)
+    {
+        if (b != null && b is UInt256)
+        {
+            return this.value.CompareTo((object)((UInt256)b).value);
+        }
+        else
+        {
+            throw new InvalidOperationException("Object does not have type UInt256");
+        }
+    }
 
     public override int GetHashCode() => this.value.GetHashCode();
 

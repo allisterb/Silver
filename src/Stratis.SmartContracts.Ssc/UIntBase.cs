@@ -83,11 +83,15 @@ namespace Stratis.SmartContracts
         {
             throw new OverflowException("Only positive or zero values are allowed.");
         }
-        if (this.TooBig(value.ToByteArray()))
+        byte[]/*?*/ a = value.ToByteArray();
+        if (a == null || (a != null && this.TooBig(a)))
         {
             throw new OverflowException();
         }
-        this.value = value;
+        else
+        {
+            this.value = value;
+        }
     }
 
     public BigInteger GetValue()
@@ -107,8 +111,12 @@ namespace Stratis.SmartContracts
 
     public byte[] ToBytes(bool lendian)
     {
-      byte[] byteArray = this.value.ToByteArray();
-      byte[] bytes = new byte[this.width];
+      byte[]/*?*/ byteArray = this.value.ToByteArray();
+      if (byteArray == null)
+      {
+          throw new InvalidOperationException("Array is null");
+      }
+        byte[] bytes = new byte[this.width];
       Array.Copy((Array) byteArray, (Array) bytes, Math.Min(byteArray.Length, bytes.Length));
       if (!lendian)
         Array.Reverse(bytes);
@@ -134,7 +142,17 @@ namespace Stratis.SmartContracts
 
     internal BigInteger Mod(BigInteger value2) => this.value % value2;
 
-    public int CompareTo(object/*?*/ b) => this.value.CompareTo(((UIntBase)b).value);
+        public int CompareTo(object/*?*/ b)
+        {
+            if (b != null && b is UIntBase)
+            {
+                return this.value.CompareTo(((UIntBase)b).value);
+            }
+            else
+            {
+                throw new InvalidOperationException("The object is not of type UIntBase");
+            }
+        }
     public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object/*?*/) b);
 
     public override int GetHashCode()
