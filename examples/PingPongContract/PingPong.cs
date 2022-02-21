@@ -21,7 +21,7 @@ public class Player : SmartContract
         ReceivedPing = 2,
         Finished = 3
     }
-	//@ public string Foo;
+	
     public uint State
     {
         get => PersistentState.GetUInt32(nameof(State));
@@ -77,7 +77,7 @@ public class Player : SmartContract
         Assert(Message.Sender == PlayerAddress);     
         Assert(State == (uint)StateType.ReceivedPing || State == (uint)StateType.Provisioned);
 
-        ITransferResult isFinishedResult = Call(Opponent, 0, nameof(Player.IsFinished));
+        ITransferResult isFinishedResult = Call(Opponent, 0, nameof(Player.IsFinished), null, 0);
 
         Assert(isFinishedResult.Success);
 

@@ -17,7 +17,11 @@ namespace Stratis.SmartContracts
 
     public UIntBase(int width)
     {
-        this.width = (width & 3) == 0 ? width : throw new ArgumentException("The 'width' must be a multiple of 4.");
+        if ((width & 3) != 0)
+        {
+            throw new ArgumentException("The 'width' must be a multiple of 4.");
+        }
+        this.width = width;
         this.value = new BigInteger(width);
     }
 
@@ -39,7 +43,7 @@ namespace Stratis.SmartContracts
       this.SetValue(new BigInteger(b));
     }
 
-    public UIntBase(int width, byte[] vch, bool lendian = true)
+    public UIntBase(int width, byte[] vch, bool lendian)
       : this(width)
     {
       if (vch.Length > this.width)
@@ -68,20 +72,36 @@ namespace Stratis.SmartContracts
       this.SetValue(new BigInteger(numArray));
     }
 
-    private bool TooBig(byte[] bytes) => bytes.Length > this.width && (bytes.Length != this.width + 1 || bytes[this.width] != (byte) 0);
+    private bool TooBig(byte[] bytes)
+    {
 
+        return bytes.Length > this.width && (bytes.Length != this.width + 1 || bytes[this.width] != (byte)0);
+    }
     private void SetValue(BigInteger value)
     {
-      if (value.Sign < 0)
-        throw new OverflowException("Only positive or zero values are allowed.");
-      this.value = !this.TooBig(value.ToByteArray()) ? value : throw new OverflowException();
+        if (value.Sign < 0)
+        {
+            throw new OverflowException("Only positive or zero values are allowed.");
+        }
+        byte[]/*?*/ a = value.ToByteArray();
+        if (a == null || (a != null && this.TooBig(a)))
+        {
+            throw new OverflowException();
+        }
+        else
+        {
+            this.value = value;
+        }
     }
 
-    public BigInteger GetValue() => this.value;
+    public BigInteger GetValue()
+    {
+        return this.value;
+    }
 
     private uint[] ToUIntArray()
     {
-      byte[] bytes = this.ToBytes();
+      byte[] bytes = this.ToBytes(true);
       int length = this.width / 4;
       uint[] uintArray = new uint[length];
       for (int index = 0; index < length; ++index)
@@ -89,10 +109,14 @@ namespace Stratis.SmartContracts
       return uintArray;
     }
 
-    public byte[] ToBytes(bool lendian = true)
+    public byte[] ToBytes(bool lendian)
     {
-      byte[] byteArray = this.value.ToByteArray();
-      byte[] bytes = new byte[this.width];
+      byte[]/*?*/ byteArray = this.value.ToByteArray();
+      if (byteArray == null)
+      {
+          throw new InvalidOperationException("Array is null");
+      }
+        byte[] bytes = new byte[this.width];
       Array.Copy((Array) byteArray, (Array) bytes, Math.Min(byteArray.Length, bytes.Length));
       if (!lendian)
         Array.Reverse(bytes);
@@ -118,9 +142,18 @@ namespace Stratis.SmartContracts
 
     internal BigInteger Mod(BigInteger value2) => this.value % value2;
 
-    public int CompareTo(object b) => this.value.CompareTo(((UIntBase) b).value);
-
-    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object) b);
+        public int CompareTo(object/*?*/ b)
+        {
+            if (b != null && b is UIntBase)
+            {
+                return this.value.CompareTo(((UIntBase)b).value);
+            }
+            else
+            {
+                throw new InvalidOperationException("The object is not of type UIntBase");
+            }
+        }
+    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object/*?*/) b);
 
     public override int GetHashCode()
     {
@@ -131,12 +164,12 @@ namespace Stratis.SmartContracts
       return (int) hashCode;
     }
 
-    public override bool Equals(object obj) => this.CompareTo(obj) == 0;
+    public override bool Equals(object/*?*/ obj) => this.CompareTo(obj) == 0;
 
     private static string ByteArrayToString(byte[] ba) => BitConverter.ToString(ba).Replace("-", "");
 
     public string ToHex() => UIntBase.ByteArrayToString(this.ToBytes(false)).ToLower();
 
-    public override string ToString() => this.value.ToString();
+    public override string/*?*/ ToString() => this.value.ToString();
   }
 }

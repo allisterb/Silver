@@ -18,13 +18,13 @@ namespace Stratis.SmartContracts
       Address addressTo,
       ulong amountToTransfer,
       string methodName,
-      object[] parameters,
-      ulong gasLimit = 0);
+      object[]/*?*/ parameters,
+      ulong gasLimit);
 
     ICreateResult Create<T>(
       ISmartContractState smartContractState,
       ulong amountToTransfer,
-      object[] parameters,
-      ulong gasLimit = 0);
+      object[]/*?*/ parameters,
+      ulong gasLimit);
   }
 }

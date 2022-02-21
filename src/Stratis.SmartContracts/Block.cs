@@ -8,14 +8,17 @@ namespace Stratis.SmartContracts
 {
   public struct Block : IBlock
   {
-    public Address Coinbase { get; }
+    public Address Coinbase { get => _coinbase; }
 
-    public ulong Number { get; }
+    public ulong Number { get => _number; }
 
     public Block(ulong number, Address coinbase)
     {
-      this.Number = number;
-      this.Coinbase = coinbase;
+      this._number = number;
+      this._coinbase = coinbase;
     }
+
+    private ulong _number;
+    private Address _coinbase;
   }
 }

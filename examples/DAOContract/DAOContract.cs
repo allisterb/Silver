@@ -73,18 +73,18 @@ public class DAOContract : SmartContract
 
         Assert(votingDuration > MinVotingDuration && votingDuration < MaxVotingDuration, $"Voting duration should be between {MinVotingDuration} and {MaxVotingDuration}.");
 
-        var length = description?.Length ?? 0;
+        int length = description != null ? description.Length : 0;
         Assert(length <= 200, "The description length can be up to 200 characters.");
 
-        var proposal = new Proposal
-        {
-            RequestedAmount = amount,
-            Description = description,
-            Recipient = recipent,
-            Owner = Message.Sender
-        };
+        var proposal = new Proposal();
 
-        var proposalId = LastProposalId;
+        proposal.RequestedAmount = amount;
+        proposal.Description = description;
+        proposal.Recipient = recipent;
+        proposal.Owner = Message.Sender;
+        
+
+        uint proposalId = LastProposalId;
         SetProposal(proposalId, proposal);
         SetVotingDeadline(proposalId, checked(votingDuration + Block.Number));
         Log(new ProposalAddedLog
