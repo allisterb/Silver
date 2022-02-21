@@ -40,16 +40,16 @@ namespace Stratis.SmartContracts
       Address addressTo,
       ulong amountToTransfer,
       string methodName,
-      object[] parameters = null,
-      ulong gasLimit = 0)
+      object[]/*?*/ parameters,
+      ulong gasLimit)
     {
       return this.contractState.InternalTransactionExecutor.Call(this.contractState, addressTo, amountToTransfer, methodName, parameters, gasLimit);
     }
 
     protected ICreateResult Create<T>(
-      ulong amountToTransfer = 0,
-      object[] parameters = null,
-      ulong gasLimit = 0)
+      ulong amountToTransfer,
+      object[] /*?*/ parameters,
+      ulong gasLimit)
       where T : SmartContract
     {
       return this.contractState.InternalTransactionExecutor.Create<T>(this.contractState, amountToTransfer, parameters, gasLimit);

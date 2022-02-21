@@ -288,12 +288,12 @@ public abstract class SilverProject : Runtime
                         var m = assertStmt.Match(lines[i].Trim());
                         if (m.Success)
                         {
-                            var ot = lines[i];
-                            lines[i] = ot.Replace(m.Groups[0].Value, $"assert {m.Groups[1].Value.Split(',')[0]}");
-                            Info("Rewriter: {0}.", "AssertStmt");
-                            Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
-                            Info("Original: {0}", ot);
-                            Info("New: {0}\n", lines[i]);
+                         //   var ot = lines[i];
+                         //   lines[i] = ot.Replace(m.Groups[0].Value, $"assert {m.Groups[1].Value.Split(',')[0]}");
+                         //   Info("Rewriter: {0}.", "AssertStmt");
+                         //   Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
+                         //   Info("Original: {0}", ot);
+                         //   Info("New: {0}\n", lines[i]);
                         }
                     }
                 }

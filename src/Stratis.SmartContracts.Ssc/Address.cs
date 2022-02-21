@@ -52,12 +52,7 @@ namespace Stratis.SmartContracts
 
     private static string UIntToHexString(uint val) => "0123456789ABCDEF"[(int) ((val & 240U) >> 4)].ToString() + (object) "0123456789ABCDEF"[(int) val & 15] + (object) "0123456789ABCDEF"[(int) ((val & 61440U) >> 12)] + (object) "0123456789ABCDEF"[(int) ((val & 3840U) >> 8)] + (object) "0123456789ABCDEF"[(int) ((val & 15728640U) >> 20)] + (object) "0123456789ABCDEF"[(int) ((val & 983040U) >> 16)] + (object) "0123456789ABCDEF"[(int) ((val & 4026531840U) >> 28)] + (object) "0123456789ABCDEF"[(int) ((val & 251658240U) >> 24)];
 
-    [Pure]
-    public static bool operator ==(Address obj1, Address obj2) => obj1.Equals(obj2);
-
-    [Pure]
-    public static bool operator !=(Address obj1, Address obj2) => !obj1.Equals(obj2);
-
+    
     [Pure]
     public override bool Equals(object/*?*/ obj)
     {
