@@ -26,6 +26,18 @@
     <Compile Include="Address.cs"/>
     <Compile Include="IBlock.cs"/>
     <Compile Include="Block.cs"/>
+    <Compile Include="DeployAttribute.cs"/>
+    <Compile Include="IContractLogger.cs" />
+    <Compile Include="ICreateResult.cs" />
+    <Compile Include="IInternalHashHelper.cs" />
+    <Compile Include="ISmartContractState.cs" />
+    <Compile Include="ITransferResult.cs" />
+    <Compile Include="IInternalTransactionExecutor.cs" />
+    <Compile Include="IMessage.cs" />
+    <Compile Include="IndexAttribute.cs" />
+    <Compile Include="IPersistentState.cs" />
+    <Compile Include="ISerializer.cs" />
+    <Compile Include="Message.cs" />
   </ItemGroup>
   
 
