@@ -48,7 +48,7 @@ namespace Stratis.SmartContracts
       return dst;
     }
 
-    public override string ToString() => Address.UIntToHexString(this.pn0) + Address.UIntToHexString(this.pn1) + Address.UIntToHexString(this.pn2) + Address.UIntToHexString(this.pn3) + Address.UIntToHexString(this.pn4);
+    public override string/*?*/ ToString() => Address.UIntToHexString(this.pn0) + Address.UIntToHexString(this.pn1) + Address.UIntToHexString(this.pn2) + Address.UIntToHexString(this.pn3) + Address.UIntToHexString(this.pn4);
 
     private static string UIntToHexString(uint val) => "0123456789ABCDEF"[(int) ((val & 240U) >> 4)].ToString() + (object) "0123456789ABCDEF"[(int) val & 15] + (object) "0123456789ABCDEF"[(int) ((val & 61440U) >> 12)] + (object) "0123456789ABCDEF"[(int) ((val & 3840U) >> 8)] + (object) "0123456789ABCDEF"[(int) ((val & 15728640U) >> 20)] + (object) "0123456789ABCDEF"[(int) ((val & 983040U) >> 16)] + (object) "0123456789ABCDEF"[(int) ((val & 4026531840U) >> 28)] + (object) "0123456789ABCDEF"[(int) ((val & 251658240U) >> 24)];
 
@@ -59,7 +59,7 @@ namespace Stratis.SmartContracts
     public static bool operator !=(Address obj1, Address obj2) => !obj1.Equals(obj2);
 
     [Pure]
-    public override bool Equals(object obj) => obj is Address address && this.Equals(address);
+    public override bool Equals(object/*?*/ obj) => obj is Address address && this.Equals(address);
 
     [Pure]
     public bool Equals(Address obj) => (1 & ((int) this.pn0 == (int) obj.pn0 ? 1 : 0) & ((int) this.pn1 == (int) obj.pn1 ? 1 : 0) & ((int) this.pn2 == (int) obj.pn2 ? 1 : 0) & ((int) this.pn3 == (int) obj.pn3 ? 1 : 0) & ((int) this.pn4 == (int) obj.pn4 ? 1 : 0)) != 0;

@@ -18,9 +18,14 @@
   </PropertyGroup>
   
   <ItemGroup>
-	<Compile Remove="*.*" />
-	<Compile Include="UintBase.cs" />
+    <Compile Remove="*.*" />
+	
+    <Compile Include="UintBase.cs" />
     <Compile Include="Uint128.cs" />
+    <Compile Include="Uint256.cs" />
+    <Compile Include="Address.cs"/>
+    <Compile Include="IBlock.cs"/>
+    <Compile Include="Block.cs"/>
   </ItemGroup>
   
 

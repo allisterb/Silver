@@ -283,7 +283,6 @@ public abstract class SilverProject : Runtime
                         Info("Original: {0}", ot);
                         Info("New: {0}\n", lines[i]);
                     }
-
                     else
                     {
                         var m = assertStmt.Match(lines[i].Trim());
@@ -324,11 +323,8 @@ public abstract class SilverProject : Runtime
                         var errs = e.Data.Split(": error");
                         var errmsg = errs[1].Split(":");
                         compilerErrors.Add(new(errs[0], errmsg[0], errmsg[1]));
-                       
-                            
                             Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
                                 "               Msg: {1}\n", errmsg[0], errmsg.Skip(1).JoinWith(""));
-                        
                     }
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("error"))
                     {
@@ -529,7 +525,7 @@ public abstract class SilverProject : Runtime
         //new SharpSyntaxRewriter.Rewriters.EmplaceGlobalStatement(),
         //new SharpSyntaxRewriter.Rewriters.EnsureVisibleConstructor(),
         //new SharpSyntaxRewriter.Rewriters.ExpandForeach(),
-        //new SharpSyntaxRewriter.Rewriters.ImplementAutoProperty(),
+        new SharpSyntaxRewriter.Rewriters.ImplementAutoProperty(),
         //new SharpSyntaxRewriter.Rewriters.ImposeThisPrefix(),
         //new SharpSyntaxRewriter.Rewriters.InitializeOutArgument(),
         //new SharpSyntaxRewriter.Rewriters.ReplicateLocalInitialization(),
