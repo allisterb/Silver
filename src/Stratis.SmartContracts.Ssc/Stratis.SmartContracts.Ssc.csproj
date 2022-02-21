@@ -20,7 +20,7 @@
   <ItemGroup>
 	<Compile Remove="*.*" />
 	<Compile Include="UintBase.cs" />
-	
+    <Compile Include="Uint128.cs" />
   </ItemGroup>
   
 

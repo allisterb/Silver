@@ -305,15 +305,12 @@ public abstract class SilverProject : Runtime
             SourceFiles = syntaxTrees.Select(st => Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc"))).ToList();
             op2.Complete();
         }
+                
+        References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
+        TargetDir = Path.Combine(Path.GetDirectoryName(TargetPath)!, "ssc");
+        if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
+        TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
         
-        if (Verify)
-        {
-            References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
-            TargetDir = Path.Combine(Path.GetDirectoryName(TargetPath)!, "ssc");
-            if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
-            TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
-        }
-
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
@@ -330,18 +327,18 @@ public abstract class SilverProject : Runtime
                        
                             
                             Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
-                                "               Msg: {1}", errmsg[0], errmsg.Skip(1).JoinWith(""));
+                                "               Msg: {1}\n", errmsg[0], errmsg.Skip(1).JoinWith(""));
                         
                     }
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("error"))
                     {
                         var err = e.Data.Split("error ").Last().Split(":");
-                        Error("Code:{0}" + Environment.NewLine + "               Msg:{1}", err[0], err.Skip(1).JoinWith(""));
+                        Error("Code:{0}" + Environment.NewLine + "               Msg:{1}\n", err[0], err.Skip(1).JoinWith(""));
                     }
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("fatal error"))
                     {
                         var err = e.Data.Split("fatal error ").Last().Split(":");
-                        Error("Code:{0}" + Environment.NewLine + "               Msg:{1}", err[0], err.Skip(1).JoinWith(""));
+                        Error("Code:{0}" + Environment.NewLine + "               Msg:{1}\n", err[0], err.Skip(1).JoinWith(""));
                     }
                     else if (e.Data is not null && e.Data.Contains("error"))
                     {
@@ -356,14 +353,14 @@ public abstract class SilverProject : Runtime
                         {
                             compilerWarnings.Add(new(warns[0], warnmsg[0], warnmsg[1]));
                             Warn("File: " + warns[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
-                                "               Msg: {1}", warnmsg[0], warnmsg[1]);
+                                "               Msg: {1}\n", warnmsg[0], warnmsg[1]);
                         }
                     }
                 }, isNETFxTool: true);
 
             if (output is null || output.Contains(" error "))
             {
-                Error("Compile failed with {0} errors.", compilerErrors.Count);
+                Error("Compilation failed with {0} error(s).", compilerErrors.Count);
                 op.Abandon();
                 sscc = new SscCompilation(this, false, Verify, compilerErrors, compilerWarnings);
                 return false;
@@ -423,7 +420,7 @@ public abstract class SilverProject : Runtime
                 {
                     Debug("Not deleting temporary files in debug mode.");
                 }
-                Info("Compile succeded. Assembly is at {0}.", TargetPath);
+                Info("Compilation succeded with {0} warning(s). Assembly is at {1}.", compilerWarnings.Count, TargetPath);
                 if (Verify)
                 {
                     Info("Run `silver verify {0}` to view the details of verification.", TargetPath);

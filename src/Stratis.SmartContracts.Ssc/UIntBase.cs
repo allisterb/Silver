@@ -105,7 +105,7 @@ namespace Stratis.SmartContracts
       return uintArray;
     }
 
-    public byte[] ToBytes(bool lendian )
+    public byte[] ToBytes(bool lendian)
     {
       byte[] byteArray = this.value.ToByteArray();
       byte[] bytes = new byte[this.width];
@@ -134,10 +134,8 @@ namespace Stratis.SmartContracts
 
     internal BigInteger Mod(BigInteger value2) => this.value % value2;
 
-    int System.IComparable.CompareTo(object/*?*/ b) => this.value.CompareTo(((UIntBase) b).value);
-
-    public int CompareTo(object b) => this.value.CompareTo(((UIntBase)b).value);
-    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object/*?*/)b);
+    public int CompareTo(object/*?*/ b) => this.value.CompareTo(((UIntBase)b).value);
+    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object/*?*/) b);
 
     public override int GetHashCode()
     {
@@ -148,12 +146,12 @@ namespace Stratis.SmartContracts
       return (int) hashCode;
     }
 
-    //public override bool Equals(object obj) => this.CompareTo(obj) == 0;
+    public override bool Equals(object/*?*/ obj) => this.CompareTo(obj) == 0;
 
     private static string ByteArrayToString(byte[] ba) => BitConverter.ToString(ba).Replace("-", "");
 
     public string ToHex() => UIntBase.ByteArrayToString(this.ToBytes(false)).ToLower();
 
-    public override string ToString() => this.value.ToString();
+    public override string/*?*/ ToString() => this.value.ToString();
   }
 }

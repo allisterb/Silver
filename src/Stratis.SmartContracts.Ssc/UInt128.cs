@@ -26,7 +26,7 @@ namespace Stratis.SmartContracts
 
     internal UInt128(BigInteger value) => this.value = new UIntBase(16, value);
 
-    public UInt128(byte[] vch, bool lendian = true) => this.value = new UIntBase(16, vch, lendian);
+    public UInt128(byte[] vch, bool lendian) => this.value = new UIntBase(16, vch, lendian);
 
     public static UInt128 operator >>(UInt128 a, int shift) => new UInt128(a.value.ShiftRight(shift));
 
@@ -75,14 +75,14 @@ namespace Stratis.SmartContracts
 
     public static explicit operator ulong(UInt128 value) => (ulong) value.value.GetValue();
 
-    public byte[] ToBytes() => this.value.ToBytes();
+    public byte[] ToBytes() => this.value.ToBytes(true);
 
-    public int CompareTo(object b) => this.value.CompareTo((object) ((UInt128) b).value);
+    public int CompareTo(object/*?*/ b) => this.value.CompareTo((object/*?*/) ((UInt128) b).value);
 
     public override int GetHashCode() => this.value.GetHashCode();
 
-    public override bool Equals(object obj) => this.CompareTo(obj) == 0;
+    public override bool Equals(object/*?*/ obj) => this.CompareTo(obj) == 0;
 
-    public override string ToString() => this.value.ToString();
+    public override string/*?*/  ToString() => this.value.ToString();
   }
 }
