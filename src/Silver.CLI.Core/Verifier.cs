@@ -12,7 +12,7 @@ public class Verifier : Runtime
         var target = FailIfFileNotFound(path);
         if (SilverProject.HasProjectExtension(path))
         {
-            if (!Compiler.Compile(path, "Debug", true, false, true, true, false, out target) || target is null)
+            if (!Compiler.Compile(path, "Debug", true, false, true, true, false, false, out target) || target is null)
             {
                 Error("One or more errors occurred compiling project {0}.", path);
                 return false;

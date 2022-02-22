@@ -6,13 +6,18 @@ public class HelloBlockchain : SmartContract
 	public HelloBlockchain(ISmartContractState state, string message)
 		: base(state)
 	{
+
 		/*
 		Requestor = Message.Sender;
 		RequestMessage = message;
 		State = (uint)StateType.Request;
 		*/
+		State4 = state.PersistentState;
 	}
-
+	//@ [Rep]
+	public HelloState State2 = new HelloState();
+	
+	public IPersistentState State4;
 	public enum StateType : uint
 	{
 		Request = 0,
@@ -23,7 +28,9 @@ public class HelloBlockchain : SmartContract
 	
 	{
 		//ContractState = 0;
+		
 		uint gg = ContractState;
+		
 	}
 
 	//@ [Pure]
@@ -36,11 +43,14 @@ public class HelloBlockchain : SmartContract
 	public uint ContractState
 	{
 		
+		
 		get
+		
 		{
-			//@ expose(this.contractState) {
-			return State.GetUInt32(nameof(ContractState));
-			//@ }
+			
+				return State2.H3();
+			
+			
 			//return Foo();
 		}
 

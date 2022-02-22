@@ -154,7 +154,7 @@ public abstract class SilverProject : Runtime
     #endregion
 
     #region Methods
-    public virtual bool Compile(out IEnumerable<Diagnostic> diags, out EmitResult? result)
+    public virtual bool Compile(bool noscanalyze, out IEnumerable<Diagnostic> diags, out EmitResult? result)
     {
         FailIfNotInitialized();
         result = null;
@@ -173,9 +173,17 @@ public abstract class SilverProject : Runtime
         {
             Error(e, "Analyzer {0} threw an exception when reporting diagnostic {1}:", da.GetType().Name, d.Id);
         };
-        var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
-            new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
-        diags = ca.GetAllDiagnosticsAsync(Ct).Result;
+        if (!noscanalyze)
+        {
+            var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()),
+                new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
+            diags = ca.GetAllDiagnosticsAsync(Ct).Result;
+
+        }
+        else
+        {
+            diags = c.GetDiagnostics();
+        }
         if (diags is null || diags.Any(d => d.Severity == DiagnosticSeverity.Error))
         {
             op.Abandon();
@@ -209,7 +217,7 @@ public abstract class SilverProject : Runtime
         }
     }
 
-    public bool SscCompile(bool rewrite, bool norewriteassert, out SscCompilation? sscc)
+    public bool SscCompile(bool rewrite, bool noassertrewrite, out SscCompilation? sscc)
     {
         FailIfNotInitialized();
         sscc = null;
@@ -284,7 +292,7 @@ public abstract class SilverProject : Runtime
                     }
                     else
                     {
-                        if (!norewriteassert)
+                        if (!noassertrewrite)
                         {
                             var m0 = assertStmt.Match(lines[i].Trim());
                             if (m0.Success)

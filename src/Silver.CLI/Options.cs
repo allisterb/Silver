@@ -104,8 +104,11 @@ public class CompileOptions : Options
     [Option("rewrite", Required = false, HelpText = "Rewrite the C# source files for compatibility with Spec#. This option is always true when --verify is specified.")]
     public bool Rewrite { get; set; } = false;
 
-    [Option("no-rw-assert", Required = false, HelpText = "Don't rewrite smart contract Assert calls to their static Spec# equivalent.")]
-    public bool NoRewriteAssert { get; set; } = false;
+    [Option("no-assert-rw", Required = false, HelpText = "Don't rewrite smart contract Assert calls to their static Spec# equivalent.")]
+    public bool NoAssertRewrite { get; set; } = false;
+
+    [Option("no-sc-analyze", Required = false, HelpText = "Don't enable the smart contract Roslyn analyzer..")]
+    public bool NoScAnalyze { get; set; } = false;
 }
 
 [Verb("verify", HelpText = "Verify a .NET assembly compiled with Spec#.")]

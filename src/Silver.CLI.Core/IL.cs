@@ -159,7 +159,7 @@ public class IL : Runtime
                 Info("Target assembly is {0}.", proj.TargetPath);
                 return proj.TargetPath;
             }
-            else if (proj.Compile(out var _, out var _))
+            else if (proj.Compile(false, out var _, out var _))
             {
                 Info("Target assembly is {0}.", proj.TargetPath);
                 return proj.TargetPath;

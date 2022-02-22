@@ -24,6 +24,7 @@ namespace Stratis.SmartContracts
 
     int GetInt32(string key);
 
+    //@ modifies this.0;
     uint GetUInt32(string key);
 
     long GetInt64(string key);

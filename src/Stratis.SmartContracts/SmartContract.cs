@@ -87,7 +87,7 @@ namespace Stratis.SmartContracts
 
         #region Fields
         [Rep]
-        private readonly ISmartContractState contractState;
+        protected readonly ISmartContractState contractState;
 
         protected Address Address => this.contractState.Message.ContractAddress;
 
