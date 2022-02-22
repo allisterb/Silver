@@ -1,13 +1,16 @@
 ﻿using Stratis.SmartContracts;
+//@ using Microsoft.Contracts;
 
 public class HelloBlockchain : SmartContract
 {
 	public HelloBlockchain(ISmartContractState state, string message)
 		: base(state)
 	{
+		/*
 		Requestor = Message.Sender;
 		RequestMessage = message;
 		State = (uint)StateType.Request;
+		*/
 	}
 
 	public enum StateType : uint
@@ -16,12 +19,37 @@ public class HelloBlockchain : SmartContract
 		Respond = 1
 	}
 
-	public uint State
+	public void Hello()
+	//@ modifies this.*;
 	{
-		get => PersistentState.GetUInt32(nameof(State));
-		private set => PersistentState.SetUInt32(nameof(State), value);
+		//ContractState = 0;
+		uint gg = ContractState;
 	}
 
+	//@ [Pure]
+	public uint Foo()
+    {
+		return 0;
+    }
+
+	
+	public uint ContractState
+	{
+		
+		get => Foo();
+			
+
+		
+		//PersistentState.GetUInt32(nameof(ContractState));
+		private set
+		
+		{
+			Hello();
+			//PersistentState.SetUInt32(nameof(ContractState), value);
+			
+		}
+	}
+	/*
 	public Address Requestor
 	{
 		get => PersistentState.GetAddress(nameof(Requestor));
@@ -61,4 +89,5 @@ public class HelloBlockchain : SmartContract
 		ResponseMessage = responseMessage;
 		State = (uint)StateType.Respond;
 	}
+	*/
 }

@@ -157,6 +157,7 @@ public abstract class SilverProject : Runtime
     public virtual bool Compile(out IEnumerable<Diagnostic> diags, out EmitResult? result)
     {
         FailIfNotInitialized();
+        result = null;
         var op = Begin("Compiling");
         var c = RoslynWorkspace.CurrentSolution
             .Projects.First()
@@ -166,7 +167,6 @@ public abstract class SilverProject : Runtime
             op.Abandon();
             Error("Could not get Roslyn compilation for project {0}.", RoslynWorkspace.CurrentSolution.Projects.First().Name);
             diags = Array.Empty<Diagnostic>();
-            result = null;
             return false;
         }
         Action<Exception, DiagnosticAnalyzer, Diagnostic> errorHandler = (e, da, d) =>
@@ -176,14 +176,13 @@ public abstract class SilverProject : Runtime
         var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()), 
             new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
         diags = ca.GetAllDiagnosticsAsync(Ct).Result;
-        if (((diags is null || diags.Any(d => d.Severity == DiagnosticSeverity.Error))))
+        if (diags is null || diags.Any(d => d.Severity == DiagnosticSeverity.Error))
         {
             op.Abandon();
-            result = null;
             return false;
         }
         var emitOptions = new EmitOptions(debugInformationFormat: DebugInformationFormat.PortablePdb);
-        if (File.Exists(TargetPath)) Warn("File {0} exists, overwriting...", ViewFilePath(TargetPath));
+        WarnIfFileExists(TargetPath);
         using FileStream pestream = File.OpenWrite(TargetPath);
         using FileStream pdbstream = File.OpenWrite(Path.ChangeExtension(TargetPath, ".pdb")); 
         result = c.Emit(pestream, pdbstream, options: emitOptions);
@@ -250,8 +249,9 @@ public abstract class SilverProject : Runtime
                             var flp = prevSt.GetLineSpan(tc.Span);
                             Info("Rewriter: {0}.", rwn);
                             Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
-                            Info("Original: {0}", preText.ToString(tc.Span));
-                            Info("New: {0}\n", tc.NewText);
+                            Info("Line: {0}", i);
+                            Info("Original: {0}", preText.ToString(tc.Span).Trim());
+                            Info("New:      {0}\n", tc.NewText.Trim());
                         }
                         var rwtDiags = rwt.GetDiagnostics();
                         LogDiagnostics(rwtDiags, Path.GetDirectoryName(st.FilePath)!);
@@ -275,25 +275,37 @@ public abstract class SilverProject : Runtime
                     if (lines[i].TrimStart().StartsWith("//@"))
                     {
                         var ot = lines[i];
-                        lines[i] = ot
-                            .Replace("[Pure]", "[Microsoft.Contracts.Pure]")
-                            .Replace("//@", "");
-                        Info("Rewriter: {0}.", "EmbeddedAsComment");
+                        lines[i] = ot.Replace("//@", "");
+                        Info("Rewriter: {0}.", "EmbeddedAsComment_1");
                         Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
-                        Info("Original: {0}", ot);
-                        Info("New: {0}\n", lines[i]);
+                        Info("Line: {0}", i);
+                        Info("Original: {0}", ot.Trim());
+                        Info("New:      {0}\n", lines[i].Trim());
                     }
                     else
                     {
-                        var m = assertStmt.Match(lines[i].Trim());
-                        if (m.Success)
+                        var m0 = assertStmt.Match(lines[i].Trim());
+                        if (m0.Success)
                         {
-                         //   var ot = lines[i];
-                         //   lines[i] = ot.Replace(m.Groups[0].Value, $"assert {m.Groups[1].Value.Split(',')[0]}");
-                         //   Info("Rewriter: {0}.", "AssertStmt");
-                         //   Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
-                         //   Info("Original: {0}", ot);
-                         //   Info("New: {0}\n", lines[i]);
+                            var ot = lines[i];
+                            lines[i] = ot.Replace(m0.Groups[0].Value, $"assert {m0.Groups[1].Value.Split(',')[0]}");
+                            Info("Rewriter: {0}.", "AssertStmt");
+                            Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
+                            Info("Line: {0}", i);
+                            Info("Original: {0}", ot.Trim());
+                            Info("New:      {0}\n", lines[i].Trim());
+                        }
+                        
+                        var m1 = embeddedComment.Match(lines[i].Trim());
+                        if (m1.Success)
+                        {
+                            var ot = lines[i];
+                            lines[i] = ot.Replace(m1.Groups[0].Value, m1.Groups[1].Value) ;
+                            Info("Rewriter: {0}.", "EmbeddedAsComment_2");
+                            Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
+                            Info("Line: {0}", i);
+                            Info("Original: {0}", ot.Trim());
+                            Info("New:      {0}\n", lines[i].Trim());
                         }
                     }
                 }
@@ -480,10 +492,10 @@ public abstract class SilverProject : Runtime
         {
             var sourceFiles = additionalFiles.Prepend(filePath).ToList();
             var settings = new Dictionary<string, object>
-                {
-                    { "BuildConfig", "Debug" },
-                    { "SourceFiles", sourceFiles }
-                };
+            {
+                { "BuildConfig", "Debug" },
+                { "SourceFiles", sourceFiles }
+            };
             var proj = new AdhocSilverProject(settings);
             return proj.Initialized ? GetProp(proj, prop) : null;
         }
@@ -525,7 +537,7 @@ public abstract class SilverProject : Runtime
         //new SharpSyntaxRewriter.Rewriters.EmplaceGlobalStatement(),
         //new SharpSyntaxRewriter.Rewriters.EnsureVisibleConstructor(),
         //new SharpSyntaxRewriter.Rewriters.ExpandForeach(),
-        new SharpSyntaxRewriter.Rewriters.ImplementAutoProperty(),
+        new ImplementAutoProperty(),
         //new SharpSyntaxRewriter.Rewriters.ImposeThisPrefix(),
         //new SharpSyntaxRewriter.Rewriters.InitializeOutArgument(),
         //new SharpSyntaxRewriter.Rewriters.ReplicateLocalInitialization(),
@@ -545,6 +557,7 @@ public abstract class SilverProject : Runtime
     };
     private static string[] rewriterNames = rewriters.Select(r => r.GetType().Name).ToArray();
 
+    private static Regex embeddedComment = new Regex(@"\/\*\@\w*(.+)\w*\*\/", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
     private static Regex assertStmt = new Regex(@"Assert\((.*)\)", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
     private static string[] suppressedSscWarningCodes = { "CS2614" };

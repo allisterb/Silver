@@ -77,32 +77,35 @@ public class ControlFlowGraphOptions : AnalyzeOptions
 }
 #endregion
 
-[Verb("compile", HelpText = "Compile a C# source code project or files.")]
+[Verb("compile", HelpText = "Compile a C# project file or source files.")]
 public class CompileOptions : Options
 {
-    [Value(0, Required = true, HelpText = "The C# source files or project file to compile.")]
+    [Value(0, Required = true, HelpText = "The C# project file or source files to compile.")]
     public IEnumerable<string> Files { get; set; } = Array.Empty<string>();
 
-    [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified source files or project file.")]
+    [Option('p', "prop", Required = false, HelpText = "Print the compile-time value of a property for the specified project file or source files.")]
     public string Property { get; set; } = string.Empty;
 
-    [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line that will be invoked for the specified source files project file.")]
+    [Option('l', "cmd-line", Required = false, HelpText = "Print the Spec# compiler command-line that will be invoked for the specified project file or source files.")]
     public bool CommandLine { get; set; }
 
-    [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the build configuration for compiling the source files or project file. Defaults to 'Debug'.")]
+    [Option('b', "build-config", Default = "Debug", Required = false, HelpText = "Set the build configuration for compiling the specified project file or source files. Defaults to 'Debug'.")]
     public string BuildConfig { get; set; } = string.Empty;
 
-    [Option("validate", Required = false, HelpText = "Validate the assembly after compilation using the Stratis SCT.")]
+    [Option("validate", Required = false, HelpText = "Validate the assembly after compilation using the Stratis SCT tool.")]
     public bool Validate { get; set; }
 
-    [Option('v', "verify", Required = false, HelpText = "Verify the specified source files or project file after compilation.")]
+    [Option('v', "verify", Required = false, HelpText = "Verify the specified project file or source files after compilation using Spec#.")]
     public bool Verify { get; set; }
 
-    [Option("ssc", Required = false, HelpText = "Use the SSC compiler instead of MSBuild.")]
+    [Option("ssc", Required = false, HelpText = "Use the Spec# C# compiler instead of MSBuild to compile the project file or source files.")]
     public bool Ssc { get; set; }
 
-    [Option("rewrite", Required = false, HelpText = "Use the Roslyn rewiters.")]
+    [Option("rewrite", Required = false, HelpText = "Rewrite the C# source files for compatibility with Spec#. This option is always true when --verify is specified.")]
     public bool Rewrite { get; set; } = false;
+
+    [Option("no-rw-assert", Required = false, HelpText = "Don't rewrite smart contract Assert calls to their static Spec# equivalent.")]
+    public bool NoRewriteAssert { get; set; } = false;
 }
 
 [Verb("verify", HelpText = "Verify a .NET assembly compiled with Spec#.")]

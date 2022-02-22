@@ -34,10 +34,11 @@ public class Player : SmartContract
         private set => PersistentState.SetAddress(nameof(Opponent), value);
     }
 
+    
     public Address PlayerAddress
     {
         get => PersistentState.GetAddress(nameof(PlayerAddress));
-        private set => PersistentState.SetAddress(nameof(PlayerAddress), value);
+        private set =>  PersistentState.SetAddress(nameof(PlayerAddress), value);
     }
 
     public string GameName
@@ -54,8 +55,14 @@ public class Player : SmartContract
 
     public uint PingsReceived
     {
-        get => PersistentState.GetUInt32(nameof(PingsReceived));
+        get
+        {
+            //^ expose(this) {
+                return PersistentState.GetUInt32(nameof(PingsReceived));
+            //^ }
+        }
         private set => PersistentState.SetUInt32(nameof(PingsReceived), value);
+
     }
 
     public void ReceivePing()
@@ -143,7 +150,7 @@ public class Starter : SmartContract
         gc.GameName = gameName;
         Log<GameCreated>(gc);
     }
-
+    
     public struct GameCreated
     {
         [Index]

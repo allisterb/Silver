@@ -42,7 +42,6 @@ namespace Silver.CLI.Core
             var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
             if (proj is not null && proj.Initialized)
             {
-                
                 proj.Verify = verify;
                 if (ssc || Path.GetExtension(filePath).StartsWith(".ssc"))
                 {
