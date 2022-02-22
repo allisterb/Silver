@@ -1,5 +1,5 @@
-﻿using Stratis.SmartContracts;
-//@ using Microsoft.Contracts;
+using Stratis.SmartContracts;
+ using Microsoft.Contracts;
 
 public class HelloBlockchain : SmartContract
 {
@@ -26,7 +26,7 @@ public class HelloBlockchain : SmartContract
 		uint gg = ContractState;
 	}
 
-	//@ [Pure]
+	 [Pure]
 	public uint Foo()
     {
 		return 0;
@@ -38,9 +38,9 @@ public class HelloBlockchain : SmartContract
 		
 		get
 		{
-			//@ expose(this.contractState) {
-			return State.GetUInt32(nameof(ContractState));
-			//@ }
+			 expose(this.contractState) {
+			return State.GetUInt32("ContractState");
+			 }
 			//return Foo();
 		}
 
@@ -74,7 +74,7 @@ public class HelloBlockchain : SmartContract
 
 	public void SendRequest(string requestMessage)
 	{
-		Assert(Message.Sender == Requestor, "Sender is not requestor");
+		assert Message.Sender == Requestor;
 
 		RequestMessage = requestMessage;
 		State = (uint)StateType.Request;
@@ -89,3 +89,4 @@ public class HelloBlockchain : SmartContract
 	}
 	*/
 }
+

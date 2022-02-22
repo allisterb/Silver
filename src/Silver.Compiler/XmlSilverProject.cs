@@ -56,7 +56,7 @@ namespace Silver.Compiler
                                 }
                                 if (!File.Exists(pr.TargetPath) || !pr.BuildUpToDate)
                                 {
-                                    if(!pr.SscCompile(false, out var sscc))
+                                    if(!pr.SscCompile(false, false, out var sscc))
                                     {
                                         Fatal("The project reference {0} could not be built and is not up-to-date.", pr.ProjectFile.FullName);
                                         op.Abandon();

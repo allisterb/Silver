@@ -209,7 +209,7 @@ public abstract class SilverProject : Runtime
         }
     }
 
-    public bool SscCompile(bool rewrite, out SscCompilation? sscc)
+    public bool SscCompile(bool rewrite, bool norewriteassert, out SscCompilation? sscc)
     {
         FailIfNotInitialized();
         sscc = null;
@@ -284,16 +284,19 @@ public abstract class SilverProject : Runtime
                     }
                     else
                     {
-                        var m0 = assertStmt.Match(lines[i].Trim());
-                        if (m0.Success)
+                        if (!norewriteassert)
                         {
-                            var ot = lines[i];
-                            lines[i] = ot.Replace(m0.Groups[0].Value, $"assert {m0.Groups[1].Value.Split(',')[0]}");
-                            Info("Rewriter: {0}.", "AssertStmt");
-                            Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
-                            Info("Line: {0}", i);
-                            Info("Original: {0}", ot.Trim());
-                            Info("New:      {0}\n", lines[i].Trim());
+                            var m0 = assertStmt.Match(lines[i].Trim());
+                            if (m0.Success)
+                            {
+                                var ot = lines[i];
+                                lines[i] = ot.Replace(m0.Groups[0].Value, $"assert {m0.Groups[1].Value.Split(',')[0]}");
+                                Info("Rewriter: {0}.", "AssertStmt");
+                                Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
+                                Info("Line: {0}", i);
+                                Info("Original: {0}", ot.Trim());
+                                Info("New:      {0}\n", lines[i].Trim());
+                            }
                         }
                         
                         var m1 = embeddedComment.Match(lines[i].Trim());

@@ -108,7 +108,15 @@ namespace Stratis.SmartContracts
             }
         }
 
-        public IPersistentState State => this.contractState.PersistentState;
+        public IPersistentState State
+        {
+            get
+            {
+                //^ expose(this) {
+                return this.contractState.PersistentState;
+                //^ }
+            }
+        }
 
         public ISerializer Serializer => this.contractState.Serializer;
 

@@ -36,7 +36,7 @@ namespace Silver.CLI.Core
             }
         }
 
-        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, out string? targetPath, params string[] additionalFiles)
+        public static bool Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, bool norewriteassert, out string? targetPath, params string[] additionalFiles)
         {
             targetPath = null;
             var proj = SilverProject.GetProject(FailIfFileNotFound(filePath), buildConfig, additionalFiles);
@@ -45,7 +45,7 @@ namespace Silver.CLI.Core
                 proj.Verify = verify;
                 if (ssc || Path.GetExtension(filePath).StartsWith(".ssc"))
                 {
-                    var sscret = proj.SscCompile(rewrite, out var sscc);
+                    var sscret = proj.SscCompile(rewrite, norewriteassert, out var sscc);
                     targetPath = proj.TargetPath;
                     return sscret;
                 }
@@ -88,7 +88,7 @@ namespace Silver.CLI.Core
                 }
                 if (c && verify)
                 {
-                    c = proj.SscCompile(rewrite, out var sscc);
+                    c = proj.SscCompile(rewrite, norewriteassert, out var sscc);
                     targetPath = proj.TargetPath;
                     return c;
                 }
