@@ -6,6 +6,8 @@
 	  <AssemblyName>Stratis.SmartContracts</AssemblyName>
     <ApplicationVersion>2.0.0.0</ApplicationVersion>
     <RootNamespace>Stratis.SmartContracts</RootNamespace>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net461|AnyCPU'">
@@ -23,6 +25,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
     <Optimize>False</Optimize>
   </PropertyGroup>
+  
+    <ItemGroup>
+    <Compile Remove="SilverImpl\SilverContractLogger.cs" />
+    <Compile Remove="SilverImpl\SilverPersistentState.cs" />
+    <Compile Remove="SilverImpl\SilverSmartContractState.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <Reference Include="System.Compiler.Runtime">

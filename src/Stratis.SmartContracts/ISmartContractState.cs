@@ -1,29 +1,33 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Stratis.SmartContracts.ISmartContractState
-// Assembly: Stratis.SmartContracts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 313BA83E-A11B-42B1-9AF7-0994F99B5586
-// Assembly location: C:\Users\Allister\Downloads\Stratis.SmartContracts.dll
-
+﻿
+using Microsoft.Contracts;
 using System;
 
 namespace Stratis.SmartContracts
 {
   public interface ISmartContractState
   {
-    IBlock Block { get; }
+        [Pure]
+        IBlock Block { get; }
 
-    IMessage Message { get; }
+        [Pure]
+        IMessage Message { get; }
 
-    IPersistentState PersistentState { get; }
+        [Pure]
+        IPersistentState PersistentState { get; }
 
-    IContractLogger ContractLogger { get; }
+        [Pure]
+        IContractLogger ContractLogger { get; }
 
-    IInternalTransactionExecutor InternalTransactionExecutor { get; }
+        [Pure]
+        IInternalTransactionExecutor InternalTransactionExecutor { get; }
 
-    IInternalHashHelper InternalHashHelper { get; }
+        [Pure]
+        IInternalHashHelper InternalHashHelper { get; }
 
-    ISerializer Serializer { get; }
+        [Pure]
+        ISerializer Serializer { get; }
 
-    Func<ulong> GetBalance { get; }
+        [Pure]
+        Func<ulong> GetBalance { get; }
   }
 }

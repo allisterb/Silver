@@ -86,11 +86,11 @@ namespace Stratis.SmartContracts
 
     public byte[] ToBytes() => this.value.ToBytes(true);
 
-    public int CompareTo(object/*?*/ b)
+    public int CompareTo(object? b)
     {
         if (b != null && b is UInt256)
         {
-            return this.value.CompareTo((object)((UInt256)b).value);
+            return this.value.CompareTo((object?)((UInt256)b).value);
         }
         else
         {
@@ -100,8 +100,8 @@ namespace Stratis.SmartContracts
 
     public override int GetHashCode() => this.value.GetHashCode();
 
-    public override bool Equals(object/*?*/ obj) => this.CompareTo(obj) == 0;
+    public override bool Equals(object? obj) => this.CompareTo(obj) == 0;
 
-    public override string/*?*/ ToString() => this.value.ToString();
+    public override string? ToString() => this.value.ToString();
   }
 }

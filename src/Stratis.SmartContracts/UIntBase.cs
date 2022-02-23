@@ -83,7 +83,7 @@ namespace Stratis.SmartContracts
         {
             throw new OverflowException("Only positive or zero values are allowed.");
         }
-        byte[]/*?*/ a = value.ToByteArray();
+        byte[]? a = value.ToByteArray();
         if (a == null || (a != null && this.TooBig(a)))
         {
             throw new OverflowException();
@@ -111,7 +111,7 @@ namespace Stratis.SmartContracts
 
     public byte[] ToBytes(bool lendian)
     {
-      byte[]/*?*/ byteArray = this.value.ToByteArray();
+      byte[]? byteArray = this.value.ToByteArray();
       if (byteArray == null)
       {
           throw new InvalidOperationException("Array is null");
@@ -142,18 +142,18 @@ namespace Stratis.SmartContracts
 
     internal BigInteger Mod(BigInteger value2) => this.value % value2;
 
-        public int CompareTo(object/*?*/ b)
+    public int CompareTo(object? b)
+    {
+        if (b != null && b is UIntBase)
         {
-            if (b != null && b is UIntBase)
-            {
-                return this.value.CompareTo(((UIntBase)b).value);
-            }
-            else
-            {
-                throw new InvalidOperationException("The object is not of type UIntBase");
-            }
+            return this.value.CompareTo(((UIntBase)b).value);
         }
-    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object/*?*/) b);
+        else
+        {
+            throw new InvalidOperationException("The object is not of type UIntBase");
+        }
+    }
+    public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object?) b);
 
     public override int GetHashCode()
     {
@@ -164,12 +164,20 @@ namespace Stratis.SmartContracts
       return (int) hashCode;
     }
 
-    public override bool Equals(object/*?*/ obj) => this.CompareTo(obj) == 0;
+    public override bool Equals(object? obj) => this.CompareTo(obj) == 0;
 
-    private static string ByteArrayToString(byte[] ba) => BitConverter.ToString(ba).Replace("-", "");
+        private static string ByteArrayToString(byte[] ba)
+        {
+            string? s = BitConverter.ToString(ba);
+            if (s == null)
+            {
+                throw new InvalidOperationException("BitConverter.ToString method returned null;");
+            }
+            return s.Replace("-", "");
+        }
 
     public string ToHex() => UIntBase.ByteArrayToString(this.ToBytes(false)).ToLower();
-
-    public override string/*?*/ ToString() => this.value.ToString();
+    
+    public override string? ToString() => this.value.ToString();
   }
 }
