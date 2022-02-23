@@ -52,40 +52,40 @@ namespace Stratis.SmartContracts
         T[] GetArray<T>(string key);
 
         [Pure]
-        void SetBytes(byte[] key, byte[] value) /*@ ensures this.GetBytes(key) == value */;
+        void SetBytes(byte[] key, byte[] value) /*@ ensures this.GetBytes(key) == value @*/;
 
         [Pure]
-        void SetBytes(string key, byte[] value);
+        void SetBytes(string key, byte[] value) /*@ ensures this.GetBytes(key) == value @*/;
 
         [Pure]
-        void SetChar(string key, char value);
+        void SetChar(string key, char value) /*@ ensures this.GetChar(key) == value @*/;
 
         [Pure]
-        void SetAddress(string key, Address value);
+        void SetAddress(string key, Address value) /*@ ensures this.GetAddress(key) == value @*/;
 
         [Pure]
-        void SetBool(string key, bool value);
+        void SetBool(string key, bool value) /*@ ensures this.GetBool(key) == value @*/;
 
         [Pure]
-        void SetInt32(string key, int value);
+        void SetInt32(string key, int value) /*@ ensures this.GetInt32(key) == value @*/;
 
         [Pure]
-        void SetUInt32(string key, uint value);
+        void SetUInt32(string key, uint value) /*@ ensures this.GetUInt32(key) == value @*/;
 
         [Pure]
-        void SetInt64(string key, long value);
+        void SetInt64(string key, long value) /*@ ensures this.GetInt64(key) == value @*/;
 
         [Pure]
-        void SetUInt64(string key, ulong value);
+        void SetUInt64(string key, ulong value) /*@ ensures this.GetUInt64(key) == value @*/;
 
         [Pure]
-        void SetUInt128(string key, UInt128 value);
+        void SetUInt128(string key, UInt128 value) /*@ ensures this.GetUInt128(key) == value @*/;
 
         [Pure]
-        void SetUInt256(string key, UInt256 value);
+        void SetUInt256(string key, UInt256 value) /*@ ensures this.GetUInt256(key) == value @*/;
 
         [Pure]
-        void SetString(string key, string value);
+        void SetString(string key, string value) /*@ ensures this.GetString(key).Equals(value) @*/;
 
         [Pure]
         void SetStruct<T>(string key, T value) where T : struct;

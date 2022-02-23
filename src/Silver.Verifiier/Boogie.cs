@@ -6,7 +6,7 @@ using System.Xml.Serialization;
 using Silver.Verifier.Models;
 public class Boogie : Runtime
 {
-    public static BoogieResults? Verify(string path, string? output)
+    public static BoogieResults? Verify(string path, string? output = null)
     {
         var f = output ?? DateTime.Now.Ticks.ToString() + Path.GetFileName(FailIfFileNotFound(path)) + ".xml";
         Debug("XML output will be written to file {0}.", Path.GetFullPath(f));

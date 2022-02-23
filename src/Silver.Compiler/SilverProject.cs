@@ -568,7 +568,7 @@ public abstract class SilverProject : Runtime
     };
     private static string[] rewriterNames = rewriters.Select(r => r.GetType().Name).ToArray();
 
-    private static Regex embeddedComment = new Regex(@"\/\*\@\w*(.+)\w*\*\/", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
+    private static Regex embeddedComment = new Regex(@"\/\*\@\w*(.+)\w*\@\*\/", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
     private static Regex assertStmt = new Regex(@"Assert\((.*)\)", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
     private static string[] suppressedSscWarningCodes = {};
