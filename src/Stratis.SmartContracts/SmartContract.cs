@@ -17,56 +17,56 @@ namespace Stratis.SmartContracts
             this.Message = contractState.Message;
             this.State = contractState.PersistentState;
             this.PersistentState = contractState.PersistentState;
-            this.Serializer = contractState.Serializer;  
+            this.Serializer = contractState.Serializer;
+            this.CurrentBalance = contractState.GetBalance();
         }
         #endregion
 
         #region Methods
-        [Pure]
-        protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer) => this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, amountToTransfer);
+        
+        protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
+            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
+            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
+            => this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, amountToTransfer);
 
-        [Pure]
         protected ITransferResult Call(
           Address addressTo,
           ulong amountToTransfer,
           string methodName,
           object[]? parameters,
           ulong gasLimit)
-        {
-                return this.contractState.InternalTransactionExecutor.Call(this.contractState, addressTo, amountToTransfer, methodName, parameters, gasLimit);
-        }
-
-        [Pure]
+            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
+            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
+            => this.contractState.InternalTransactionExecutor.Call(this.contractState, addressTo, amountToTransfer, methodName, parameters, gasLimit);
+        
         protected ITransferResult Call(
             Address addressTo,
             ulong amountToTransfer,
             string methodName,
             object[]? parameters)
-        {
-            
-                return Call(addressTo, amountToTransfer, methodName, parameters, 0);
-        }
-
-        [Pure]
+            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
+            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
+            => Call(addressTo, amountToTransfer, methodName, parameters, 0);
+        
         protected ITransferResult Call(
             Address addressTo,
             ulong amountToTransfer,
             string methodName)
-            {
-                
-                 return Call(addressTo, amountToTransfer, methodName, null, 0);
-                
-            }
+            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
+            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
+            => Call(addressTo, amountToTransfer, methodName, null, 0);        
+        
 
-        [Pure]
+        
         protected ICreateResult Create<T>(
           ulong amountToTransfer,
           object[] parameters,
           ulong gasLimit)
           where T : SmartContract
-            {
-                return this.contractState.InternalTransactionExecutor.Create<T>(this.contractState, amountToTransfer, parameters, gasLimit);
-            }
+            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
+            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
+            => this.contractState.InternalTransactionExecutor.Create<T>(this.contractState, amountToTransfer, parameters, gasLimit);
+            
 
         [Pure]
         protected byte[] Keccak256(byte[] toHash) => this.contractState.InternalHashHelper.Keccak256(toHash);
@@ -91,6 +91,7 @@ namespace Stratis.SmartContracts
         public virtual void Receive()
         {
         }
+
         #endregion
 
         #region Fields
@@ -118,6 +119,9 @@ namespace Stratis.SmartContracts
 
         [Rep]
         public ISerializer Serializer; //=> this.State.Serializer;
+
+        [Rep]
+        protected ulong CurrentBalance;
 
         #endregion
     }

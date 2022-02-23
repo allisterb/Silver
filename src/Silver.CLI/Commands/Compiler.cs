@@ -53,6 +53,8 @@ internal class CompilerCmd : Command
                 else
                 {
                     Verifier.PrintVerifierResultsToConsole(results);
+                    Info("Run {0} to view the details of verification again.", "silver verify " + target);
+                    
                 }
             }
             ExitWithSuccess();

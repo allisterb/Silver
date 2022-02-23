@@ -37,6 +37,7 @@ public class Verifier : Runtime
         var tree = new Tree("Verification results");
         var file = tree.AddNode($"[royalblue1]File: {results.File.Name}[/]");
         var methods = file.AddNode("[yellow]Methods[/]");
+        var methodCount = results.File.Methods.Length;
         foreach (var m in results.File.Methods)
         {
             var status = m.Conclusion.Outcome == "errors" ? "[red]Failed[/]" : "[lime]Ok[/]";
@@ -69,5 +70,16 @@ public class Verifier : Runtime
             method.AddNode($"Duration: {m.Conclusion.Duration}s");
         }
         AnsiConsole.Write(tree);
+        AnsiConsole.WriteLine("");
+        var errorCount = results.File.Methods.Where(m => m.Conclusion.Outcome == "errors").Count();
+        if (errorCount == 0)
+        {
+            Info("Verification succeded for {0} methods.", methodCount);
+        }
+        else
+        {
+            Info("{0} out of {1} methods failed verification.", errorCount, methodCount);
+        }
+        
     }
 }
