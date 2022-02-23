@@ -74,11 +74,11 @@ public class Verifier : Runtime
         var errorCount = results.File.Methods.Where(m => m.Conclusion.Outcome == "errors").Count();
         if (errorCount == 0)
         {
-            Info("Verification succeded for {0} methods.", methodCount);
+            Info("Verification succeded for {0} method(s).", methodCount);
         }
         else
         {
-            Info("{0} out of {1} methods failed verification.", errorCount, methodCount);
+            Info("{0} out of {1} method(s) failed verification.", errorCount, methodCount);
         }
         
     }

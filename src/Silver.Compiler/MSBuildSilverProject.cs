@@ -69,6 +69,7 @@ public class MSBuildSilverProject : SilverProject
             TargetDir = MsBuildProject.GetProperty("TargetDir");
             TargetExt = MsBuildProject.GetProperty("TargetExt");
             NoStdLib = MsBuildProject.Properties.ContainsKey("NoStdLib") && MsBuildProject.GetProperty("NoStdLib").ToLower() == "true" ? true : false;
+            NonNull = MsBuildProject.Properties.ContainsKey("Nullable") && MsBuildProject.GetProperty("Nullable").ToLower() == "enable";
             PackageReferences =
                 MsBuildProject.PackageReferences
                 .Select(r => new AssemblyName(r.Key) { Version = r.Value.ContainsKey("Version") ? r.Value["Version"].ToVersion() : null })

@@ -94,6 +94,7 @@ public abstract class SilverProject : Runtime
 
     public bool Verify { get; set; } = false;
 
+    public bool NonNull { get; protected set; } = false;
     public string CommandLine
     {
         get
@@ -136,7 +137,10 @@ public abstract class SilverProject : Runtime
             
             sb.AppendFormat("-r:{0} ", References.Prepend(scr).Prepend(systemContractAssemblies[0]).Prepend(systemContractAssemblies[1]).JoinWith(";"));
 
-            sb.Append("-nn ");
+            if (NonNull)
+            {
+                sb.Append("-nn ");
+            }
 
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
@@ -178,7 +182,6 @@ public abstract class SilverProject : Runtime
             var ca = c.WithAnalyzers(ImmutableArray.Create<DiagnosticAnalyzer>(new SmartContractAnalyzer()),
                 new CompilationWithAnalyzersOptions(null, errorHandler, true, false, false, null));
             diags = ca.GetAllDiagnosticsAsync(Ct).Result;
-
         }
         else
         {
@@ -224,7 +227,7 @@ public abstract class SilverProject : Runtime
         CSharpParseOptions parseOptions = new CSharpParseOptions(LanguageVersion.Latest, DocumentationMode.None, SourceCodeKind.Regular, DefineConstants.Split(';'));
         if (rewrite)
         {
-            var op2 = Begin("Parsing and rewriting {0} files", SourceFiles.Count);
+            var op2 = Begin("Parsing and rewriting {0} file(s)", SourceFiles.Count);
             IEnumerable<SyntaxTree> syntaxTrees = SourceFiles.Select(item => CSharpSyntaxTree.ParseText(File.ReadAllText(item), parseOptions, item, cancellationToken: Ct));
             foreach (var st in syntaxTrees)
             {
@@ -352,17 +355,21 @@ public abstract class SilverProject : Runtime
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("error"))
                     {
                         var err = e.Data.Split("error ").Last().Split(":");
+                        compilerErrors.Add(new SscCompilerError("", err[0], err.Skip(1).JoinWith("")));
                         Error("Code:{0}" + Environment.NewLine + "               Msg:{1}\n", err[0], err.Skip(1).JoinWith(""));
+                        if (err[0] == "CS0001") Info("The above error is usually caused by using var in your C# source code. Spec# doesn't support var as yet.");
                     }
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("fatal error"))
                     {
                         var err = e.Data.Split("fatal error ").Last().Split(":");
+                        compilerErrors.Add(new SscCompilerError("", err[0], err.Skip(1).JoinWith("")));
                         Error("Code:{0}" + Environment.NewLine + "               Msg:{1}\n", err[0], err.Skip(1).JoinWith(""));
                     }
                     else if (e.Data is not null && e.Data.Contains("error"))
                     {
                         var errs = e.Data.Split("error:");
-                        Error(errs.Last());
+                        compilerErrors.Add(new SscCompilerError("", "", errs.Skip(1).JoinWith("")));
+                        Error(errs.Skip(1).JoinWith(""));
                     }
                     else if (e.Data is not null && e.Data.Contains("warning CS") && !e.Data.Trim().StartsWith("warning"))
                     {
@@ -375,9 +382,13 @@ public abstract class SilverProject : Runtime
                                 "               Msg: {1}\n", warnmsg[0], warnmsg[1]);
                         }
                     }
+                }, 
+                (sender, e) => 
+                {
+                    
                 }, isNETFxTool: true);
 
-            if (output is null || output.Contains(" error "))
+            if (output is null || output.Contains(" error ") || compilerErrors.Any())
             {
                 Error("Compilation failed with {0} error(s).", compilerErrors.Count);
                 op.Abandon();
