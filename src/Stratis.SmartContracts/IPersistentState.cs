@@ -52,7 +52,7 @@ namespace Stratis.SmartContracts
         T[] GetArray<T>(string key);
 
         [Pure]
-        void SetBytes(byte[] key, byte[] value);
+        void SetBytes(byte[] key, byte[] value) /*@ ensures this.GetBytes(key) == value */;
 
         [Pure]
         void SetBytes(string key, byte[] value);

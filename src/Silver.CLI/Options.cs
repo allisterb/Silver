@@ -79,7 +79,7 @@ public class ControlFlowGraphOptions : AnalyzeOptions
 
 [Verb("compile", HelpText = "Compile a C# project file or source files.")]
 public class CompileOptions : Options
-{
+{ 
     [Value(0, Required = true, HelpText = "The C# project file or source files to compile.")]
     public IEnumerable<string> Files { get; set; } = Array.Empty<string>();
 

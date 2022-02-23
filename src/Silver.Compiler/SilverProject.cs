@@ -298,7 +298,7 @@ public abstract class SilverProject : Runtime
                             if (m0.Success)
                             {
                                 var ot = lines[i];
-                                lines[i] = ot.Replace(m0.Groups[0].Value, $"assert {m0.Groups[1].Value.Split(',')[0]}");
+                                lines[i] = ot.Replace(m0.Groups[0].Value, $"assume {m0.Groups[1].Value.Split(',')[0]}");
                                 Info("Rewriter: {0}.", "AssertStmt");
                                 Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
                                 Info("Line: {0}", i);
@@ -571,6 +571,6 @@ public abstract class SilverProject : Runtime
     private static Regex embeddedComment = new Regex(@"\/\*\@\w*(.+)\w*\*\/", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
     private static Regex assertStmt = new Regex(@"Assert\((.*)\)", RegexOptions.Compiled | RegexOptions.Singleline | RegexOptions.CultureInvariant);
 
-    private static string[] suppressedSscWarningCodes = { "CS2614" };
+    private static string[] suppressedSscWarningCodes = {};
     #endregion
 }

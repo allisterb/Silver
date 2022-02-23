@@ -6,4 +6,5 @@ dotnet build src\Silver.CLI\Silver.CLI.csproj %*
 
 :end
 popd
+@endlocal
 exit /B %ERROR_CODE%

@@ -3,83 +3,54 @@
 
 public class HelloBlockchain : SmartContract
 {
+	//@ [NotDelayed]
 	public HelloBlockchain(ISmartContractState state, string message)
-		: base(state)
+		:
+		base(state)
 	{
-
+		
+		
 		/*
-		Requestor = Message.Sender;
-		RequestMessage = message;
+
 		State = (uint)StateType.Request;
 		*/
-		State4 = state.PersistentState;
+
+
+
 	}
-	//@ [Rep]
-	public HelloState State2 = new HelloState();
-	
-	public IPersistentState State4;
+
+	public uint ContractState { get; set; }
+
 	public enum StateType : uint
 	{
 		Request = 0,
 		Respond = 1
 	}
 
-	public void Hello()
-	
-	{
-		//ContractState = 0;
-		
-		uint gg = ContractState;
-		
-	}
+	//public StateType StateType { get; set; }
 
-	//@ [Pure]
-	public uint Foo()
-    {
-		return 0;
-    }
-
-	
-	public uint ContractState
-	{
-		
-		
-		get
-		
-		{
-			
-				return State2.H3();
-			
-			
-			//return Foo();
-		}
-
-
-
-	}
-	/*
 	public Address Requestor
 	{
-		get => PersistentState.GetAddress(nameof(Requestor));
-		private set => PersistentState.SetAddress(nameof(Requestor), value);
+		get => State.GetAddress(nameof(Requestor));
+		private set => State.SetAddress(nameof(Requestor), value);
 	}
-
+	
 	public Address Responder
 	{
-		get => PersistentState.GetAddress(nameof(Responder));
-		private set => PersistentState.SetAddress(nameof(Responder), value);
+		get => State.GetAddress(nameof(Responder));
+		private set => State.SetAddress(nameof(Responder), value);
 	}
-
+	
 	public string RequestMessage
 	{
-		get => PersistentState.GetString(nameof(RequestMessage));
-		private set => PersistentState.SetString(nameof(RequestMessage), value);
+		get => State.GetString(nameof(RequestMessage));
+		private set => State.SetString(nameof(RequestMessage), value);
 	}
 
 	public string ResponseMessage
 	{
-		get => PersistentState.GetString(nameof(ResponseMessage));
-		private set => PersistentState.SetString(nameof(ResponseMessage), value);
+		get => State.GetString(nameof(ResponseMessage));
+		private set => State.SetString(nameof(ResponseMessage), value);
 	}
 
 	public void SendRequest(string requestMessage)
@@ -87,7 +58,7 @@ public class HelloBlockchain : SmartContract
 		Assert(Message.Sender == Requestor, "Sender is not requestor");
 
 		RequestMessage = requestMessage;
-		State = (uint)StateType.Request;
+		ContractState = (uint)StateType.Request;
 	}
 
 	public void SendResponse(string responseMessage)
@@ -95,7 +66,8 @@ public class HelloBlockchain : SmartContract
 		Responder = Message.Sender;
 
 		ResponseMessage = responseMessage;
-		State = (uint)StateType.Respond;
+		ContractState = (uint)StateType.Respond;
 	}
-	*/
+	
+	
 }
