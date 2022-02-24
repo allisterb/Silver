@@ -10,20 +10,22 @@ public class SimpleVerifiableContract : SmartContract
 		:base(state)
     {
         state.PersistentState.SetAddress(nameof(Owner), state.Message.Sender);
-
+        
     }
 
     public void Donate()
+    
     {
+        
+       
         ITransferResult result = Transfer(Owner, Message.Value);
-        Assert(result.Success, "Transfer failed.");
+        
+        //Assert(result.Success, "Transfer failed.");
     }
 
-   
-
-    
     private Address Owner
     {
         get => State.GetAddress(nameof(Owner));
+        set => State.SetAddress(nameof(Owner), value);
     }
 }

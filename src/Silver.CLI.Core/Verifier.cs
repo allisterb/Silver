@@ -48,13 +48,13 @@ public class Verifier : Runtime
                 foreach (var error in m.Errors)
                 {
                     var e = errors.AddNode(error.Message);
-                    if (error.File!.EndsWith(".ssc"))
+                    if (error.File is not null && error.File.EndsWith(".ssc"))
                     {
                         e.AddNode($"File: [blue]{error.File!.Replace(".ssc", ".cs").EscapeMarkup()}[/]");
                     }
                     else
                     {
-                        e.AddNode($"File: [blue]{error.File!.EscapeMarkup()}[/]");
+                        e.AddNode($"File: [blue]{error.File?.EscapeMarkup() ?? ""}[/]");
                     }
                     if (error.LineSpecified)
                     {

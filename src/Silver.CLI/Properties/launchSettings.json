@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "compile $(SolutionDir)..\\examples\\SimpleVerifiableContract\\SimpleVerifiableContract.csproj --verify --validate"
+      "commandLineArgs": "compile $(SolutionDir)..\\examples\\SimpleVerifiableContract\\SimpleVerifiableContract.csproj --verify"
     }
   }
 }

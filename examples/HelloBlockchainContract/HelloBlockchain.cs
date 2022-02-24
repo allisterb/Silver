@@ -5,8 +5,7 @@ public class HelloBlockchain : SmartContract
 {
 	//@ [NotDelayed]
 	public HelloBlockchain(ISmartContractState state, string message)
-		:
-		base(state)
+		:base(state)
 	{
 		
 		

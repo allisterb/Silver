@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Globalization;
+using System.Collections.Generic;
 
 using Microsoft.Contracts;
 
@@ -18,56 +18,73 @@ namespace Stratis.SmartContracts
             this.State = contractState.PersistentState;
             this.PersistentState = contractState.PersistentState;
             this.Serializer = contractState.Serializer;
-            this.CurrentBalance = contractState.GetBalance();
+            this.Balances = new Dictionary<Address, long>();
+            this.Balances.Add(contractState.Message.ContractAddress, (long)contractState.GetBalance());
+            this.Balances.Add(contractState.Message.Sender, 0L - (long) contractState.Message.Value);
         }
         #endregion
 
         #region Methods
-        
-        protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
-            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
-            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
-            => this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, amountToTransfer);
 
+        protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
+            //@ modifies Balances;
+            
+        {
+            ITransferResult result = this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, amountToTransfer);
+            if (result.Success)
+            {
+                if (this.Balances.ContainsKey(addressTo))
+                {
+                    this.Balances[addressTo] = this.Balances[addressTo] + (long) amountToTransfer;
+                }
+                else
+                {
+                    this.Balances.Add(addressTo, (long) amountToTransfer);
+                }
+            }
+            return result;
+        }
         protected ITransferResult Call(
           Address addressTo,
           ulong amountToTransfer,
           string methodName,
           object[]? parameters,
           ulong gasLimit)
-            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
-            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
-            => this.contractState.InternalTransactionExecutor.Call(this.contractState, addressTo, amountToTransfer, methodName, parameters, gasLimit);
-        
+        {
+            ITransferResult result = this.contractState.InternalTransactionExecutor.Call(this.contractState, addressTo, amountToTransfer, methodName, parameters, gasLimit);
+            if (result.Success)
+            {
+                if (this.Balances.ContainsKey(addressTo))
+                {
+                    this.Balances[addressTo] = this.Balances[addressTo] + (long)amountToTransfer;
+                }
+                else
+                {
+                    this.Balances.Add(addressTo, (long)amountToTransfer);
+                }
+            }
+            return result;
+        }
         protected ITransferResult Call(
             Address addressTo,
             ulong amountToTransfer,
             string methodName,
             object[]? parameters)
-            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
-            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
             => Call(addressTo, amountToTransfer, methodName, parameters, 0);
         
         protected ITransferResult Call(
             Address addressTo,
             ulong amountToTransfer,
             string methodName)
-            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
-            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
             => Call(addressTo, amountToTransfer, methodName, null, 0);        
-        
-
         
         protected ICreateResult Create<T>(
           ulong amountToTransfer,
           object[] parameters,
           ulong gasLimit)
           where T : SmartContract
-            //@ ensures (result.Success && this.CurrentBalance == old(this.CurrentBalance) - amountToTransfer)
-            //@ || (!result.Success && this.CurrentBalance == old(this.CurrentBalance));
             => this.contractState.InternalTransactionExecutor.Create<T>(this.contractState, amountToTransfer, parameters, gasLimit);
             
-
         [Pure]
         protected byte[] Keccak256(byte[] toHash) => this.contractState.InternalHashHelper.Keccak256(toHash);
 
@@ -121,8 +138,8 @@ namespace Stratis.SmartContracts
         public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
-        protected ulong CurrentBalance;
-
+        [ElementsRep]
+        protected Dictionary<Address, long> Balances;
         #endregion
     }
 }
