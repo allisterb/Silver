@@ -8,7 +8,7 @@ using System;
 using Microsoft.Contracts;
 namespace Stratis.SmartContracts
 {
-    public struct Address
+    public class Address
     {
         public static Address Zero;
         public const int Width = 20;
@@ -54,6 +54,8 @@ namespace Stratis.SmartContracts
         private static string UIntToHexString(uint val) => "0123456789ABCDEF"[(int)((val & 240U) >> 4)].ToString() + (object)"0123456789ABCDEF"[(int)val & 15] + (object)"0123456789ABCDEF"[(int)((val & 61440U) >> 12)] + (object)"0123456789ABCDEF"[(int)((val & 3840U) >> 8)] + (object)"0123456789ABCDEF"[(int)((val & 15728640U) >> 20)] + (object)"0123456789ABCDEF"[(int)((val & 983040U) >> 16)] + (object)"0123456789ABCDEF"[(int)((val & 4026531840U) >> 28)] + (object)"0123456789ABCDEF"[(int)((val & 251658240U) >> 24)];
 
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
+        [NoReferenceComparison]
         public static bool operator ==(Address obj1, Address obj2) => obj1.Equals(obj2);
 
         [Pure]
@@ -61,12 +63,13 @@ namespace Stratis.SmartContracts
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
-        public override bool Equals(object? obj)
+        
+        public override bool Equals(object? _obj)
         {
-            if (obj != null && obj is Address)
+            if (_obj != null && _obj is Address)
             {
-                Address a = (Address)obj;
-                return this.Equals(a);
+                Address obj = (Address)_obj;
+                return (1 & ((int)this.pn0 == (int)obj.pn0 ? 1 : 0) & ((int)this.pn1 == (int)obj.pn1 ? 1 : 0) & ((int)this.pn2 == (int)obj.pn2 ? 1 : 0) & ((int)this.pn3 == (int)obj.pn3 ? 1 : 0) & ((int)this.pn4 == (int)obj.pn4 ? 1 : 0)) != 0;
             }
             else
             {
@@ -75,6 +78,8 @@ namespace Stratis.SmartContracts
         }
 
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
+        [NoReferenceComparison]
         public bool Equals(Address obj) => (1 & ((int)this.pn0 == (int)obj.pn0 ? 1 : 0) & ((int)this.pn1 == (int)obj.pn1 ? 1 : 0) & ((int)this.pn2 == (int)obj.pn2 ? 1 : 0) & ((int)this.pn3 == (int)obj.pn3 ? 1 : 0) & ((int)this.pn4 == (int)obj.pn4 ? 1 : 0)) != 0;
     }
 }

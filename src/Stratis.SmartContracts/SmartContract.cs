@@ -8,6 +8,7 @@ namespace Stratis.SmartContracts
   public abstract class SmartContract
   {
         #region Constructors
+        
         public SmartContract(ISmartContractState contractState)
         {
             this.contractState = contractState;
@@ -18,16 +19,18 @@ namespace Stratis.SmartContracts
             this.State = contractState.PersistentState;
             this.PersistentState = contractState.PersistentState;
             this.Serializer = contractState.Serializer;
-            this.Balances = new Dictionary<Address, long>();
-            this.Balances.Add(contractState.Message.ContractAddress, (long)contractState.GetBalance());
-            this.Balances.Add(contractState.Message.Sender, 0L - (long) contractState.Message.Value);
+            Dictionary<Address, long> balances = new Dictionary<Address, long>();
+            
+            balances.Add(contractState.Message.ContractAddress, (long)contractState.GetBalance());
+            balances.Add(contractState.Message.Sender, 0L - (long) contractState.Message.Value);
+            this.Balances = balances;
         }
         #endregion
 
         #region Methods
 
         protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
-            //@ modifies Balances;
+            //@ modifies Balances[addressTo];
             
         {
             ITransferResult result = this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, amountToTransfer);

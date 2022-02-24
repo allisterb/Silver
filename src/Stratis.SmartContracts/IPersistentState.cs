@@ -19,7 +19,6 @@ namespace Stratis.SmartContracts
         char GetChar(string key);
 
         [Pure]
-        [Reads(ReadsAttribute.Reads.Nothing)]
         Address GetAddress(string key);
 
         [Pure]
@@ -62,7 +61,6 @@ namespace Stratis.SmartContracts
         void SetChar(string key, char value) /*@ ensures this.GetChar(key) == value @*/;
 
         [Pure]
-        [Reads(ReadsAttribute.Reads.Nothing)]
         void SetAddress(string key, Address value) /*@ ensures this.GetAddress(key) == value @*/;
 
         [Pure]

@@ -47,7 +47,7 @@ public class Verifier : Runtime
                 var errors = method.AddNode("[red]Errors[/]");
                 foreach (var error in m.Errors)
                 {
-                    var e = errors.AddNode(error.Message);
+                    var e = errors.AddNode(error.Message.EscapeMarkup());
                     if (error.File is not null && error.File.EndsWith(".ssc"))
                     {
                         e.AddNode($"File: [blue]{error.File!.Replace(".ssc", ".cs").EscapeMarkup()}[/]");
