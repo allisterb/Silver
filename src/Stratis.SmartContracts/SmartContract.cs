@@ -31,7 +31,8 @@ namespace Stratis.SmartContracts
 
         protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
         //@ modifies this.Balances;
-        //@ ensures this.Balances[addressTo] == old(this.Balances[addressTo]) + 10;
+        
+        //@ ensures this.Balances[addressTo] != old(this.Balances[addressTo]) + 10;
         {
             
             ITransferResult result = this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, 10);
@@ -39,8 +40,7 @@ namespace Stratis.SmartContracts
             this.Balances[addressTo] = this.Balances[addressTo] + 10;
             
             
-            //@ assert this.Balances.ContainsKey(addressTo);
-            //@ assert this.Balances[addressTo] == this.Balances[addressTo] + 10;
+            
 
             /*
             this.Balances[addressTo] = this.Balances[addressTo] + (long)amountToTransfer;
