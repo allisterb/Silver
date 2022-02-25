@@ -11,6 +11,7 @@ using Microsoft.CodeAnalysis.Emit;
 
 using SharpSyntaxRewriter.Rewriters;
 using SharpSyntaxRewriter.Rewriters.Types;
+
 using Silver.CodeAnalysis.Cs;
 
 #region Records
@@ -95,6 +96,7 @@ public abstract class SilverProject : Runtime
     public bool Verify { get; set; } = false;
 
     public bool NonNull { get; protected set; } = false;
+
     public string CommandLine
     {
         get
@@ -117,10 +119,6 @@ public abstract class SilverProject : Runtime
             {
                 sb.Append("-debug+ -debug:pdbonly ");
             }
-            if (NoStdLib)
-            {
-                sb.Append("-nostdlib+ ");
-            }
             if (!string.IsNullOrEmpty(ShadowedAssembly))
             {
                 sb.AppendFormat("-shadow:{0} ", Path.Combine(ProjectFile.DirectoryName!, ShadowedAssembly));
@@ -133,15 +131,17 @@ public abstract class SilverProject : Runtime
             {
                 sb.Append("-verify ");
             }
+
             var scr = Path.Combine(AssemblyLocation, "ssc", "System.Compiler.Runtime.dll");
-            
-            sb.AppendFormat("-r:{0} ", References.Prepend(scr).Prepend(systemContractAssemblies[0]).Prepend(systemContractAssemblies[1]).JoinWith(";"));
+
+            sb.AppendFormat("-r:{0} ", References.Prepend(scr).JoinWith(";"));
 
             if (NonNull)
             {
                 sb.Append("-nn ");
             }
 
+            
             sb.Append(SourceFiles.JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
@@ -335,7 +335,8 @@ public abstract class SilverProject : Runtime
         TargetDir = Path.Combine(Path.GetDirectoryName(TargetPath)!, "ssc");
         if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
         TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
-        
+        if (!string.IsNullOrEmpty(ShadowedAssembly)) Info("Assembly will shadow {0}.", ShadowedAssembly);
+
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
@@ -419,7 +420,7 @@ public abstract class SilverProject : Runtime
                             if (File.Exists(pcr)) File.Delete(pcr);
                             File.Copy(pr, pcr);
                         }
-                        Info("Copied reference {0}.", Path.GetFileName(r));
+                        Info("Copied public reference {0}.", Path.GetFileName(r));
                     }
                     else if (File.Exists(r))
                     {

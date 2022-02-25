@@ -30,10 +30,21 @@ namespace Stratis.SmartContracts
         #region Methods
 
         protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
-            //@ modifies Balances[addressTo];
-            
+        //@ modifies this.Balances;
+        //@ ensures this.Balances[addressTo] == old(this.Balances[addressTo]) + 10;
         {
-            ITransferResult result = this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, amountToTransfer);
+            
+            ITransferResult result = this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, 10);
+            
+            this.Balances[addressTo] = this.Balances[addressTo] + 10;
+            
+            
+            //@ assert this.Balances.ContainsKey(addressTo);
+            //@ assert this.Balances[addressTo] == this.Balances[addressTo] + 10;
+
+            /*
+            this.Balances[addressTo] = this.Balances[addressTo] + (long)amountToTransfer;
+            
             if (result.Success)
             {
                 if (this.Balances.ContainsKey(addressTo))
@@ -44,7 +55,8 @@ namespace Stratis.SmartContracts
                 {
                     this.Balances.Add(addressTo, (long) amountToTransfer);
                 }
-            }
+            
+            }*/
             return result;
         }
         protected ITransferResult Call(
@@ -141,7 +153,6 @@ namespace Stratis.SmartContracts
         public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
-        [ElementsRep]
         protected Dictionary<Address, long> Balances;
         #endregion
     }

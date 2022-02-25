@@ -8,14 +8,19 @@ using System;
 using Microsoft.Contracts;
 namespace Stratis.SmartContracts
 {
-    public class Address
+    public struct Address
     {
         public static Address Zero;
         public const int Width = 20;
+        [Rep]
         private readonly uint pn0;
+        [Rep]
         private readonly uint pn1;
+        [Rep]
         private readonly uint pn2;
+        [Rep]
         private readonly uint pn3;
+        [Rep]
         private readonly uint pn4;
 
         public Address(Address other)
