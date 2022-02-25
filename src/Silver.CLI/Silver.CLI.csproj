@@ -29,11 +29,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Target Name="CopyDLLs" AfterTargets="Build">
-    <Copy
-      SourceFiles="$(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.dll;$(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.pdb"
-      DestinationFolder="$(TargetDir)" />
-    <Message Text="Copied $(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.dll;$(ProjectDir)../../lib/net461/Stratis.SmartContracts.NET4.pdb to $(TargetDir)" Importance="High" />
-  </Target>
 </Project>

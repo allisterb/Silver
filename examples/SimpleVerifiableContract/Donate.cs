@@ -14,18 +14,27 @@ public class SimpleVerifiableContract : SmartContract
     }
 
     public void Donate()
+    //@ ensures this.Balances[Owner] != old(this.Balances[Owner]) + 10;
     
+
     {
+        //@ expose (this) {
+        //@ assume this.Balances.ContainsKey(Owner);
         
-       
-        ITransferResult result = Transfer(Owner, Message.Value);
+        this.Transfer(Owner, 10);
         
-        //Assert(result.Success, "Transfer failed.");
+        //@ }
+
     }
 
     private Address Owner
     {
-        get => State.GetAddress(nameof(Owner));
+        get
+        {
+            //@ expose(this) {
+            return State.GetAddress(nameof(Owner));
+            //@ }
+        }
         set => State.SetAddress(nameof(Owner), value);
     }
 }

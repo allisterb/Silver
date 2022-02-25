@@ -17,6 +17,9 @@ copy src\Stratis.SmartContracts\bin\Debug\net461\ssc\Stratis.SmartContracts.pdb 
 copy src\Stratis.SmartContracts\bin\Debug\net461\ssc\Stratis.SmartContracts.dll src\Silver.CLI\bin\Debug\net6.0\Stratis.SmartContracts.NET4.dll
 copy src\Stratis.SmartContracts\bin\Debug\net461\ssc\Stratis.SmartContracts.pdb src\Silver.CLI\bin\Debug\net6.0\Stratis.SmartContracts.NET4.pdb
 
+copy src\Stratis.SmartContracts\bin\Debug\net461\ssc\Stratis.SmartContracts.dll src\Silver.CLI\bin\Debug\net6.0\publish\Stratis.SmartContracts.NET4.dll
+copy src\Stratis.SmartContracts\bin\Debug\net461\ssc\Stratis.SmartContracts.pdb src\Silver.CLI\bin\Debug\net6.0\publish\Stratis.SmartContracts.NET4.pdb
+
 echo(
 echo Building Stratis.SmartContracts base project succeded.
 

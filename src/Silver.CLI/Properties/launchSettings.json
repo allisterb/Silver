@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "compile $(SolutionDir)..\\examples\\SimpleVerifiableContract\\SimpleVerifiableContract.csproj --verify"
+      "commandLineArgs": "compile $(SolutionDir)..\\ext\\specsharp\\Samples\\OutOfBandContracts\\Mscorlib\\Mscorlib.Contracts.sscproj --ssc"
     }
   }
 }

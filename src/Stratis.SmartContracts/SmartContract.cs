@@ -31,15 +31,15 @@ namespace Stratis.SmartContracts
 
         protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
         //@ modifies this.Balances;
-        
+        //@ ensures this.Balances.ContainsKey(addressTo);
         //@ ensures this.Balances[addressTo] != old(this.Balances[addressTo]) + 10;
         {
-            
+
             ITransferResult result = this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, 10);
             
             this.Balances[addressTo] = this.Balances[addressTo] + 10;
             
-            
+            //@ assume this.Balances.ContainsKey(addressTo);
             
 
             /*

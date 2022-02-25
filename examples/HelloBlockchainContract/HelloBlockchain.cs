@@ -3,6 +3,7 @@
 
 public class HelloBlockchain : SmartContract
 {
+	
 	//@ [NotDelayed]
 	public HelloBlockchain(ISmartContractState state, string message)
 		:base(state)
@@ -18,8 +19,7 @@ public class HelloBlockchain : SmartContract
 
 	}
 
-	public uint ContractState { get; set; }
-
+	
 	public enum StateType : uint
 	{
 		Request = 0,
@@ -28,11 +28,13 @@ public class HelloBlockchain : SmartContract
 
 	//public StateType StateType { get; set; }
 
+
 	public Address Requestor
 	{
 		get => State.GetAddress(nameof(Requestor));
 		private set => State.SetAddress(nameof(Requestor), value);
 	}
+	
 	
 	public Address Responder
 	{
@@ -46,26 +48,29 @@ public class HelloBlockchain : SmartContract
 		private set => State.SetString(nameof(RequestMessage), value);
 	}
 
+	
 	public string ResponseMessage
 	{
 		get => State.GetString(nameof(ResponseMessage));
 		private set => State.SetString(nameof(ResponseMessage), value);
 	}
 
+
 	public void SendRequest(string requestMessage)
 	{
 		Assert(Message.Sender == Requestor, "Sender is not requestor");
 
 		RequestMessage = requestMessage;
-		ContractState = (uint)StateType.Request;
+		//ContractState = (uint)StateType.Request;
 	}
 
+	
 	public void SendResponse(string responseMessage)
 	{
 		Responder = Message.Sender;
-
 		ResponseMessage = responseMessage;
-		ContractState = (uint)StateType.Respond;
+		//ContractState = (uint)StateType.Respond;
+		
 	}
 	
 	

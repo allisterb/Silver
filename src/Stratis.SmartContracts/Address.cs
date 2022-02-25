@@ -8,7 +8,7 @@ using System;
 using Microsoft.Contracts;
 namespace Stratis.SmartContracts
 {
-    public struct Address
+    public class Address
     {
         public static Address Zero;
         public const int Width = 20;
