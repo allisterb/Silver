@@ -8,7 +8,7 @@ using Microsoft.Contracts;
 
 namespace Stratis.SmartContracts
 {
-    public abstract class SilverSmartContractState : ISmartContractState
+    public abstract class SilverSmartContractState
     {
         #region Constructors
 
@@ -22,7 +22,7 @@ namespace Stratis.SmartContracts
         public IMessage Message { get => this._Message; }
 
         [Pure]
-        public IPersistentState PersistentState { get => this._PersistentState; }
+        public SilverSmartContractPersistentState PersistentState { get => this._PersistentState; }
 
         [Pure]
         public abstract IContractLogger ContractLogger { get; }

@@ -8,11 +8,11 @@ using Microsoft.Contracts;
 
 namespace Stratis.SmartContracts
 {
-    public class SilverSmartContractPersistentState: IPersistentState
+    public class SilverSmartContractPersistentState
     {
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
-        public bool IsContract(Address address) => SilverSmartContractVM.RandomBool;
+        public bool IsContract(Address address) => SilverVM.RandomBool;
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
@@ -137,6 +137,7 @@ namespace Stratis.SmartContracts
             }
         }
 
+        
         private T Get<T>(string key)
         {
             if (this.State.ContainsKey(key))
@@ -168,6 +169,7 @@ namespace Stratis.SmartContracts
         }
 
         #region Fields
+        [Rep]
         private readonly Dictionary<string, object> State = new Dictionary<string, object>();
         #endregion
     }
