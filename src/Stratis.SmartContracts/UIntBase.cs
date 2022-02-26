@@ -110,7 +110,7 @@ namespace Stratis.SmartContracts
       byte[]? byteArray = this.value.ToByteArray();
       if (byteArray == null)
       {
-          throw new InvalidOperationException("Array is null");
+          throw new InvalidOperationException("ToByteArray() method is null.");
       }
         byte[] bytes = new byte[this.width];
       Array.Copy((Array) byteArray, (Array) bytes, Math.Min(byteArray.Length, bytes.Length));
@@ -146,7 +146,7 @@ namespace Stratis.SmartContracts
         }
         else
         {
-            throw new InvalidOperationException("The object is not of type UIntBase");
+            throw new InvalidOperationException("The object being compared to is null or not of type UIntBase.");
         }
     }
     public static int Comparison(UIntBase a, UIntBase b) => a.CompareTo((object?) b);
@@ -169,7 +169,7 @@ namespace Stratis.SmartContracts
             string? s = BitConverter.ToString(ba);
             if (s == null)
             {
-                throw new InvalidOperationException("BitConverter.ToString method returned null;");
+                throw new InvalidOperationException("BitConverter.ToString method returned null.");
             }
             return s.Replace("-", "");
         }

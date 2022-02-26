@@ -7,56 +7,100 @@ namespace Stratis.SmartContracts
 {
   public abstract class SmartContract
   {
+    #if NETSTANDARD2_0_OR_GREATER
+
+    private readonly ISmartContractState contractState;
+
+    protected Address Address => this.contractState.Message.ContractAddress;
+
+    public ulong Balance => this.contractState.GetBalance();
+
+    public IBlock Block => this.contractState.Block;
+
+    public IMessage Message => this.contractState.Message;
+
+    [Obsolete("Please use State property as shorthand", false)]
+    public IPersistentState PersistentState => this.contractState.PersistentState;
+
+    public IPersistentState State => this.contractState.PersistentState;
+
+    public ISerializer Serializer => this.contractState.Serializer;
+
+    public SmartContract(ISmartContractState contractState)
+    {
+      CultureInfo.CurrentCulture = new CultureInfo("en-US");
+      this.contractState = contractState;
+    }
+
+    protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer) => this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, amountToTransfer);
+
+    protected ITransferResult Call(
+      Address addressTo,
+      ulong amountToTransfer,
+      string methodName,
+      object[] parameters = null,
+      ulong gasLimit = 0)
+    {
+      return this.contractState.InternalTransactionExecutor.Call(this.contractState, addressTo, amountToTransfer, methodName, parameters, gasLimit);
+    }
+
+    protected ICreateResult Create<T>(
+      ulong amountToTransfer = 0,
+      object[] parameters = null,
+      ulong gasLimit = 0)
+      where T : SmartContract
+    {
+      return this.contractState.InternalTransactionExecutor.Create<T>(this.contractState, amountToTransfer, parameters, gasLimit);
+    }
+
+    protected byte[] Keccak256(byte[] toHash) => this.contractState.InternalHashHelper.Keccak256(toHash);
+
+    protected void Assert(bool condition, string message = "Assert failed.")
+    {
+      if (!condition)
+        throw new SmartContractAssertException(message);
+    }
+
+    protected void Log<T>(T toLog) where T : struct => this.contractState.ContractLogger.Log<T>(this.contractState, toLog);
+
+    public virtual void Receive()
+    {
+    }
+    
+    #else
+
         #region Constructors
-        
         public SmartContract(ISmartContractState contractState)
         {
-            this.contractState = contractState;
+            this.contractState = (SilverSmartContractState) contractState;
             this.Address = contractState.Message.ContractAddress;
             this.Balance = contractState.GetBalance();
             this.Block = contractState.Block;
             this.Message = contractState.Message;
-            this.State = contractState.PersistentState;
             this.PersistentState = contractState.PersistentState;
             this.Serializer = contractState.Serializer;
             Dictionary<Address, long> balances = new Dictionary<Address, long>();
-            
-            balances.Add(contractState.Message.ContractAddress, (long)contractState.GetBalance());
+            balances.Add(contractState.Message.ContractAddress, (long) contractState.GetBalance());
             balances.Add(contractState.Message.Sender, 0L - (long) contractState.Message.Value);
             this.Balances = balances;
         }
         #endregion
 
-        #region Methods
+    #region Methods
 
-        protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
-        //@ modifies this.Balances;
+        protected TransferResult Transfer(Address addressTo, ulong amountToTransfer)
         //@ ensures this.Balances.ContainsKey(addressTo);
-        //@ ensures this.Balances[addressTo] != old(this.Balances[addressTo]) + 10;
+        //@ ensures (result.Success && (this.Balances[addressTo] != old(this.Balances[addressTo]) + 10)) || (!result.Success);
         {
-
-            ITransferResult result = this.contractState.InternalTransactionExecutor.Transfer(this.contractState, addressTo, 10);
-            
-            this.Balances[addressTo] = this.Balances[addressTo] + 10;
-            
-            //@ assume this.Balances.ContainsKey(addressTo);
-            
-
-            /*
-            this.Balances[addressTo] = this.Balances[addressTo] + (long)amountToTransfer;
-            
+            if (!Balances.ContainsKey(addressTo))
+            {
+                Balances.Add(addressTo, 0L);
+            }
+            TransferResult result = SilverSmartContractVM.RandomTransferResult;
             if (result.Success)
             {
-                if (this.Balances.ContainsKey(addressTo))
-                {
-                    this.Balances[addressTo] = this.Balances[addressTo] + (long) amountToTransfer;
-                }
-                else
-                {
-                    this.Balances.Add(addressTo, (long) amountToTransfer);
-                }
-            
-            }*/
+                Balances[addressTo] = Balances[addressTo] + (long)amountToTransfer;
+            }
             return result;
         }
         protected ITransferResult Call(
@@ -76,6 +120,7 @@ namespace Stratis.SmartContracts
                 else
                 {
                     this.Balances.Add(addressTo, (long)amountToTransfer);
+                    
                 }
             }
             return result;
@@ -124,17 +169,17 @@ namespace Stratis.SmartContracts
         {
         }
 
-        #endregion
+#endregion
 
-        #region Fields
+    #region Fields
         [Rep]
-        public readonly ISmartContractState contractState;
-
-        [Rep]
-        public readonly IPersistentState State;
+        public readonly SilverSmartContractState contractState;
 
         [Rep]
-        public readonly Address Address; // = this.State.Message.ContractAddress;
+        public readonly SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
+
+        [Rep]
+        public readonly Address Address; // => this.State.Message.ContractAddress;
 
         [Rep]
         public readonly ulong Balance; // => this.contractState.GetBalance();
@@ -145,15 +190,15 @@ namespace Stratis.SmartContracts
         [Rep]
         public readonly IMessage Message; // => this.contractState.Message;
 
-        [Obsolete("Please use State property as shorthand", false)]
         [Rep]
-        public IPersistentState PersistentState; //StateIndependentAttribute;
+        public IPersistentState PersistentState; // => this.contractState.PersistentState;
 
         [Rep]
         public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
-        protected Dictionary<Address, long> Balances;
+        public Dictionary<Address, long> Balances;
         #endregion
+#endif
     }
 }

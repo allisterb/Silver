@@ -91,7 +91,7 @@ namespace Stratis.SmartContracts
         }
         else
         {
-            throw new InvalidOperationException("Object does not have type UInt256");
+            throw new InvalidOperationException("Object being compared is null or not of type type UInt256.");
         }
     }
 
