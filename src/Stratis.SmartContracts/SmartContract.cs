@@ -72,12 +72,14 @@ namespace Stratis.SmartContracts
     #region Constructors
     public SmartContract(ISmartContractState contractState)
     {
-        this.contractState = (SilverSmartContractState) contractState;
-        this.Address = contractState.Message.ContractAddress;
-        this.Balance = contractState.GetBalance();
-        this.Block = contractState.Block;
-        this.Message = contractState.Message;
-        this.PersistentState = contractState.PersistentState;
+        SilverSmartContractState _contractState = (SilverSmartContractState)contractState;
+        this.contractState = _contractState;
+        this.Address = _contractState.Message.ContractAddress;
+        this.Balance = _contractState.GetBalance();
+        this.Block = _contractState.Block;
+        this.Message = _contractState.Message;
+        this.PersistentState = _contractState.PersistentState;
+        this.State = _contractState.PersistentState;
         this.Serializer = contractState.Serializer;
         Dictionary<Address, long> balances = Balances = new Dictionary<Address, long>();
         balances.Add(contractState.Message.ContractAddress, (long) contractState.GetBalance());
@@ -201,7 +203,7 @@ namespace Stratis.SmartContracts
         public readonly SilverSmartContractState contractState;
 
         [Rep]
-        public readonly SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
+        public readonly SilverSmartContractPersistentState State;
 
         [Rep]
         public readonly Address Address; // => this.State.Message.ContractAddress;
@@ -213,10 +215,10 @@ namespace Stratis.SmartContracts
         public readonly IBlock Block; // => this.contractState.Block;
 
         [Rep]
-        public readonly IMessage Message; // => this.contractState.Message;
+        public readonly Message Message; // => this.contractState.Message;
 
         [Rep]
-        public IPersistentState PersistentState; // => this.contractState.PersistentState;
+        public SilverSmartContractPersistentState PersistentState; // => this.contractState.PersistentState;
 
         [Rep]
         public ISerializer Serializer; //=> this.State.Serializer;
