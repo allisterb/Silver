@@ -101,7 +101,7 @@ namespace Stratis.SmartContracts
             ITransferResult result = SilverVM.RandomTransferResult;
             if (result.Success)
             {
-                Balances[addressTo] = Balances[addressTo] + (long) amountToTransfer;
+                Balances[addressTo] = Balances[addressTo] + amountToTransfer;
             }
             //@ assert Balances.ContainsKey(addressTo);
             

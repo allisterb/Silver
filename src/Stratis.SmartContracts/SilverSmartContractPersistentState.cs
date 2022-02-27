@@ -138,6 +138,8 @@ namespace Stratis.SmartContracts
         }
 
         
+        [Pure]
+        [ResultNotNewlyAllocated]
         private T Get<T>(string key)
         {
             if (this.State.ContainsKey(key))
@@ -146,8 +148,7 @@ namespace Stratis.SmartContracts
             }
             else
             {
-                this.State.Add(key, new object());
-                return (T) this.State[key];
+                throw new KeyNotFoundException(key);
             }
         }
 
@@ -170,6 +171,7 @@ namespace Stratis.SmartContracts
 
         #region Fields
         [Rep]
+        [ElementsRep(0)]
         private readonly Dictionary<string, object> State = new Dictionary<string, object>();
         #endregion
     }
