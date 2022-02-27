@@ -14,12 +14,14 @@ public class SimpleVerifiableContract : SmartContract
     {
         //@ assume Microsoft.Contracts.Owner.Same(this, this.Owner);
         //@ Address owner = Owner;
-        //@ long oldBalance = GetBalance(Owner);
-        ITransferResult result = this.Transfer(Owner, 10);
+        //@ long oldBalance = GetBalance(owner);
+        //@ long credit = Message.Value;
+
+
+        ITransferResult result = this.Transfer(Owner, Message.Value);
         Assert(result.Success, "ll");
-        //@ assert GetBalance(owner) > oldBalance;
-       
         
+        //@ assert GetBalance(owner) == oldBalance + credit;
     }
 
     private Address Owner

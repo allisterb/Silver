@@ -1,30 +1,47 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Stratis.SmartContracts.Message
-// Assembly: Stratis.SmartContracts, Version=2.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 313BA83E-A11B-42B1-9AF7-0994F99B5586
-// Assembly location: C:\Users\Allister\Downloads\Stratis.SmartContracts.dll
-
-namespace Stratis.SmartContracts
+﻿namespace Stratis.SmartContracts
 {
-  public sealed class Message : IMessage
-  {
-    public Address ContractAddress { get => _ContractAddress; }
 
-    public Address Sender { get => _Sender; }
-
-    public ulong Value { get => _Value; }
-
-    public Message(Address contractAddress, Address sender, ulong value)
+#if NETSTANDARD20_OR_GREATER
+    public sealed class Message : IMessage
     {
-      this._ContractAddress = contractAddress;
-      this._Sender = sender;
-      this._Value = value;
+        public Address ContractAddress { get => _ContractAddress; }
+
+        public Address Sender { get => _Sender; }
+        
+        public ulong Value { get => _Value; }
+
+        public Message(Address contractAddress, Address sender, ulong value)
+        {
+            this._ContractAddress = contractAddress;
+            this._Sender = sender;
+            this._Value = value;
+        }
+
+        private ulong _Value;
+        private Address _ContractAddress;
+        private Address _Sender;
+    }
+#else
+    public sealed class Message : IMessage
+    {
+        public Address ContractAddress { get => _ContractAddress; }
+
+        public Address Sender { get => _Sender; }
+
+        public long Value { get => _Value; }
+        public Message(Address contractAddress, Address sender, long value)
+        {
+            this._ContractAddress = contractAddress;
+            this._Sender = sender;
+            this._Value = value;
+        }
+
+        private long _Value;
+        private Address _ContractAddress;
+        private Address _Sender;
     }
 
-    private Address _ContractAddress;
-
-    private Address _Sender;
-
-    private ulong _Value;
-  }
+#endif
+        
 }
+

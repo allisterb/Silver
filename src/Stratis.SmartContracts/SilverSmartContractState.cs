@@ -16,10 +16,10 @@ namespace Stratis.SmartContracts
 
         #region Properties
         [Pure]
-        public IBlock Block { get => this._Block; }
+        public Block Block { get => this._Block; }
 
         [Pure]
-        public IMessage Message { get => this._Message; }
+        public Message Message { get => this._Message; }
 
         [Pure]
         public SilverSmartContractPersistentState PersistentState { get => this._PersistentState; }
