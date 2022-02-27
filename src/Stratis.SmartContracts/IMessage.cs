@@ -9,7 +9,7 @@
         #if NETSTANDARD2_0_OR_GREATER
         ulong Value { get; }
         #else
-        long Value { get; }
+        ulong Value { get; }
         #endif
     }
 }

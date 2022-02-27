@@ -28,15 +28,15 @@
 
         public Address Sender { get => _Sender; }
 
-        public long Value { get => _Value; }
-        public Message(Address contractAddress, Address sender, long value)
+        public ulong Value { get => _Value; }
+        public Message(Address contractAddress, Address sender, ulong value)
         {
             this._ContractAddress = contractAddress;
             this._Sender = sender;
             this._Value = value;
         }
 
-        private long _Value;
+        private ulong _Value;
         private Address _ContractAddress;
         private Address _Sender;
     }

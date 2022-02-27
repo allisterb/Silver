@@ -14,9 +14,8 @@ public class SimpleVerifiableContract : SmartContract
     {
         //@ assume Microsoft.Contracts.Owner.Same(this, this.Owner);
         //@ Address owner = Owner;
-        //@ long oldBalance = GetBalance(Owner);
-        //@ long credit = Message.Value;
-
+        //@ ulong oldBalance = GetBalance(Owner);
+        //@ ulong credit = Message.Value;
 
         ITransferResult result = this.Transfer(Owner, Message.Value);
         Assert(result.Success, "ll");
@@ -26,11 +25,8 @@ public class SimpleVerifiableContract : SmartContract
 
     private Address Owner
     {
-        get
-        {
-            return State.GetAddress(nameof(Owner));
-        }
-
+        //@ 
+        get => State.GetAddress(nameof(Owner));
         set => State.SetAddress(nameof(Owner), value);   
     }
 }

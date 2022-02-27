@@ -81,9 +81,9 @@ namespace Stratis.SmartContracts
         this.PersistentState = _contractState.PersistentState;
         this.State = _contractState.PersistentState;
         this.Serializer = contractState.Serializer;
-        Dictionary<Address, long> balances = Balances = new Dictionary<Address, long>();
-        balances.Add(contractState.Message.ContractAddress, (long) contractState.GetBalance());
-        balances.Add(contractState.Message.Sender, 0L - (long) contractState.Message.Value);
+        Dictionary<Address, ulong> balances = Balances = new Dictionary<Address, ulong>();
+        balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
+        balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
         this.Balances = balances;
     }
         #endregion
@@ -91,7 +91,7 @@ namespace Stratis.SmartContracts
         #region Methods
 
         #region Stratis interface
-        protected ITransferResult Transfer(Address addressTo, long amountToTransfer)
+        protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
         //@ ensures this.Balances.ContainsKey(addressTo);
         //@ ensures (result.Success && (this.Balances[addressTo] == old(this.Balances[addressTo]) + amountToTransfer)) || (!result.Success);
         //@ ensures(result.Success && (GetBalance(addressTo) == old(this.GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
@@ -121,11 +121,11 @@ namespace Stratis.SmartContracts
             {
                 if (this.Balances.ContainsKey(addressTo))
                 {
-                    this.Balances[addressTo] = this.Balances[addressTo] + (long)amountToTransfer;
+                    this.Balances[addressTo] = this.Balances[addressTo] + amountToTransfer;
                 }
                 else
                 {
-                    this.Balances.Add(addressTo, (long)amountToTransfer);
+                    this.Balances.Add(addressTo, amountToTransfer);
                     
                 }
             }
@@ -181,7 +181,7 @@ namespace Stratis.SmartContracts
 
         #region Silver extensions
         [Pure]
-        public long GetBalance(Address address)
+        public ulong GetBalance(Address address)
         //@ ensures Balances.ContainsKey(address);
         {
             if (!Balances.ContainsKey(address))
@@ -224,7 +224,7 @@ namespace Stratis.SmartContracts
         public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
-        public Dictionary<Address, long> Balances = new Dictionary<Address, long>();
+        public Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
         #endregion
 
 #endif
