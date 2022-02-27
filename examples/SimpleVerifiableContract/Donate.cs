@@ -1,4 +1,5 @@
 ﻿using Stratis.SmartContracts;
+//@ using Microsoft.Contracts;
 
 [Deploy]
 
@@ -18,14 +19,14 @@ public class SimpleVerifiableContract : SmartContract
         //@ ulong credit = Message.Value;
 
         ITransferResult result = this.Transfer(Owner, Message.Value);
-        Assert(result.Success, "ll");
-
+        Assert(result.Success, "Transfer was not successful.");
+        
         //@ assert GetBalance(owner) == oldBalance + credit;
     }
 
     private Address Owner
     {
-        //@ 
+        //@ [Pure(PureAttribute.PurityLevel.Strong)]
         get => State.GetAddress(nameof(Owner));
         set => State.SetAddress(nameof(Owner), value);   
     }

@@ -5,9 +5,9 @@ using Microsoft.Contracts;
 
 namespace Stratis.SmartContracts
 {
-  public abstract class SmartContract
-  {
-    #if NETSTANDARD2_0_OR_GREATER
+    public abstract class SmartContract
+    {
+#if NETSTANDARD2_0_OR_GREATER
 
     private readonly ISmartContractState contractState;
 
@@ -67,25 +67,25 @@ namespace Stratis.SmartContracts
     {
     }
     
-    #else // Smart contract implementation for verifier
-
-    #region Constructors
-    public SmartContract(ISmartContractState contractState)
-    {
-        SilverSmartContractState _contractState = (SilverSmartContractState)contractState;
-        this.contractState = _contractState;
-        this.Address = _contractState.Message.ContractAddress;
-        this.Balance = _contractState.GetBalance();
-        this.Block = _contractState.Block;
-        this.Message = _contractState.Message;
-        this.PersistentState = _contractState.PersistentState;
-        this.State = _contractState.PersistentState;
-        this.Serializer = contractState.Serializer;
-        Dictionary<Address, ulong> balances = Balances = new Dictionary<Address, ulong>();
-        balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
-        balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
-        this.Balances = balances;
-    }
+#else
+        // Smart contract implementation for verifier
+        #region Constructors
+        public SmartContract(ISmartContractState contractState)
+        {
+            SilverSmartContractState _contractState = (SilverSmartContractState)contractState;
+            this.contractState = _contractState;
+            this.Address = _contractState.Message.ContractAddress;
+            this.Balance = _contractState.GetBalance();
+            this.Block = _contractState.Block;
+            this.Message = _contractState.Message;
+            this.PersistentState = _contractState.PersistentState;
+            this.State = _contractState.PersistentState;
+            this.Serializer = contractState.Serializer;
+            Dictionary<Address, ulong> balances = Balances = new Dictionary<Address, ulong>();
+            balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
+            balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
+            this.Balances = balances;
+        }
         #endregion
 
         #region Methods
@@ -98,15 +98,14 @@ namespace Stratis.SmartContracts
         {
             if (!Balances.ContainsKey(addressTo))
             {
-                Balances.Add(addressTo, 0L);
+                Balances.Add(addressTo, 0UL);
             }
             ITransferResult result = SilverVM.RandomTransferResult;
             if (result.Success)
             {
                 Balances[addressTo] = Balances[addressTo] + amountToTransfer;
             }
-            //@ assert Balances.ContainsKey(addressTo);
-            
+
             return result;
         }
         protected ITransferResult Call(
@@ -115,6 +114,9 @@ namespace Stratis.SmartContracts
           string methodName,
           object[]? parameters,
           ulong gasLimit)
+        //@ ensures this.Balances.ContainsKey(addressTo);
+        //@ ensures (result.Success && (this.Balances[addressTo] == old(this.Balances[addressTo]) + amountToTransfer)) || (!result.Success);
+        //@ ensures(result.Success && (GetBalance(addressTo) == old(this.GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
         {
             ITransferResult result = SilverVM.RandomTransferResult;
             if (result.Success)
@@ -126,7 +128,7 @@ namespace Stratis.SmartContracts
                 else
                 {
                     this.Balances.Add(addressTo, amountToTransfer);
-                    
+
                 }
             }
             return result;
@@ -137,28 +139,28 @@ namespace Stratis.SmartContracts
             string methodName,
             object[]? parameters)
             => Call(addressTo, amountToTransfer, methodName, parameters, 0);
-        
+
         protected ITransferResult Call(
             Address addressTo,
             ulong amountToTransfer,
             string methodName)
-            => Call(addressTo, amountToTransfer, methodName, null, 0);        
-        
+            => Call(addressTo, amountToTransfer, methodName, null, 0);
+
         protected ICreateResult Create<T>(
           ulong amountToTransfer,
           object[] parameters,
           ulong gasLimit)
           where T : SmartContract
             => SilverVM.RandomCreateResult;
-            
+
         [Pure]
         protected byte[] Keccak256(byte[] toHash) => this.contractState.InternalHashHelper.Keccak256(toHash);
 
         [Pure]
         protected void Assert(bool condition, string message)
         {
-          if (!condition)
-            throw new SmartContractAssertException(message);
+            if (!condition)
+                throw new SmartContractAssertException(message);
         }
 
         [Pure]
@@ -186,16 +188,12 @@ namespace Stratis.SmartContracts
         {
             if (!Balances.ContainsKey(address))
             {
-                Balances.Add(address, 0);
-                return 0;
+                Balances.Add(address, 0UL);
             }
-            else
-            {
-                return Balances[address];
-            }
+            return Balances[address];
         }
         #endregion
-        
+
         #endregion
 
         #region Fields

@@ -36,9 +36,11 @@ public class DAOContract : SmartContract
         private set => State.SetUInt32(nameof(LastProposalId), value);
     }
 
+    //@ [Microsoft.Contracts.Pure]
     public bool IsWhitelisted(Address address) => State.GetBool($"Whitelisted:{address}");
     private void SetIsWhitelisted(Address address, bool allowed) => State.SetBool($"Whitelisted:{address}", allowed);
 
+    //@ [Microsoft.Contracts.Pure]
     public ulong GetVotingDeadline(uint proposalId) => State.GetUInt64($"Deadline:{proposalId}");
     private void SetVotingDeadline(uint proposalId, ulong block) => State.SetUInt64($"Deadline:{proposalId}", block);
 
@@ -87,6 +89,7 @@ public class DAOContract : SmartContract
         uint proposalId = LastProposalId;
         SetProposal(proposalId, proposal);
         SetVotingDeadline(proposalId, checked(votingDuration + Block.Number));
+        /*
         Log(new ProposalAddedLog
         {
             ProposalId = proposalId,
@@ -94,7 +97,7 @@ public class DAOContract : SmartContract
             Amount = amount,
             Description = description
         });
-
+        */
         LastProposalId = proposalId + 1;
 
         return proposalId;
@@ -122,7 +125,7 @@ public class DAOContract : SmartContract
         Unvote(proposalId, currentVote);
         SetVote(proposalId, Message.Sender, vote);
 
-        Log(new ProposalVotedLog { ProposalId = proposalId, Voter = Message.Sender, Vote = vote == Votes.Yes });
+        // Log(new ProposalVotedLog { ProposalId = proposalId, Voter = Message.Sender, Vote = vote == Votes.Yes });
 
         if (vote == Votes.Yes)
         {
@@ -169,7 +172,7 @@ public class DAOContract : SmartContract
 
         Assert(result.Success, "Transfer failed.");
 
-        Log(new ProposalExecutedLog { ProposalId = proposalId, Amount = proposal.RequestedAmount, Recipent = proposal.Recipient });
+        //Log(new ProposalExecutedLog { ProposalId = proposalId, Amount = proposal.RequestedAmount, Recipent = proposal.Recipient });
 
     }
 
@@ -225,9 +228,10 @@ public class DAOContract : SmartContract
     public void Deposit()
     {
         EnsureOwnerOnly();
-        Log(new FundRaisedLog { Sender = Message.Sender, Amount = Message.Value });
+        //Log(new FundRaisedLog { Sender = Message.Sender, Amount = Message.Value });
     }
 
+    //@ [Microsoft.Contracts.Pure]
     public override void Receive() => Deposit();
 
     public void TransferOwnership(Address newOwner)
