@@ -10,10 +10,6 @@ namespace Stratis.SmartContracts
 {
     public abstract class SilverSmartContractState
     {
-        #region Constructors
-
-        #endregion
-
         #region Properties
         [Pure]
         public Block Block { get => this._Block; }
@@ -41,8 +37,13 @@ namespace Stratis.SmartContracts
         #endregion
 
         #region Fields
+        [Rep]
         private Block _Block = new Block();
-        private Message _Message = new Message(Address.Zero, Address.Zero, 0);
+        
+        [Rep]
+        private Message _Message = new Message(SilverVM.RandomAddress, SilverVM.RandomAddress, SilverVM.RandomUInt);
+        
+        [Rep]
         private SilverSmartContractPersistentState _PersistentState = new SilverSmartContractPersistentState();
         #endregion
     }
