@@ -38,13 +38,13 @@ namespace Stratis.SmartContracts
 
         #region Fields
         [Rep]
-        private Block _Block = new Block();
+        private readonly Block _Block = new Block();
         
         [Rep]
-        private Message _Message = new Message(SilverVM.RandomAddress, SilverVM.RandomAddress, SilverVM.RandomUInt);
+        private readonly Message _Message = new Message(SilverVM.RandomAddress, SilverVM.RandomAddress, SilverVM.RandomUInt);
         
         [Rep]
-        private SilverSmartContractPersistentState _PersistentState = new SilverSmartContractPersistentState();
+        private readonly SilverSmartContractPersistentState _PersistentState = new SilverSmartContractPersistentState();
         #endregion
     }
 }

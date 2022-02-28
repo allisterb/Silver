@@ -16,10 +16,12 @@ namespace Stratis.SmartContracts
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
+        [ResultNotNewlyAllocated]
         public byte[] GetBytes(byte[] key) => Get<byte[]>(key.ToString());
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
+        [ResultNotNewlyAllocated]
         public byte[] GetBytes(string key) => Get<byte[]>(key);
 
         [Pure]
@@ -28,6 +30,7 @@ namespace Stratis.SmartContracts
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
+        [ResultNotNewlyAllocated]
         public Address GetAddress(string key) => Get<Address>(key);
 
         [Pure]
@@ -60,16 +63,17 @@ namespace Stratis.SmartContracts
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
+        [ResultNotNewlyAllocated]
         public T[] GetArray<T>(string key) => Get<T[]>(key);
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
+        [ResultNotNewlyAllocated]
         public string GetString(string key) => Get<string>(key);
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
         public  T GetStruct<T>(string key) where T : struct => Get<T>(key);
-
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
@@ -137,7 +141,6 @@ namespace Stratis.SmartContracts
             }
         }
 
-        
         [Pure]
         [ResultNotNewlyAllocated]
         private T Get<T>(string key)

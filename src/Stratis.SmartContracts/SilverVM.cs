@@ -1,32 +1,53 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Contracts;
 
 namespace Stratis.SmartContracts
 {
     public class SilverVM 
     {
-        public static bool RandomBool { get => Rnd.Next() > 1000 ? true : false; }
+        public static bool RandomBool { [Pure] [Reads(ReadsAttribute.Reads.Nothing)] get => Rnd.Next() > 1000 ? true : false; }
 
-        public static int RandomInt { get => Rnd.Next(); }
+        public static int RandomInt { [Pure][Reads(ReadsAttribute.Reads.Nothing)] get => Rnd.Next(); }
 
-        public static uint RandomUInt { get => (uint)Rnd.Next(); }
+        public static uint RandomUInt { [Pure][Reads(ReadsAttribute.Reads.Nothing)] get => (uint)Rnd.Next(); }
 
-        public static long RandomLong { get => Rnd.Next(); }
+        public static long RandomLong { [Pure][Reads(ReadsAttribute.Reads.Nothing)] get => Rnd.Next(); }
 
-        public static ulong RandomULong { get => (ulong)Rnd.Next(); }
+        public static ulong RandomULong { [Pure][Reads(ReadsAttribute.Reads.Nothing)] get => (ulong)Rnd.Next(); }
 
-        public static UInt128 RandomUInt128 { get => new UInt128(RandomByteArray); }
+        public static UInt128 RandomUInt128 { [Pure][Reads(ReadsAttribute.Reads.Nothing)] get => new UInt128(RandomByteArray); }
 
-        public static byte[] RandomByteArray { get => new byte[RandomInt]; }
+        public static byte[] RandomByteArray 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get => new byte[RandomInt]; 
+        }
 
-        public static Address RandomAddress { get => new Address(RandomUInt, RandomUInt, RandomUInt, RandomUInt, RandomUInt); }
+        public static Address RandomAddress 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get => new Address(RandomUInt, RandomUInt, RandomUInt, RandomUInt, RandomUInt); 
+        }
 
-        public static RandomTransferResult RandomTransferResult { get => new RandomTransferResult(); }
+        public static RandomTransferResult RandomTransferResult 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get => new RandomTransferResult(); 
+        }
 
-        public static RandomCreateResult RandomCreateResult { get => new RandomCreateResult(); }
+        public static RandomCreateResult RandomCreateResult 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get => new RandomCreateResult(); 
+        }
 
         #region Fields
 
