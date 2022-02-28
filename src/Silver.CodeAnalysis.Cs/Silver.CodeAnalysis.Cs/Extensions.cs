@@ -8,7 +8,7 @@ namespace Silver.CodeAnalysis.Cs
 {
     public static class Extensions
     {
-        public static bool IsArray(this ITypeSymbol t) => t != null && t.TypeKind == TypeKind.Array;
+        public static bool IsArray(this ITypeSymbol t) => t != null && t.Name == "Array";
 
         public static bool IsEnum(this ITypeSymbol t) => t != null && t.SpecialType == SpecialType.System_Enum;
 

@@ -7,6 +7,7 @@ using Spectre.Console;
 using Silver.Compiler;
 using Silver.Verifier;
 using Silver.Verifier.Models;
+
 public class Verifier : Runtime
 {
     public static bool Verify(string path, string? classPattern, string? methodPattern, string? output)
@@ -37,8 +38,9 @@ public class Verifier : Runtime
     {
         Regex? classPattern = _classPattern is not null ? new Regex(_classPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
         Regex? methodPattern = _methodPattern is not null ? new Regex(_methodPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
-        
-        AnsiConsole.WriteLine("");
+        if (classPattern is not null) Info("Filtering verification output using class pattern {0}.", classPattern.ToString());
+        if (methodPattern is not null) Info("Filtering verification output using method pattern {0}.", methodPattern.ToString());
+
         var tree = new Tree("Verification results");
         var file = tree.AddNode($"[royalblue1]File: {results.File.Name}[/]");
         var methods = file.AddNode("[yellow]Methods[/]");
@@ -77,7 +79,7 @@ public class Verifier : Runtime
                     //method.AddNode($"Message: {error.Message}");
                 }
             }
-            method.AddNode($"Duration: {m.Conclusion.Duration}s");
+            method.AddNode($"Duration: [fuchsia]{m.Conclusion.Duration}s[/]");
         }
         AnsiConsole.Write(tree);
         AnsiConsole.WriteLine("");
@@ -90,6 +92,5 @@ public class Verifier : Runtime
         {
             Info("{0} out of {1} method(s) failed verification.", errorCount, methodCount);
         }
-        
     }
 }

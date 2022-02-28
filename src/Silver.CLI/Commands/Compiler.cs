@@ -33,7 +33,7 @@ internal class CompilerCmd : Command
         }
     }
 
-    internal static void Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, bool norewriteassert, bool noscanalyze, params string[] additionalFiles)
+    internal static void Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, bool norewriteassert, bool noscanalyze, string? classPattern = null, string? methodPattern = null, params string[] additionalFiles)
     {
         ExitIfFileNotFound(filePath);
         if (!Compiler.Compile(filePath, buildConfig, verify, ssc, rewrite, validate, norewriteassert, noscanalyze, out var target) || target is null)
@@ -52,7 +52,7 @@ internal class CompilerCmd : Command
                 }
                 else
                 {
-                    Verifier.PrintVerifierResultsToConsole(results);
+                    Verifier.PrintVerifierResultsToConsole(results, classPattern, methodPattern);
                     Info("Run {0} to view the details of verification again.", "silver verify " + target);
                     
                 }

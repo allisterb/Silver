@@ -110,6 +110,12 @@ public class CompileOptions : Options
 
     [Option("no-sc-analyze", Required = false, HelpText = "Don't enable the smart contract Roslyn analyzer..")]
     public bool NoScAnalyze { get; set; } = false;
+
+    [Option('c', "class", Required = false, HelpText = "If verifying only print verification results for methods belonging to classes matching this name pattern.")]
+    public string? ClassPattern { get; set; }
+
+    [Option('m', "method", Required = false, HelpText = "If verifying only print verification results for methods matching this name pattern.")]
+    public string? MethodPattern { get; set; }
 }
 #endregion
 

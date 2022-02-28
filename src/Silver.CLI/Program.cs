@@ -164,7 +164,7 @@ class Program : Runtime
              var buildConfig = o.BuildConfig;
              if (!string.IsNullOrEmpty(o.Property))
              {
-                 CompilerCmd.GetProperty(o.Files.First(), buildConfig, o.Property, additionalFiles);
+                 CompilerCmd.GetProperty(o.Files.First(), buildConfig, o.Property, additionalFiles: additionalFiles);
              }
              else if (o.CommandLine)
              {
@@ -172,7 +172,7 @@ class Program : Runtime
              }
              else
              {
-                 CompilerCmd.Compile(file, buildConfig, o.Verify, o.Ssc, o.Rewrite || ! o.Ssc, o.Validate, o.NoAssertRewrite, o.NoScAnalyze, additionalFiles);
+                 CompilerCmd.Compile(file, buildConfig, o.Verify, o.Ssc, o.Rewrite || ! o.Ssc, o.Validate, o.NoAssertRewrite, o.NoScAnalyze, o.ClassPattern, o.MethodPattern, additionalFiles);
              }
          })
         #endregion
