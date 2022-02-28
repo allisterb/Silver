@@ -48,7 +48,6 @@ public class ColorfulSourceEmitter : SourceEmitter
     #region Methods
 
     #region Traversers
-
     public override void TraverseChildren(INamespaceTypeDefinition namespaceTypeDefinition)
     {
         //var td = (ITypeDefinition)namespaceTypeDefinition;

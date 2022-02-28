@@ -1,5 +1,7 @@
 ﻿namespace Silver.CLI.Core;
 
+using System.Text.RegularExpressions;
+
 using Spectre.Console;
 
 using Silver.Compiler;
@@ -7,7 +9,7 @@ using Silver.Verifier;
 using Silver.Verifier.Models;
 public class Verifier : Runtime
 {
-    public static bool Verify(string path, string? output)
+    public static bool Verify(string path, string? classPattern, string? methodPattern, string? output)
     {
         var target = FailIfFileNotFound(path);
         if (SilverProject.HasProjectExtension(path))
@@ -26,13 +28,16 @@ public class Verifier : Runtime
         }
         else
         {
-            PrintVerifierResultsToConsole(results);
+            PrintVerifierResultsToConsole(results, classPattern, methodPattern);
             return true;
         }
     }
 
-    public static void PrintVerifierResultsToConsole(BoogieResults results)
+    public static void PrintVerifierResultsToConsole(BoogieResults results, string? _classPattern = null, string? _methodPattern = null, string? output = null)
     {
+        Regex? classPattern = _classPattern is not null ? new Regex(_classPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
+        Regex? methodPattern = _methodPattern is not null ? new Regex(_methodPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
+        
         AnsiConsole.WriteLine("");
         var tree = new Tree("Verification results");
         var file = tree.AddNode($"[royalblue1]File: {results.File.Name}[/]");
@@ -40,6 +45,11 @@ public class Verifier : Runtime
         var methodCount = results.File.Methods.Length;
         foreach (var m in results.File.Methods)
         {
+            var className = m.Name.Split('.').First();
+            var methodName = m.Name.Split('.').Last().Split('$').First();
+            if (classPattern is not null && !classPattern.IsMatch(className)) continue;
+            if (methodPattern is not null && !methodPattern.IsMatch(methodName)) continue;
+
             var status = m.Conclusion.Outcome == "errors" ? "[red]Failed[/]" : "[lime]Ok[/]";
             var method = methods.AddNode(($"[cyan]{m.Name.EscapeMarkup()}[/]: {status}"));
             if (m.Errors is not null && m.Errors.Any())

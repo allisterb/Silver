@@ -3,9 +3,9 @@
 
 [Deploy]
 
-public class SimpleVerifiableContract : SmartContract
+public class SimpleTransfers : SmartContract
 {
-    public SimpleVerifiableContract(ISmartContractState state)
+    public SimpleTransfers(ISmartContractState state)
         : base(state)
     {
         state.PersistentState.SetAddress(nameof(Owner), state.Message.Sender);

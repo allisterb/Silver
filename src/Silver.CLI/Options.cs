@@ -77,6 +77,7 @@ public class ControlFlowGraphOptions : AnalyzeOptions
 }
 #endregion
 
+#region Compiler
 [Verb("compile", HelpText = "Compile a C# project file or source files.")]
 public class CompileOptions : Options
 { 
@@ -110,17 +111,27 @@ public class CompileOptions : Options
     [Option("no-sc-analyze", Required = false, HelpText = "Don't enable the smart contract Roslyn analyzer..")]
     public bool NoScAnalyze { get; set; } = false;
 }
+#endregion
 
+#region Verifier
 [Verb("verify", HelpText = "Verify a .NET assembly compiled with Spec#.")]
 public class VerifyOptions : Options
 {
     [Value(0, Required = true, HelpText = "The .NET assembly or project file to translate.")]
     public string File { get; set; } = String.Empty;
 
+    [Option('c', "class", Required = false, HelpText = "Only print verification results for methods belonging to classes matching this name pattern.")]
+    public string? ClassPattern { get; set; }
+
+    [Option('m', "method", Required = false, HelpText = "Only print verification results for methods matching this name pattern.")]
+    public string? MethodPattern { get; set; }
+
     [Option('o', "output", Required = false, HelpText = "Save the verifier XML output to this file.")]
     public string? Output { get; set; }
 }
+#endregion
 
+#region Metadata
 [Verb("metadata", HelpText = "Get metadata for a .NET bytecode assembly.")]
 public class AssemblyOptions : Options
 {
@@ -130,7 +141,9 @@ public class AssemblyOptions : Options
     [Option('r', "references", Required = false, HelpText = "Print references.")]
     public bool References { get; set; }
 }
+#endregion
 
+#region Disassembler
 [Verb("dis", HelpText = "Disassemble a .NET bytecode assembly.")]
 public class DisassemblerOptions : Options
 {
@@ -149,7 +162,9 @@ public class DisassemblerOptions : Options
     [Option('b', "boogie", Required = false, HelpText = "Translate the assembly CIL to Boogie.")]
     public bool Boogie { get; set; }
 }
+#endregion
 
+#region Tools
 [Verb("boogie", HelpText = "Execute the installed Boogie tool with the specified options.")]
 public class BoogieOptions : Options
 {
@@ -170,11 +185,13 @@ public class SctOptions : Options
     [Value(0, Required = true, HelpText = "The options to pass to Sct.")]
     public IEnumerable<string> Options { get; set; } = Array.Empty<string>();
 }
+#endregion
 
+#region External Tools Manager
 [Verb("install", HelpText = "Install any required external tools.")]
 public class InstallOptions : Options
 {
     [Option('i', "info", Required = false, HelpText = "Print version information for installed external tools.")]
     public bool Info { get; set; }
 }
-
+#endregion

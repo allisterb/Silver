@@ -145,7 +145,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAOContract", "..\examples\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stratis.SmartContracts", "Stratis.SmartContracts\Stratis.SmartContracts.csproj", "{819DDAFA-D87D-4158-BBE9-981F10879B84}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleVerifiableContract", "..\examples\SimpleVerifiableContract\SimpleVerifiableContract.csproj", "{7A93231A-F684-44A1-A7CD-CDAD0785CEF3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleVerifiableContracts", "..\examples\SimpleVerifiableContracts\SimpleVerifiableContracts.csproj", "{7A93231A-F684-44A1-A7CD-CDAD0785CEF3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BC68EC82-CCAC-4BB3-9C76-63AC9A206788}"
 	ProjectSection(SolutionItems) = preProject

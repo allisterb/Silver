@@ -28,7 +28,6 @@ namespace Stratis.SmartContracts
 
         public SmartContract(ISmartContractState contractState)
         {
-          CultureInfo.CurrentCulture = new CultureInfo("en-US");
           this.contractState = contractState;
         }
 
@@ -38,7 +37,7 @@ namespace Stratis.SmartContracts
           Address addressTo,
           ulong amountToTransfer,
           string methodName,
-          object[] parameters = null,
+          object[]? parameters = null,
           ulong gasLimit = 0)
         {
           return this.contractState.InternalTransactionExecutor.Call(this.contractState, addressTo, amountToTransfer, methodName, parameters, gasLimit);
@@ -46,7 +45,7 @@ namespace Stratis.SmartContracts
 
         protected ICreateResult Create<T>(
           ulong amountToTransfer = 0,
-          object[] parameters = null,
+          object[]? parameters = null,
           ulong gasLimit = 0)
           where T : SmartContract
         {

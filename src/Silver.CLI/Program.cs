@@ -62,6 +62,7 @@ class Program : Runtime
         {
             InteractiveConsole = !o.Script;
         })
+        #region External tools manager
         .WithParsed<InstallOptions>(o =>
         {
             Core.ExternalToolsManager.EnsureAllExists();
@@ -73,6 +74,9 @@ class Program : Runtime
                 }
             }
         })
+        #endregion
+
+        #region Tools
         .WithParsed<BoogieOptions>(o =>
         {
             if (Core.Tools.Boogie(o.Options.ToArray()))
@@ -108,6 +112,9 @@ class Program : Runtime
             }
 
         })
+        #endregion
+
+        #region Metadata
         .WithParsed<AssemblyOptions>(o =>
         {
             if (o.References)
@@ -116,10 +123,16 @@ class Program : Runtime
                 Exit(ExitResult.SUCCESS);
             }
         })
+        #endregion
+
+        #region Disassembler
         .WithParsed<DisassemblerOptions>(o =>
         {
             ILCmd.Dissassemble(o.File, o.Boogie, o.NoIL, o.ClassPattern, o.MethodPattern);
         })
+        #endregion
+
+        #region Analyzers
         .WithParsed<SummarizeOptions>(o =>
         {
             ExitIfFileNotFound(o.InputFile);
@@ -141,6 +154,9 @@ class Program : Runtime
               ILCmd.PrintControlFlowGraph(o);
 
           })
+        #endregion
+
+        #region Compiler
          .WithParsed<CompileOptions>(o =>
          {
              var file = o.Files.First();
@@ -159,11 +175,15 @@ class Program : Runtime
                  CompilerCmd.Compile(file, buildConfig, o.Verify, o.Ssc, o.Rewrite || ! o.Ssc, o.Validate, o.NoAssertRewrite, o.NoScAnalyze, additionalFiles);
              }
          })
+        #endregion
+
+        #region Verifier
          .WithParsed<VerifyOptions>(o =>
          {
-             ExitIfFileNotFound(o.File);
-             VerifierCmd.Verify(o.File, o.Output);
+             VerifierCmd.Verify(o.File, o.ClassPattern, o.MethodPattern, o.Output);
          })
+        #endregion
+
         #endregion
 
         #region Print options help
