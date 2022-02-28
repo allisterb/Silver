@@ -227,7 +227,7 @@ public abstract class SilverProject : Runtime
         CSharpParseOptions parseOptions = new CSharpParseOptions(LanguageVersion.Latest, DocumentationMode.None, SourceCodeKind.Regular, DefineConstants.Split(';'));
         if (rewrite)
         {
-            var op2 = Begin("Parsing and rewriting {0} file(s)", SourceFiles.Count);
+            var op = Begin("Parsing and rewriting {0} file(s)", SourceFiles.Count);
             IEnumerable<SyntaxTree> syntaxTrees = SourceFiles.Select(item => CSharpSyntaxTree.ParseText(File.ReadAllText(item), parseOptions, item, cancellationToken: Ct));
             foreach (var st in syntaxTrees)
             {
@@ -328,7 +328,7 @@ public abstract class SilverProject : Runtime
                 OriginalSourceFiles.Add(st.FilePath);
             }
             SourceFiles = syntaxTrees.Select(st => Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc"))).ToList();
-            op2.Complete();
+            op.Complete();
         }
                 
         References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));

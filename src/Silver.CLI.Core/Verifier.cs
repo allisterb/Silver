@@ -15,11 +15,18 @@ public class Verifier : Runtime
         var target = FailIfFileNotFound(path);
         if (SilverProject.HasProjectExtension(path))
         {
-            if (!Compiler.Compile(path, "Debug", true, false, true, true, false, false, out target) || target is null)
+            var proj = SilverProject.GetProject(path, "Debug");
+            if (proj == null || !proj.Initialized)
+            {
+                Error("Could not initialize project {0}.", path);
+                return false;
+            }
+            if (!proj.SscCompile(true, false, out var sssc))
             {
                 Error("One or more errors occurred compiling project {0}.", path);
                 return false;
             }
+            target = proj.TargetPath;
         }
         var results = Boogie.Verify(FailIfFileNotFound(target), output);
         if (results is null)
@@ -38,8 +45,8 @@ public class Verifier : Runtime
     {
         Regex? classPattern = _classPattern is not null ? new Regex(_classPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
         Regex? methodPattern = _methodPattern is not null ? new Regex(_methodPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
-        if (classPattern is not null) Info("Filtering verification output using class pattern {0}.", classPattern.ToString());
-        if (methodPattern is not null) Info("Filtering verification output using method pattern {0}.", methodPattern.ToString());
+        if (classPattern is not null) Info("Filtering verification output using class pattern {0}...", classPattern.ToString());
+        if (methodPattern is not null) Info("Filtering verification output using method pattern {0}...", methodPattern.ToString());
 
         var tree = new Tree("Verification results");
         var file = tree.AddNode($"[royalblue1]File: {results.File.Name}[/]");
