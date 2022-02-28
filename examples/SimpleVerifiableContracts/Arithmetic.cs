@@ -5,22 +5,21 @@ public class ArithmeticContract : SmartContract
 {
     public ArithmeticContract(ISmartContractState state) : base(state) {}
 
-    uint Max(uint[] _a)
-    //@ requires _a.Length >= 5;
-    
+    public uint Max(uint[] a)
+    //@ ensures forall{int i in (0:a.Length); result >= a[i]};
     {
-        uint m = 0;
-        for (int i = 0; i < _a.Length; ++i)
+        uint m = uint.MinValue;
+        for (int n = 0; n < a.Length; n++)
+        //@ invariant n <= a.Length;
+        //@ invariant forall {int i in (0:n); m >= a[i]};
         {
-            if (_a[i] > m)
+            if (a[n] > m)
             {
-                m = _a[i];
+                m = a[n];
             }
         }
-        // assert forall {int i in (0:_a.Length); (m >= _a[i])}; 
         return m;
     }
-
     public uint TestMax()
     {
         uint[] items = { 4, 5, 6, 7, 8 };
