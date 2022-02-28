@@ -11,29 +11,59 @@ namespace Stratis.SmartContracts
     public abstract class SilverSmartContractState
     {
         #region Properties
-        [Pure]
-        public Block Block { get => this._Block; }
+        public Block Block { [Pure] get => this._Block; }
 
-        [Pure]
-        public Message Message { get => this._Message; }
+        public Message Message 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get => this._Message; 
+        }
 
-        [Pure]
-        public SilverSmartContractPersistentState PersistentState { get => this._PersistentState; }
+        public SilverSmartContractPersistentState PersistentState 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get => this._PersistentState; 
+        }
 
-        [Pure]
-        public abstract IContractLogger ContractLogger { get; }
+        public abstract IContractLogger ContractLogger 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get; 
+        }
 
-        [Pure]
-        public abstract IInternalTransactionExecutor InternalTransactionExecutor { get; }
+        public abstract IInternalTransactionExecutor InternalTransactionExecutor 
+        { 
+            [Pure]
+            get; 
+        }
+        
+        public abstract IInternalHashHelper InternalHashHelper 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get; 
+        }
 
-        [Pure]
-        public abstract IInternalHashHelper InternalHashHelper { get; }
+        public abstract ISerializer Serializer 
+        {
+            [Pure]
+            [Reads(ReadsAttribute.Reads.Nothing)]
+            [ResultNotNewlyAllocated]
+            get; 
+        }
 
-        [Pure]
-        public abstract ISerializer Serializer { get; }
-
-        [Pure]
-        public abstract Func<ulong> GetBalance { get; }
+        public abstract Func<ulong> GetBalance 
+        { 
+            [Pure]
+            get; 
+        }
         #endregion
 
         #region Fields
