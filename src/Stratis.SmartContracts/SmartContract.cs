@@ -69,18 +69,16 @@ namespace Stratis.SmartContracts
     #else
         // Smart contract implementation for verifier
         #region Constructors
-        public SmartContract(ISmartContractState contractState)
+        public SmartContract(ISmartContractState __contractState)
         {
-            SilverSmartContractState _contractState = (SilverSmartContractState)contractState;
-            this.contractState = _contractState;
-            this.Address = _contractState.Message.ContractAddress;
-            this.Balance = _contractState.GetBalance();
-            this.Block = _contractState.Block;
-            this.Message = _contractState.Message;
-            this.PersistentState = State;
-            
-            this.Serializer = contractState.Serializer;
-            Dictionary<Address, ulong> balances = new Dictionary<Address, ulong>();
+            SilverSmartContractState _contractState = (SilverSmartContractState) __contractState;
+            contractState = _contractState;
+            Address = _contractState.Message.ContractAddress;
+            Balance = _contractState.GetBalance();
+            Block = _contractState.Block;
+            Message = _contractState.Message;
+            PersistentState = State;
+            Serializer = contractState.Serializer;            
             Balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
             Balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
         }
@@ -151,7 +149,7 @@ namespace Stratis.SmartContracts
             => SilverVM.RandomCreateResult;
 
         [Pure]
-        protected byte[] Keccak256(byte[] toHash) => this.contractState.InternalHashHelper.Keccak256(toHash);
+        protected byte[] Keccak256(byte[] toHash) => contractState.InternalHashHelper.Keccak256(toHash);
 
         [Pure]
         protected void Assert(bool condition, string message)
@@ -194,29 +192,29 @@ namespace Stratis.SmartContracts
 
         #region Fields
         [Rep]
-        public readonly SilverSmartContractState contractState;
+        public static SilverSmartContractState contractState;
 
         [Peer]
-        
-        public static readonly SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
+
+        public static SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
 
         [Rep]
-        public readonly Address Address; // => this.State.Message.ContractAddress;
+        public static Address Address; // => this.State.Message.ContractAddress;
 
         [Rep]
-        public readonly ulong Balance; // => this.contractState.GetBalance();
+        public static ulong Balance; // => this.contractState.GetBalance();
 
         [Rep]
-        public readonly IBlock Block; // => this.contractState.Block;
+        public static IBlock Block; // => this.contractState.Block;
+
+        [Peer]
+        public Message Message; // => this.contractState.Message;
 
         [Rep]
-        public readonly Message Message; // => this.contractState.Message;
+        public static SilverSmartContractPersistentState PersistentState; // => this.contractState.PersistentState;
 
         [Rep]
-        public SilverSmartContractPersistentState PersistentState; // => this.contractState.PersistentState;
-
-        [Rep]
-        public ISerializer Serializer; //=> this.State.Serializer;
+        public static ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
         public static Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();

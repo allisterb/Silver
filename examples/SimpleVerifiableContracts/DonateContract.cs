@@ -9,12 +9,14 @@ public class DonateContract : SmartContract
         
     }
 
-    public void Donate()
+    public ITransferResult Donate()
+    //@ ensures result.Success ==> GetBalance(Owner) == old(GetBalance(Owner)) + Message.Value;
     {
         //@ assume Microsoft.Contracts.Owner.Same(this, Owner);
         //@ ulong oldBalance = GetBalance(Owner);
-        //@ ITransferResult result = Transfer(Owner, Message.Value);
+        ITransferResult result = Transfer(Owner, Message.Value);
         //@ assert result.Success ==> GetBalance(Owner) == oldBalance + Message.Value;
+        return result;
     }
 
     private /*@ static @*/ Address Owner
