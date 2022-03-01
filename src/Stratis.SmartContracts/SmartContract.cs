@@ -77,10 +77,10 @@ namespace Stratis.SmartContracts
             this.Balance = _contractState.GetBalance();
             this.Block = _contractState.Block;
             this.Message = _contractState.Message;
-            this.PersistentState = _contractState.PersistentState;
-            this.State = _contractState.PersistentState;
+            this.PersistentState = State;
+            
             this.Serializer = contractState.Serializer;
-            Dictionary<Address, ulong> balances = Balances = new Dictionary<Address, ulong>();
+            Dictionary<Address, ulong> balances = new Dictionary<Address, ulong>();
             balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
             balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
             this.Balances = balances;
@@ -198,8 +198,9 @@ namespace Stratis.SmartContracts
         [Rep]
         public readonly SilverSmartContractState contractState;
 
-        [Rep]
-        public readonly SilverSmartContractPersistentState State;
+        [Peer]
+        
+        public static readonly SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
 
         [Rep]
         public readonly Address Address; // => this.State.Message.ContractAddress;
