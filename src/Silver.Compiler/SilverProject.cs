@@ -345,7 +345,7 @@ public abstract class SilverProject : Runtime
             var output = RunCmd(Path.Combine(AssemblyLocation, "ssc", "ssc.exe"), CommandLine, Path.Combine(AssemblyLocation, "ssc"),
                 (sender, e) => 
                 {
-                    if (e.Data is not null && e.Data.Contains("error CS") && !e.Data.Trim().StartsWith("error"))
+                    if (e.Data is not null && (e.Data.Contains("error CS") || e.Data.Contains("error ")) && !e.Data.Trim().StartsWith("error"))
                     {
                         var errs = e.Data.Split(": error");
                         var errmsg = errs[1].Split(":");
