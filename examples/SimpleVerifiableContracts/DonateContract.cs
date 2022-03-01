@@ -6,17 +6,13 @@ public class DonateContract : SmartContract
         : base(state)
     {
         state.PersistentState.SetAddress(nameof(Owner), state.Message.Sender);
-        
     }
 
     public ITransferResult Donate()
     //@ ensures result.Success ==> GetBalance(Owner) == old(GetBalance(Owner)) + Message.Value;
     {
         //@ assume Microsoft.Contracts.Owner.Same(this, Owner);
-        //@ ulong oldBalance = GetBalance(Owner);
-        ITransferResult result = Transfer(Owner, Message.Value);
-        //@ assert result.Success ==> GetBalance(Owner) == oldBalance + Message.Value;
-        return result;
+        return Transfer(Owner, Message.Value);
     }
 
     private Address Owner
