@@ -192,20 +192,20 @@ namespace Stratis.SmartContracts
 
         #region Fields
         [Rep]
-        public static SilverSmartContractState contractState;
+        public SilverSmartContractState contractState;
 
         [Peer]
 
         public static SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
 
         [Rep]
-        public static Address Address; // => this.State.Message.ContractAddress;
+        public Address Address; // => this.State.Message.ContractAddress;
 
         [Rep]
-        public static ulong Balance; // => this.contractState.GetBalance();
+        public ulong Balance; // => this.contractState.GetBalance();
 
         [Rep]
-        public static IBlock Block; // => this.contractState.Block;
+        public IBlock Block; // => this.contractState.Block;
 
         [Peer]
         public Message Message; // => this.contractState.Message;
@@ -214,7 +214,7 @@ namespace Stratis.SmartContracts
         public static SilverSmartContractPersistentState PersistentState; // => this.contractState.PersistentState;
 
         [Rep]
-        public static ISerializer Serializer; //=> this.State.Serializer;
+        public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
         public static Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
