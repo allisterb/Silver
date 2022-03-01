@@ -81,19 +81,18 @@ namespace Stratis.SmartContracts
             
             this.Serializer = contractState.Serializer;
             Dictionary<Address, ulong> balances = new Dictionary<Address, ulong>();
-            balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
-            balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
-            this.Balances = balances;
+            Balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
+            Balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
         }
         #endregion
 
         #region Methods
 
         #region Stratis interface
-        protected ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
-        //@ ensures this.Balances.ContainsKey(addressTo);
-        //@ ensures (result.Success && (this.Balances[addressTo] == old(this.Balances[addressTo]) + amountToTransfer)) || (!result.Success);
-        //@ ensures(result.Success && (GetBalance(addressTo) == old(this.GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
+        protected static ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
+        //@ ensures Balances.ContainsKey(addressTo);
+        //@ ensures (result.Success && (Balances[addressTo] == old(Balances[addressTo]) + amountToTransfer)) || (!result.Success);
+        //@ ensures(result.Success && (GetBalance(addressTo) == old(GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
         {
             if (!Balances.ContainsKey(addressTo))
             {
@@ -107,27 +106,26 @@ namespace Stratis.SmartContracts
 
             return result;
         }
-        protected ITransferResult Call(
+        protected static ITransferResult Call(
           Address addressTo,
           ulong amountToTransfer,
           string methodName,
           object[]? parameters,
           ulong gasLimit)
-        //@ ensures this.Balances.ContainsKey(addressTo);
-        //@ ensures (result.Success && (this.Balances[addressTo] == old(this.Balances[addressTo]) + amountToTransfer)) || (!result.Success);
-        //@ ensures(result.Success && (GetBalance(addressTo) == old(this.GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
+        //@ ensures Balances.ContainsKey(addressTo);
+        //@ ensures (result.Success && (Balances[addressTo] == old(Balances[addressTo]) + amountToTransfer)) || (!result.Success);
+        //@ ensures(result.Success && (GetBalance(addressTo) == old(GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
         {
             ITransferResult result = SilverVM.RandomTransferResult;
             if (result.Success)
             {
-                if (this.Balances.ContainsKey(addressTo))
+                if (Balances.ContainsKey(addressTo))
                 {
-                    this.Balances[addressTo] = this.Balances[addressTo] + amountToTransfer;
+                    Balances[addressTo] = Balances[addressTo] + amountToTransfer;
                 }
                 else
                 {
-                    this.Balances.Add(addressTo, amountToTransfer);
-
+                    Balances.Add(addressTo, amountToTransfer);
                 }
             }
             return result;
@@ -181,8 +179,8 @@ namespace Stratis.SmartContracts
 
         #region Silver extensions
         [Pure]
-        public ulong GetBalance(Address address)
-        //@ ensures Balances.ContainsKey(address);
+        public static ulong GetBalance(Address address)
+        
         {
             if (!Balances.ContainsKey(address))
             {
@@ -198,7 +196,7 @@ namespace Stratis.SmartContracts
         [Rep]
         public readonly SilverSmartContractState contractState;
 
-        [Rep]
+        [Peer]
         
         public static readonly SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
 
@@ -221,7 +219,7 @@ namespace Stratis.SmartContracts
         public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
-        public Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
+        public static Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
         #endregion
 
     #endif
