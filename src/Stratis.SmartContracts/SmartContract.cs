@@ -78,9 +78,11 @@ namespace Stratis.SmartContracts
             Block = _contractState.Block;
             Message = _contractState.Message;
             PersistentState = State;
-            Serializer = contractState.Serializer;            
-            Balances.Add(contractState.Message.ContractAddress, contractState.GetBalance());
-            Balances.Add(contractState.Message.Sender, 0UL - contractState.Message.Value);
+            Serializer = _contractState.Serializer;
+            Dictionary<Address, ulong> balances = new Dictionary<Address, ulong>();
+            balances.Add(_contractState.Message.ContractAddress, _contractState.GetBalance());
+            balances.Add(_contractState.Message.Sender, 0UL - _contractState.Message.Value);
+            Balances = balances;
         }
         #endregion
 
@@ -89,7 +91,6 @@ namespace Stratis.SmartContracts
         #region Stratis interface
         protected static ITransferResult Transfer(Address addressTo, ulong amountToTransfer)
         //@ ensures Balances.ContainsKey(addressTo);
-        //@ ensures (result.Success && (Balances[addressTo] == old(Balances[addressTo]) + amountToTransfer)) || (!result.Success);
         //@ ensures(result.Success && (GetBalance(addressTo) == old(GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
         {
             if (!Balances.ContainsKey(addressTo))
@@ -111,7 +112,6 @@ namespace Stratis.SmartContracts
           object[]? parameters,
           ulong gasLimit)
         //@ ensures Balances.ContainsKey(addressTo);
-        //@ ensures (result.Success && (Balances[addressTo] == old(Balances[addressTo]) + amountToTransfer)) || (!result.Success);
         //@ ensures(result.Success && (GetBalance(addressTo) == old(GetBalance(addressTo)) + amountToTransfer)) || (!result.Success);
         {
             ITransferResult result = SilverVM.RandomTransferResult;
