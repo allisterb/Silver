@@ -8,11 +8,12 @@ public class DonateContract : SmartContract
         state.PersistentState.SetAddress(nameof(Owner), state.Message.Sender);
     }
 
-    public ITransferResult Donate()
-    //@ ensures result.Success ==> GetBalance(Owner) == old(GetBalance(Owner)) + Message.Value;
+    public void Donate()
     {
-        //@ assume Microsoft.Contracts.Owner.Same(this, Owner);
-        return Transfer(Owner, Message.Value);
+        //@ assume Microsoft.Contracts.Owner.Same(Message, Owner);
+        //@ ulong oldBalance = GetBalance(Owner);
+        Transfer(Owner, Message.Value);
+        //@ assert GetBalance(Owner) == oldBalance + Message.Value;
     }
 
     private Address Owner
@@ -27,7 +28,5 @@ public class DonateContract : SmartContract
             //@ assume Microsoft.Contracts.Owner.Same(State, Owner);
             State.SetAddress(nameof(Owner), value);
         }
-
     }
-
 }
