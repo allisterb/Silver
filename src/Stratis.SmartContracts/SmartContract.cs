@@ -198,7 +198,7 @@ namespace Stratis.SmartContracts
         [Rep]
         public readonly SilverSmartContractState contractState;
 
-        [Peer]
+        [Rep]
         
         public static readonly SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
 
