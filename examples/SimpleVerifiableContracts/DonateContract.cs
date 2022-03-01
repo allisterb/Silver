@@ -19,13 +19,19 @@ public class DonateContract : SmartContract
         return result;
     }
 
-    private /*@ static @*/ Address Owner
+    private Address Owner
     {
         get
         {
             //@ assume Microsoft.Contracts.Owner.Same(State, Owner);
             return State.GetAddress(nameof(Owner));
         }
+        set
+        {
+            //@ assume Microsoft.Contracts.Owner.Same(State, Owner);
+            State.SetAddress(nameof(Owner), value);
+        }
+
     }
 
 }
