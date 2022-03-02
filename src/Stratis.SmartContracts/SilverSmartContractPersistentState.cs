@@ -144,17 +144,24 @@ namespace Stratis.SmartContracts
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
         [ResultNotNewlyAllocated]
-        private T Get<T>(string key) => (T) _State[key];
+        private T Get<T>(string key)
+        {
+            T value = (T) _State[key];
+            Owner.AssignSame(value, this);
+            return value;
+        }
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
-        private void Set<T>(string key, T value)
+        private void Set<T>(string key, [Captured] T value)
         {
             if (value == null)
             {
                 throw new ArgumentNullException("value");
             }
 
+            Owner.AssignSame(value, this);
+     
             if (_State.ContainsKey(key))
             {
                 _State[key] = value;
@@ -168,7 +175,7 @@ namespace Stratis.SmartContracts
         #region Fields
         [Rep]
         [ElementsRep(0)]
-        private static readonly Dictionary<string, object> _State = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _State = new Dictionary<string, object>();
         #endregion
     }
 }
