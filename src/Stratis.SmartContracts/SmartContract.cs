@@ -80,10 +80,8 @@ namespace Stratis.SmartContracts
             Serializer = _contractState.Serializer;
             State = _contractState.PersistentState;
             PersistentState = _contractState.PersistentState;
-            Dictionary<Address, ulong> balances = new Dictionary<Address, ulong>();
-            balances.Add(_contractState.Message.ContractAddress, _contractState.GetBalance());
-            balances.Add(_contractState.Message.Sender, 0UL - _contractState.Message.Value);
-            Balances = balances;
+            Balances.Add(_contractState.Message.ContractAddress, _contractState.GetBalance());
+            Balances.Add(_contractState.Message.Sender, 0UL - _contractState.Message.Value);
         }
         #endregion
 
@@ -219,7 +217,7 @@ namespace Stratis.SmartContracts
 
         [Rep]
         [ElementsRep(0)]
-        public static Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
+        private static readonly Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
         #endregion
 
     #endif
