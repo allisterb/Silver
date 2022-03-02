@@ -159,16 +159,17 @@ namespace Stratis.SmartContracts
             {
                 throw new ArgumentNullException("value");
             }
-
-            Owner.AssignSame(value, this);
-     
-            if (_State.ContainsKey(key))
-            {
-                _State[key] = value;
-            }
             else
             {
-                _State.Add(key, value);
+
+                if (_State.ContainsKey(key))
+                {
+                    _State[key] = value;
+                }
+                else
+                {
+                    _State.Add(key, value);
+                }
             }
         }
 

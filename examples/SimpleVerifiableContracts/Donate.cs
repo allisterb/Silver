@@ -11,9 +11,10 @@ public class DonateContract : SmartContract
     public void Donate()
     //@ ensures GetBalance(Owner) == old(GetBalance(Owner)) + Message.Value;
     {
-        //@ assume Microsoft.Contracts.Owner.Same(this, Owner);
-        //@ assume Microsoft.Contracts.Owner.Same(this, Message);
-        Owner = Message.Sender;
+        //@ assume Microsoft.Contracts.Owner.Same(Owner, this);
+        
+        //Owner = Address.Zero;
+        //@ assert Owner == Address.Zero;
         ITransferResult r = Transfer(Owner, Message.Value);
         Assert(r.Success, "The transfer did not succeed.") ;
     }
