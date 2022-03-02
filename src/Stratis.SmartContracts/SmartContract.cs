@@ -127,20 +127,20 @@ namespace Stratis.SmartContracts
             }
             return result;
         }
-        protected ITransferResult Call(
+        protected static ITransferResult Call(
             Address addressTo,
             ulong amountToTransfer,
             string methodName,
             object[]? parameters)
             => Call(addressTo, amountToTransfer, methodName, parameters, 0);
 
-        protected ITransferResult Call(
+        protected static ITransferResult Call(
             Address addressTo,
             ulong amountToTransfer,
             string methodName)
             => Call(addressTo, amountToTransfer, methodName, null, 0);
 
-        protected ICreateResult Create<T>(
+        protected static ICreateResult Create<T>(
           ulong amountToTransfer,
           object[] parameters,
           ulong gasLimit)
@@ -151,20 +151,20 @@ namespace Stratis.SmartContracts
         protected byte[] Keccak256(byte[] toHash) => contractState.InternalHashHelper.Keccak256(toHash);
 
         [Pure]
-        protected void Assert(bool condition, string message)
+        protected static void Assert(bool condition, string message)
         {
             if (!condition)
                 throw new SmartContractAssertException(message);
         }
 
         [Pure]
-        protected void Assert(bool condition)
+        protected static void Assert(bool condition)
         {
             Assert(condition, "Assert failed.");
         }
 
         [Pure]
-        protected void Log<T>(T toLog) where T : struct
+        protected static void Log<T>(T toLog) where T : struct
         {
 
         }
@@ -191,26 +191,26 @@ namespace Stratis.SmartContracts
 
         #region Fields
         [Rep]
-        public SilverSmartContractState contractState;
+        public readonly SilverSmartContractState contractState;
 
         [Rep]
 
-        public SilverSmartContractPersistentState State;
+        public readonly SilverSmartContractPersistentState State;
 
         [Rep]
-        public Address Address; // => this.State.Message.ContractAddress;
+        public readonly Address Address; // => this.State.Message.ContractAddress;
 
         [Rep]
-        public ulong Balance; // => this.contractState.GetBalance();
+        public readonly ulong Balance; // => this.contractState.GetBalance();
 
         [Rep]
-        public IBlock Block; // => this.contractState.Block;
+        public readonly IBlock Block; // => this.contractState.Block;
 
         [Peer]
-        public Message Message; // => this.contractState.Message;
+        public readonly Message Message; // => this.contractState.Message;
 
         [Rep]
-        public SilverSmartContractPersistentState PersistentState = new SilverSmartContractPersistentState(); // => this.contractState.PersistentState;
+        public readonly SilverSmartContractPersistentState PersistentState; // => this.contractState.PersistentState;
 
         [Rep]
         public ISerializer Serializer; //=> this.State.Serializer;
