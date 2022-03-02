@@ -85,10 +85,11 @@ namespace Stratis.SmartContracts
         #endregion
 
         #region Fields
+        [Rep]
         public const int Width = 20;
 
+        [Rep]
         public static readonly Address Zero = new Address(0, 0, 0, 0, 0);
-
         [Rep]
         private readonly uint pn0;
         [Rep]
