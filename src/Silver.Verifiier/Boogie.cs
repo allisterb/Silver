@@ -11,16 +11,19 @@ public class Boogie : Runtime
         var f = output ?? DateTime.Now.Ticks.ToString() + Path.GetFileName(FailIfFileNotFound(path)) + ".xml";
         Debug("XML output will be written to file {0}.", Path.GetFullPath(f));
         WarnIfFileExists(f);
+        var op = Begin("Verifying {0}", path);
         var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), path + " " + "/xml:"+ f, isNETFxTool: true);
         if (ret is null)
         {
-            Error("Coould not run program verifier.");
+            Error("Could not run program verifier.");
+            op.Abandon();
             File.Delete(f);
             return null;
         }
         else if(!ret.Contains("Spec# program verifier finished"))
         {
             Error("Program verifier did not complete successfully");
+            op.Abandon();
             if (output is null) File.Delete(f);
             return null;
         }
@@ -36,6 +39,7 @@ public class Boogie : Runtime
                 Debug("Deleting file {0}.", Path.GetFullPath(f));
                 File.Delete(f);
             }
+            op.Complete();
             return results;
         }
     }

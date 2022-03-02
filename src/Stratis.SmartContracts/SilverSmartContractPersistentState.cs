@@ -135,17 +135,19 @@ namespace Stratis.SmartContracts
         [Reads(ReadsAttribute.Reads.Nothing)]
         public void Clear(string key)
         {
-            if (State.ContainsKey(key))
+            if (_State.ContainsKey(key))
             {
-                State.Remove(key);
+                _State.Remove(key);
             }
         }
 
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
         [ResultNotNewlyAllocated]
-        private T Get<T>(string key) => (T) State[key];
+        private T Get<T>(string key) => (T) _State[key];
 
+        [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         private void Set<T>(string key, T value)
         {
             if (value == null)
@@ -153,20 +155,20 @@ namespace Stratis.SmartContracts
                 throw new ArgumentNullException("value");
             }
 
-            if (State.ContainsKey(key))
+            if (_State.ContainsKey(key))
             {
-                State[key] = value;
+                _State[key] = value;
             }
             else
             {
-                State.Add(key, value);
+                _State.Add(key, value);
             }
         }
 
         #region Fields
         [Rep]
         [ElementsRep(0)]
-        private readonly Dictionary<string, object> State = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _State = new Dictionary<string, object>();
         #endregion
     }
 }

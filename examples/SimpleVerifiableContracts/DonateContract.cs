@@ -9,24 +9,17 @@ public class DonateContract : SmartContract
     }
 
     public void Donate()
-    {
+    //@ ensures GetBalance(Owner) == old(GetBalance(Owner)) + Message.Value;
+    {        
         //@ assume Microsoft.Contracts.Owner.Same(Message, Owner);
-        //@ ulong oldBalance = GetBalance(Owner);
-        Transfer(Owner, Message.Value);
-        //@ assert GetBalance(Owner) == oldBalance + Message.Value;
+        ITransferResult r = Transfer(Owner, Message.Value);
+        Assert(r.Success, "The transfer did not succeed.") ;
+
     }
 
     private Address Owner
     {
-        get
-        {
-            //@ assume Microsoft.Contracts.Owner.Same(State, Owner);
-            return State.GetAddress(nameof(Owner));
-        }
-        set
-        {
-            //@ assume Microsoft.Contracts.Owner.Same(State, Owner);
-            State.SetAddress(nameof(Owner), value);
-        }
+        get => State.GetAddress(nameof(Owner));
+        set => State.SetAddress(nameof(Owner), value);
     }
 }
