@@ -168,7 +168,7 @@ namespace Stratis.SmartContracts
         #region Fields
         [Rep]
         [ElementsRep(0)]
-        private readonly Dictionary<string, object> _State = new Dictionary<string, object>();
+        private static readonly Dictionary<string, object> _State = new Dictionary<string, object>();
         #endregion
     }
 }

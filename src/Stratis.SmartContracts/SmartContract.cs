@@ -206,7 +206,7 @@ namespace Stratis.SmartContracts
         [Rep]
         public readonly IBlock Block; // => this.contractState.Block;
 
-        [Peer]
+        [Rep]
         public readonly Message Message; // => this.contractState.Message;
 
         [Rep]

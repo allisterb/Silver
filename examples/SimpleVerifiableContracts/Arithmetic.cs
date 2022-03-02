@@ -4,6 +4,26 @@ public class ArithmeticContract : SmartContract
 {
     public ArithmeticContract(ISmartContractState state) : base(state) {}
 
+    #region Solidity Max example
+    /*
+    contract Max
+    {
+        function max(uint[] memory _a) public pure returns(uint)
+    {
+        require(_a.length >= 5);
+        uint m = 0;
+        for (uint i = 0; i < _a.length; ++i)
+            if (_a[i] > m)
+                m = _a[i];
+
+        for (uint i = 0; i < _a.length; ++i)
+            assert(m > _a[i]);
+
+        return m;
+    }
+    */
+    #endregion
+
     private uint Max(uint[] a)
     //@ requires a.Length >= 5;
     //@ ensures forall{int i in (0:a.Length); result >= a[i]};
@@ -25,23 +45,6 @@ public class ArithmeticContract : SmartContract
         uint[] items = { 4, 5, 6, 7, 8};
         return Max(items);
     }
-    /*
-    contract Max
-    {
-        function max(uint[] memory _a) public pure returns(uint)
-    {
-        require(_a.length >= 5);
-        uint m = 0;
-        for (uint i = 0; i < _a.length; ++i)
-            if (_a[i] > m)
-                m = _a[i];
-
-        for (uint i = 0; i < _a.length; ++i)
-            assert(m > _a[i]);
-
-        return m;
-    }
-    */
 
     #region DeepSEA Multiply example 
     /*
@@ -64,7 +67,6 @@ public class ArithmeticContract : SmartContract
    */
     #endregion
 
-    
     private int Multiply(int a, uint b)
     //@ ensures result == a * b;
     {
