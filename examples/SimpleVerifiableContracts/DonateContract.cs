@@ -14,7 +14,6 @@ public class DonateContract : SmartContract
         //@ assume Microsoft.Contracts.Owner.Same(Message, Owner);
         ITransferResult r = Transfer(Owner, Message.Value);
         Assert(r.Success, "The transfer did not succeed.") ;
-
     }
 
     private Address Owner

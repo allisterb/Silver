@@ -218,6 +218,7 @@ namespace Stratis.SmartContracts
         public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
+        [ElementsRep(0)]
         public static Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
         #endregion
 
