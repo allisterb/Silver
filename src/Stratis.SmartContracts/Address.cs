@@ -31,6 +31,7 @@ namespace Stratis.SmartContracts
 
         #region Methods
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         public byte[] ToBytes()
         {
             byte[] dst = new byte[20];
@@ -47,13 +48,14 @@ namespace Stratis.SmartContracts
 
         [Pure]
         [NoReferenceComparison]
-        public static bool operator ==(Address obj1, Address obj2) => obj1.Equals(obj2);
+        public static bool operator == (Address obj1, Address obj2) => obj1.pn0 == obj2.pn0 && obj1.pn1 == obj2.pn1 && obj1.pn2 == obj2.pn2 && obj1.pn3 == obj2.pn3 && obj1.pn4 == obj2.pn4;
 
         [Pure]
         [NoReferenceComparison]
-        public static bool operator !=(Address obj1, Address obj2) => !obj1.Equals(obj2);
+        public static bool operator != (Address obj1, Address obj2) => obj1.pn0 != obj2.pn0 || obj1.pn1 != obj2.pn1 || obj1.pn2 != obj2.pn2 || obj1.pn3 != obj2.pn3 || obj1.pn4 != obj2.pn4;
 
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         [NoReferenceComparison]
         public bool Equals(Address obj) => pn0 == obj.pn0 && pn1 == obj.pn1 && pn2 == obj.pn2 && pn3 == obj.pn3 && pn4 == obj.pn4;
         #endregion
@@ -75,9 +77,11 @@ namespace Stratis.SmartContracts
         }
 
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         public override string ToString() => Address.UIntToHexString(this.pn0) + Address.UIntToHexString(this.pn1) + Address.UIntToHexString(this.pn2) + Address.UIntToHexString(this.pn3) + Address.UIntToHexString(this.pn4);
         
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         public override int GetHashCode() => this.ToString().GetHashCode();
         #endregion
 

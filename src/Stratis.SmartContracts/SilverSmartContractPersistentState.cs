@@ -142,11 +142,13 @@ namespace Stratis.SmartContracts
         }
 
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         [ResultNotNewlyAllocated]
         private T Get<T>(string key) => (T)_State[key];
         
 
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         private void Set<T>(string key, [Captured] T value)
         {
             if (value == null)
