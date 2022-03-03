@@ -1,2 +1,0 @@
-#!/bin/bash
-dotnet build src/Silver.CodeAnalysis.Cs/Silver.CodeAnalysis.Cs/Silver.CodeAnalysis.Cs.csproj 
