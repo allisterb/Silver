@@ -17,7 +17,7 @@
     {
         #region Overriden members
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = Validator.Errors;
-
+        
         public override void Initialize(AnalysisContext context)
         {
             if (!Debugger.IsAttached) context.EnableConcurrentExecution();
@@ -30,7 +30,7 @@
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeConstructorDecl((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeFieldDecl((FieldDeclarationSyntax)ctx.Node, ctx), SyntaxKind.FieldDeclaration);
             
-            context.RegisterOperationAction(ctx =>
+            context.RegisterOperationAction(async ctx =>
                 {
                     switch (ctx.Operation)
                     {
@@ -44,6 +44,9 @@
 
                         case IInvocationOperation methodInvocation:
                             Validator.AnalyzeMethodInvocation(methodInvocation, ctx);
+                            Validator.AnalyzeAssertConditionConstant(methodInvocation, ctx);
+                            Validator.AnalyzeAssertMessageNotProvided(methodInvocation, ctx);
+                            await Validator.AnalyzeAssertMessageEmpty(methodInvocation, ctx);
                             break;
                         
                         case IVariableDeclaratorOperation variableDeclarator:
