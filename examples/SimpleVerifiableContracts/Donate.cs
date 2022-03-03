@@ -11,7 +11,8 @@ public class DonateContract : SmartContract
     public void Donate()
     //@ ensures GetBalance(Owner) == old(GetBalance(Owner)) + Message.Value;
     {
-
+        Address owner = Owner;
+        //@ assert owner.Equals(owner);
         //Owner = new Address(0, 0, 0, 0, 0);
    
         //@ assume Microsoft.Contracts.Owner.None(Owner);
