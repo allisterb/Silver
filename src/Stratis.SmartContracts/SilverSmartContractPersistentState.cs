@@ -52,7 +52,6 @@ namespace Stratis.SmartContracts
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
         public ulong GetUInt64(string key) => Get<ulong>(key);
-
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
         public UInt128 GetUInt128(string key) => Get<UInt128>(key);
@@ -144,7 +143,7 @@ namespace Stratis.SmartContracts
         [Pure]
         [Reads(ReadsAttribute.Reads.Nothing)]
         [ResultNotNewlyAllocated]
-        private T Get<T>(string key) => (T)_State[key];
+        private T Get<T>(string key) => (T) _State[key];
         
 
         [Pure]
@@ -170,9 +169,9 @@ namespace Stratis.SmartContracts
         }
 
         #region Fields
-        [Rep]
+        [Peer]
         [ElementsPeer(0)]
-        private static readonly Dictionary<string, object> _State = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _State = new Dictionary<string, object>();
         #endregion
     }
 }

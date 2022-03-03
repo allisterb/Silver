@@ -176,6 +176,7 @@ namespace Stratis.SmartContracts
 
         #region Silver extensions
         [Pure]
+        [Reads(ReadsAttribute.Reads.Nothing)]
         public static ulong GetBalance(Address address)
         
         {

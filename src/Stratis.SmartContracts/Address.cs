@@ -30,7 +30,7 @@ namespace Stratis.SmartContracts
         #endregion
 
         #region Methods
-        [Pure]
+        [Pure(PureAttribute.PurityLevel.Strong)]
         [Reads(ReadsAttribute.Reads.Nothing)]
         public byte[] ToBytes()
         {
@@ -43,25 +43,25 @@ namespace Stratis.SmartContracts
             return dst;
         }
 
-        [Pure]
+        [Pure(PureAttribute.PurityLevel.Strong)]
         private static string UIntToHexString(uint val) => "0123456789ABCDEF"[(int)((val & 240U) >> 4)].ToString() + (object)"0123456789ABCDEF"[(int)val & 15] + (object)"0123456789ABCDEF"[(int)((val & 61440U) >> 12)] + (object)"0123456789ABCDEF"[(int)((val & 3840U) >> 8)] + (object)"0123456789ABCDEF"[(int)((val & 15728640U) >> 20)] + (object)"0123456789ABCDEF"[(int)((val & 983040U) >> 16)] + (object)"0123456789ABCDEF"[(int)((val & 4026531840U) >> 28)] + (object)"0123456789ABCDEF"[(int)((val & 251658240U) >> 24)];
 
-        [Pure]
+        [Pure(PureAttribute.PurityLevel.Strong)]
         [NoReferenceComparison]
         public static bool operator == (Address obj1, Address obj2) => obj1.pn0 == obj2.pn0 && obj1.pn1 == obj2.pn1 && obj1.pn2 == obj2.pn2 && obj1.pn3 == obj2.pn3 && obj1.pn4 == obj2.pn4;
 
-        [Pure]
+        [Pure(PureAttribute.PurityLevel.Strong)]
         [NoReferenceComparison]
         public static bool operator != (Address obj1, Address obj2) => obj1.pn0 != obj2.pn0 || obj1.pn1 != obj2.pn1 || obj1.pn2 != obj2.pn2 || obj1.pn3 != obj2.pn3 || obj1.pn4 != obj2.pn4;
 
-        [Pure]
+        [Pure(PureAttribute.PurityLevel.Strong)]
         [Reads(ReadsAttribute.Reads.Nothing)]
         [NoReferenceComparison]
         public bool Equals(Address obj) => pn0 == obj.pn0 && pn1 == obj.pn1 && pn2 == obj.pn2 && pn3 == obj.pn3 && pn4 == obj.pn4;
         #endregion
 
         #region Overrides
-        [Pure]
+        [Pure(PureAttribute.PurityLevel.Strong)]
         [Reads(ReadsAttribute.Reads.Nothing)]
         public override bool Equals(object? _obj)
         {
@@ -76,20 +76,19 @@ namespace Stratis.SmartContracts
             }
         }
 
-        [Pure]
+        [Pure(PureAttribute.PurityLevel.Strong)]
         [Reads(ReadsAttribute.Reads.Nothing)]
         public override string ToString() => Address.UIntToHexString(this.pn0) + Address.UIntToHexString(this.pn1) + Address.UIntToHexString(this.pn2) + Address.UIntToHexString(this.pn3) + Address.UIntToHexString(this.pn4);
-        
-        [Pure]
+
+        [Pure(PureAttribute.PurityLevel.Strong)]
         [Reads(ReadsAttribute.Reads.Nothing)]
         public override int GetHashCode() => this.ToString().GetHashCode();
         #endregion
 
         #region Fields
-        [Rep]
         public const int Width = 20;
 
-        [Rep]
+        [Peer]
         public static readonly Address Zero = new Address(0, 0, 0, 0, 0);
         [Rep]
         private readonly uint pn0;
