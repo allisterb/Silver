@@ -143,11 +143,11 @@ namespace Stratis.SmartContracts
 
         [Pure]
         [ResultNotNewlyAllocated]
-        private static T Get<T>(string key) => (T)_State[key];
+        private T Get<T>(string key) => (T)_State[key];
         
 
         [Pure]
-        private static void Set<T>(string key, [Captured] T value)
+        private void Set<T>(string key, [Captured] T value)
         {
             if (value == null)
             {
@@ -163,10 +163,13 @@ namespace Stratis.SmartContracts
                 {
                     _State.Add(key, value);
                 }
+                Owner.AssignSame(value, this);
             }
         }
 
         #region Fields
+        [Rep]
+        [ElementsPeer(0)]
         private static readonly Dictionary<string, object> _State = new Dictionary<string, object>();
         #endregion
     }

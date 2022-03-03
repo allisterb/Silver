@@ -10,6 +10,11 @@ namespace Stratis.SmartContracts
 {
     public abstract class SilverSmartContractState
     {
+        #region Constructors
+        [Captured]
+        public SilverSmartContractState() { }
+        #endregion
+
         #region Properties
         public Block Block { [Pure] get => this._Block; }
 

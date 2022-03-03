@@ -193,8 +193,7 @@ namespace Stratis.SmartContracts
         [Rep]
         public readonly SilverSmartContractState contractState;
 
-        [Rep]
-
+        [Peer]
         public readonly SilverSmartContractPersistentState State;
 
         [Rep]
@@ -216,7 +215,7 @@ namespace Stratis.SmartContracts
         public ISerializer Serializer; //=> this.State.Serializer;
 
         [Rep]
-        [ElementsRep(0)]
+        [ElementsPeer(0)]
         private static readonly Dictionary<Address, ulong> Balances = new Dictionary<Address, ulong>();
         #endregion
 
