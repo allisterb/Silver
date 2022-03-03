@@ -1,2 +1,4 @@
 #!/bin/bash
+set -e
 dotnet build src/Silver.CLI/Silver.CLI.csproj 
+scripts/build-sc-base
