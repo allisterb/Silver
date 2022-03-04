@@ -8,14 +8,17 @@
 ## About
 
 Silver is a [static analysis](https://en.wikipedia.org/wiki/Static_program_analysis) and [formal verification](https://en.wikipedia.org/wiki/Formal_verification) 
-tool for Stratis smart contracts. Silver can analyze both C# source code using a Roslyn diagnostic analyzer and CIL code in a bytecode assembly 
+tool for Stratis smart contracts. Silver can analyze both C# source code using a Roslyn diagnostic analyzer and CIL code in a .NET bytecode assembly 
 and can run both inside Visual Studio and on the command line.
 
 ![type not allowed from namespace](https://dm2301files.storage.live.com/y4mtdREUkjcGF6gKDRZjHDPQ1s0NU53LLENRXrni2IXbOeNblTZ4z7xMATD2woY3RdyoZvto0VlnKjW80e6tUISj2YO2t4JifQJdj0tRIwK5YDt5XIuLSWo-fBbwl6iWcF7jQGuJ0zlhvk7_uYfoflzmJSp7E612_O6O5KREX3vWTYcEJHpGO4kYHC6r6309vJx?width=1424&height=1015&cropmode=none)
 
 Silver can [validate](https://github.com/allisterb/Silver/blob/master/src/Silver.CodeAnalysis.Cs/Silver.CodeAnalysis.Cs/Validator.cs) C# code using a Roslyn diagnostic analyzer according to the same [rules](https://github.com/stratisproject/StratisFullNode/blob/master/Documentation/Features/SmartContracts/Clr-execution-and-validation.md) for types and members used by the Stratis CLR VM for smart contracts. All the [validation policies](https://github.com/stratisproject/StratisFullNode/blob/master/src/Stratis.SmartContracts.CLR.Validation/DeterminismPolicy.cs) currently in use will be ported to the Roslyn analyzer.
 
-Silver can also statically analyze CIL code in a .NET assembly using the [Analysis.Net](https://github.com/edgardozoppi/analysis-net/tree/master) framework e.g. the following is a [call-graph](https://en.wikipedia.org/wiki/Call_graph) analysis of the methods in the [Address Mapper](https://github.com/stratisproject/CirrusSmartContracts/tree/master/Mainnet/AddressMapper) contract.
+Silver can disassemble smart contract CIL code in a .NET bytecode assembly:
+
+![Silver disassembler](https://dm2301files.storage.live.com/y4m2lRiLsD_4tmykYs5vPJ-FJ8aGjSKY3Ooym8BeknRqaIHoyyvJIKkVDDkIbPQWrDBREdhByE30EWft5Lv7DzuWGsJf56ZhrFf8knjjETJoWcGbvmdoPzqdczCV0lA_0Sh-7tFf49bxswuPEJkhDn2FYa74jDphWrel4nakcD78xXaZz2xKNQg1fVxKEzdMhhg?width=1917&height=1014&cropmode=none)
+and statically analyze it using the [Analysis.Net](https://github.com/edgardozoppi/analysis-net/tree/master) framework e.g. the following is a [call-graph](https://en.wikipedia.org/wiki/Call_graph) analysis of the methods in the [Address Mapper](https://github.com/stratisproject/CirrusSmartContracts/tree/master/Mainnet/AddressMapper) contract.
 
 ![img](https://dm2301files.storage.live.com/y4mLu9yA4qSBuSATzoJqXQtKfaJCMsDx11duBmqvmt5ZDMgvXMJhvPVIurq9har4_VC2vza5GKYWXYhOReBYPW3g-xS1iDWmYiEjEqLfxzSZMzrfXTS51oDOEml0oT3Y_MuL8OLc8Bvm8VWVqToi37DxrXBTBiyfRwRU09k57lEK8riBf_OvJGxdiVNWwl-lH84?width=1916&height=1023&cropmode=none)
 
