@@ -30,7 +30,7 @@
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeConstructorDecl((ConstructorDeclarationSyntax)ctx.Node, ctx), SyntaxKind.ConstructorDeclaration);
             context.RegisterSyntaxNodeAction(ctx => Validator.AnalyzeFieldDecl((FieldDeclarationSyntax)ctx.Node, ctx), SyntaxKind.FieldDeclaration);
             
-            context.RegisterOperationAction(async ctx =>
+            context.RegisterOperationAction(ctx =>
                 {
                     switch (ctx.Operation)
                     {
@@ -46,7 +46,7 @@
                             Validator.AnalyzeMethodInvocation(methodInvocation, ctx);
                             Validator.AnalyzeAssertConditionConstant(methodInvocation, ctx);
                             Validator.AnalyzeAssertMessageNotProvided(methodInvocation, ctx);
-                            await Validator.AnalyzeAssertMessageEmpty(methodInvocation, ctx);
+                            Validator.AnalyzeAssertMessageEmpty(methodInvocation, ctx);
                             break;
                         
                         case IVariableDeclaratorOperation variableDeclarator:

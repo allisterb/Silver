@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
@@ -239,15 +237,15 @@ namespace Silver.CodeAnalysis.Cs
             return CreateDiagnostic("SC0011", DiagnosticSeverity.Info, location);
         }
 
-        private static async Task<Diagnostic> AnalyzeAssertMessageEmpty(IInvocationOperation methodInvocation)
+        private static Diagnostic AnalyzeAssertMessageEmpty(IInvocationOperation methodInvocation)
         {
             var method = methodInvocation.TargetMethod;
             
             if (method.ToString() != "Stratis.SmartContracts.SmartContract.Assert(bool, string)"
                 || methodInvocation.Arguments[1].IsImplicit) return NoDiagnostic;
 
-            var value = await CSharpScript.EvaluateAsync<string>(methodInvocation.Arguments[1].Syntax.ToString());
-            if (value != "") return NoDiagnostic;
+            var assertMessageSyntax = methodInvocation.Arguments[1].Syntax.ToString();
+            if (assertMessageSyntax != "\"\"" && assertMessageSyntax != "string.Empty") return NoDiagnostic;
             
             var location = methodInvocation.Arguments[1].Syntax.GetLocation();
             return CreateDiagnostic("SC0012", DiagnosticSeverity.Info, location);
@@ -286,8 +284,8 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeAssertMessageNotProvided(IInvocationOperation methodInvocation, OperationAnalysisContext ctx) =>
             AnalyzeAssertMessageNotProvided(methodInvocation).Report(ctx);
         
-        public static async Task<Diagnostic> AnalyzeAssertMessageEmpty(IInvocationOperation methodInvocation, OperationAnalysisContext ctx) =>
-            (await AnalyzeAssertMessageEmpty(methodInvocation)).Report(ctx);
+        public static Diagnostic AnalyzeAssertMessageEmpty(IInvocationOperation methodInvocation, OperationAnalysisContext ctx) =>
+            AnalyzeAssertMessageEmpty(methodInvocation).Report(ctx);
         #endregion
 
         public static DiagnosticDescriptor GetDescriptor(string id, DiagnosticSeverity severity) =>
