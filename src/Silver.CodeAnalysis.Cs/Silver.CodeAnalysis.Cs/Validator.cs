@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading;
-
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
-using Microsoft.CodeAnalysis.Text;
-
 using Stratis.SmartContracts;
+
 namespace Silver.CodeAnalysis.Cs
 {
     public class Validator
@@ -19,7 +16,22 @@ namespace Silver.CodeAnalysis.Cs
         #region Constructors
         static Validator()
         {
-            Errors = ImmutableArray.Create(DiagnosticIds.Select(i => GetErrorDescriptor(i)).ToArray());
+            DiagnosticSeverities = new Dictionary<string, DiagnosticSeverity>
+            {
+                { "SC0001", DiagnosticSeverity.Error },
+                { "SC0002", DiagnosticSeverity.Error },
+                { "SC0003", DiagnosticSeverity.Error },
+                { "SC0004", DiagnosticSeverity.Error },
+                { "SC0005", DiagnosticSeverity.Error },
+                { "SC0006", DiagnosticSeverity.Error },
+                { "SC0007", DiagnosticSeverity.Error },
+                { "SC0008", DiagnosticSeverity.Error },
+                { "SC0009", DiagnosticSeverity.Error },
+                { "SC0010", DiagnosticSeverity.Warning },
+                { "SC0011", DiagnosticSeverity.Info },
+                { "SC0012", DiagnosticSeverity.Info },
+            }.ToImmutableDictionary();
+            Errors = ImmutableArray.Create(DiagnosticSeverities.Select(i => GetDescriptor(i.Key, i.Value)).ToArray());
         }
         #endregion
 
@@ -29,7 +41,7 @@ namespace Silver.CodeAnalysis.Cs
         public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SemanticModel model)
         {
             var ns = node.DescendantNodes().First();
-            return CreateDiagnostic("SC0001", ns.GetLocation(), ns.ToFullString());
+            return CreateDiagnostic("SC0001", DiagnosticSeverity.Error, ns.GetLocation(), ns.ToFullString());
         }
 
         // Only allow using Stratis.SmartContract namespace in smart contract code
@@ -38,7 +50,7 @@ namespace Silver.CodeAnalysis.Cs
             var ns = node.DescendantNodes().OfType<NameSyntax>().FirstOrDefault();
             if (ns != null && !WhitelistedNamespaces.Contains(ns.ToFullString()))
             {
-                return CreateDiagnostic("SC0002", ns.GetLocation(), ns.ToFullString());
+                return CreateDiagnostic("SC0002", DiagnosticSeverity.Error, ns.GetLocation(), ns.ToFullString());
             }
             else
             {
@@ -52,7 +64,7 @@ namespace Silver.CodeAnalysis.Cs
             var classSymbol = model.GetDeclaredSymbol(node) as ITypeSymbol;
             if (classSymbol.BaseType is null || classSymbol.BaseType.ToDisplayString() != "Stratis.SmartContracts.SmartContract")
             {
-                return CreateDiagnostic("SC0003", node.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).GetLocation(), classSymbol.Name);
+                return CreateDiagnostic("SC0003", DiagnosticSeverity.Error, node.ChildTokens().First(t => t.IsKind(SyntaxKind.IdentifierToken)).GetLocation(), classSymbol.Name);
             }
             else
             {
@@ -86,7 +98,7 @@ namespace Silver.CodeAnalysis.Cs
             var classSymbol = model.GetSymbolInfo(fpt).Symbol as ITypeSymbol;
             if (classSymbol.ToDisplayString() != "Stratis.SmartContracts.ISmartContractState")
             {
-                return CreateDiagnostic("SC0004", fpn.GetLocation(), fp.Identifier.Text);
+                return CreateDiagnostic("SC0004", DiagnosticSeverity.Error, fpn.GetLocation(), fp.Identifier.Text);
             }
             else
             {
@@ -108,7 +120,7 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return CreateDiagnostic("SC0006", node.GetLocation());
+                return CreateDiagnostic("SC0006", DiagnosticSeverity.Error, node.GetLocation());
             }
         }
 
@@ -123,7 +135,7 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return CreateDiagnostic("SC0005", objectCreation.Syntax.GetLocation(), type.ToDisplayString());
+                return CreateDiagnostic("SC0005", DiagnosticSeverity.Error, objectCreation.Syntax.GetLocation(), type.ToDisplayString());
             }
         }
 
@@ -149,7 +161,7 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return CreateDiagnostic("SC0008", propReference.Syntax.GetLocation(), propname, type);
+                return CreateDiagnostic("SC0008", DiagnosticSeverity.Error, propReference.Syntax.GetLocation(), propname, type);
             }
         }
 
@@ -171,7 +183,7 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return CreateDiagnostic("SC0009", node.GetLocation(), method, typename);
+                return CreateDiagnostic("SC0009", DiagnosticSeverity.Error, node.GetLocation(), method, typename);
             }
         }
 
@@ -196,8 +208,47 @@ namespace Silver.CodeAnalysis.Cs
             }
             else
             {
-                return CreateDiagnostic("SC0007", node.GetLocation(), typename);
+                return CreateDiagnostic("SC0007", DiagnosticSeverity.Error, node.GetLocation(), typename);
             }
+        }
+
+        private static Diagnostic AnalyzeAssertConditionConstant(IInvocationOperation methodInvocation)
+        {
+            if (methodInvocation.Arguments.Length == 0) return NoDiagnostic;
+            
+            var method = methodInvocation.TargetMethod;
+
+            if (method.Name != "Assert" || !methodInvocation.Arguments[0].Value.ConstantValue.HasValue) return NoDiagnostic;
+            
+            var location = methodInvocation.Arguments[0].Syntax.GetLocation();
+            var value = (bool)methodInvocation.Arguments[0].Value.ConstantValue.Value;
+            
+            return CreateDiagnostic("SC0010", DiagnosticSeverity.Warning, location, value);
+        }
+
+        private static Diagnostic AnalyzeAssertMessageNotProvided(IInvocationOperation methodInvocation)
+        {
+            var method = methodInvocation.TargetMethod;
+
+            if (method.ToString() != "Stratis.SmartContracts.SmartContract.Assert(bool, string)"
+                || !methodInvocation.Arguments[1].IsImplicit) return NoDiagnostic;
+            
+            var location = methodInvocation.Syntax.GetLocation();
+            return CreateDiagnostic("SC0011", DiagnosticSeverity.Info, location);
+        }
+
+        private static Diagnostic AnalyzeAssertMessageEmpty(IInvocationOperation methodInvocation)
+        {
+            var method = methodInvocation.TargetMethod;
+            
+            if (method.ToString() != "Stratis.SmartContracts.SmartContract.Assert(bool, string)"
+                || methodInvocation.Arguments[1].IsImplicit) return NoDiagnostic;
+
+            var assertMessageSyntax = methodInvocation.Arguments[1].Syntax.ToString();
+            if (assertMessageSyntax != "\"\"" && assertMessageSyntax != "string.Empty") return NoDiagnostic;
+            
+            var location = methodInvocation.Arguments[1].Syntax.GetLocation();
+            return CreateDiagnostic("SC0012", DiagnosticSeverity.Info, location);
         }
 
         #region Overloads
@@ -226,22 +277,32 @@ namespace Silver.CodeAnalysis.Cs
 
         public static Diagnostic AnalyzeVariableDeclaration(IVariableDeclaratorOperation variableDeclarator, OperationAnalysisContext ctx) =>
             AnalyzeVariableDeclaration(variableDeclarator).Report(ctx);
+        
+        public static Diagnostic AnalyzeAssertConditionConstant(IInvocationOperation methodInvocation, OperationAnalysisContext ctx) =>
+            AnalyzeAssertConditionConstant(methodInvocation).Report(ctx);
+        
+        public static Diagnostic AnalyzeAssertMessageNotProvided(IInvocationOperation methodInvocation, OperationAnalysisContext ctx) =>
+            AnalyzeAssertMessageNotProvided(methodInvocation).Report(ctx);
+        
+        public static Diagnostic AnalyzeAssertMessageEmpty(IInvocationOperation methodInvocation, OperationAnalysisContext ctx) =>
+            AnalyzeAssertMessageEmpty(methodInvocation).Report(ctx);
         #endregion
 
-        public static DiagnosticDescriptor GetErrorDescriptor(string id) =>
+        public static DiagnosticDescriptor GetDescriptor(string id, DiagnosticSeverity severity) =>
             new DiagnosticDescriptor(id, RM.GetString($"{id}_Title"), RM.GetString($"{id}_MessageFormat"), Category,
-                DiagnosticSeverity.Error, true, RM.GetString($"{id}_Description"));
+                severity, true, RM.GetString($"{id}_Description"));
 
-        public static Diagnostic CreateDiagnostic(string id, Location location, params object[] args) =>
-            Diagnostic.Create(GetErrorDescriptor(id), location, args);
+        public static Diagnostic CreateDiagnostic(string id, DiagnosticSeverity severity, Location location, params object[] args) =>
+            Diagnostic.Create(GetDescriptor(id, severity), location, args);
         #endregion
 
         #region Fields
-        internal static string[] DiagnosticIds = { "SC0001", "SC0002", "SC0003", "SC0004", "SC0005", "SC0006", "SC0007", "SC0008", "SC0009" };
-        internal static Diagnostic NoDiagnostic = null;
-        internal static ImmutableArray<DiagnosticDescriptor> Errors;
-        internal static string Category = "Smart Contract";
-        internal static System.Resources.ResourceManager RM = Resources.ResourceManager;
+
+        internal static readonly ImmutableDictionary<string, DiagnosticSeverity> DiagnosticSeverities;
+        internal const Diagnostic NoDiagnostic = null;
+        internal static readonly ImmutableArray<DiagnosticDescriptor> Errors;
+        internal const string Category = "Smart Contract";
+        internal static readonly System.Resources.ResourceManager RM = Resources.ResourceManager;
 
         public static Type[] BoxedPrimitiveTypes =
         {

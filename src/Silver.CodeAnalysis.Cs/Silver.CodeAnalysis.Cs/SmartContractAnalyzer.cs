@@ -17,7 +17,7 @@
     {
         #region Overriden members
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = Validator.Errors;
-
+        
         public override void Initialize(AnalysisContext context)
         {
             if (!Debugger.IsAttached) context.EnableConcurrentExecution();
@@ -44,6 +44,9 @@
 
                         case IInvocationOperation methodInvocation:
                             Validator.AnalyzeMethodInvocation(methodInvocation, ctx);
+                            Validator.AnalyzeAssertConditionConstant(methodInvocation, ctx);
+                            Validator.AnalyzeAssertMessageNotProvided(methodInvocation, ctx);
+                            Validator.AnalyzeAssertMessageEmpty(methodInvocation, ctx);
                             break;
                         
                         case IVariableDeclaratorOperation variableDeclarator:

@@ -204,4 +204,31 @@
   <data name="SC0009_Title" xml:space="preserve">
     <value>Method invocation not allowed</value>
   </data>
+  <data name="SC0010_Description" xml:space="preserve">
+    <value>An assert condition should be derived from input or state</value>
+  </data>
+  <data name="SC0010_MessageFormat" xml:space="preserve">
+    <value>Assert condition will always evaluate to {0}</value>
+  </data>
+  <data name="SC0010_Title" xml:space="preserve">
+    <value>Assert condition should not be constant</value>
+  </data>
+  <data name="SC0011_Description" xml:space="preserve">
+    <value>Custom assert message should be used, as this can be parsed to identify reason for failure</value>
+  </data>
+  <data name="SC0011_MessageFormat" xml:space="preserve">
+    <value>Assert should contain custom message that indicates exact reason for failure</value>
+  </data>
+  <data name="SC0011_Title" xml:space="preserve">
+    <value>Assert should contain custom message</value>
+  </data>
+  <data name="SC0012_Description" xml:space="preserve">
+    <value>Assert message should not be empty, as this can be parsed to identify reason for failure</value>
+  </data>
+  <data name="SC0012_MessageFormat" xml:space="preserve">
+    <value>Assert message should indicate exact reason for failure</value>
+  </data>
+  <data name="SC0012_Title" xml:space="preserve">
+    <value>Assert message should not be empty</value>
+  </data>
 </root>
