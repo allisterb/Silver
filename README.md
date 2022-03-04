@@ -17,7 +17,7 @@ Silver can [validate](https://github.com/allisterb/Silver/blob/master/src/Silver
 
 Silver can disassemble smart contract CIL code in a .NET bytecode assembly:
 
-![Silver disassembler](https://dm2301files.storage.live.com/y4m2lRiLsD_4tmykYs5vPJ-FJ8aGjSKY3Ooym8BeknRqaIHoyyvJIKkVDDkIbPQWrDBREdhByE30EWft5Lv7DzuWGsJf56ZhrFf8knjjETJoWcGbvmdoPzqdczCV0lA_0Sh-7tFf49bxswuPEJkhDn2FYa74jDphWrel4nakcD78xXaZz2xKNQg1fVxKEzdMhhg?width=1917&height=1014&cropmode=none)
+![Silver disassembler](https://dm2301files.storage.live.com/y4mCr82EmE3ovpdLVj9Xihx2Oa1TeLDD3SEvnNTlvC2JRws1ka1X2G09KKVk1XfTxjai4AFZlWZjhrXNT0TYdVLF-ofmBqtmWmTX10YLKZcCO-lIXw6UvpOs1ikO6r_bEMHGxpx5h3CX8dkTqILCNYYz9Alp43dH5-q_aQu1rQfLkbZFWdT3i8k6h6lOv8ITjpS?width=1920&height=945&cropmode=none)
 and statically analyze it using the [Analysis.Net](https://github.com/edgardozoppi/analysis-net/tree/master) framework e.g. the following is a [call-graph](https://en.wikipedia.org/wiki/Call_graph) analysis of the methods in the [Address Mapper](https://github.com/stratisproject/CirrusSmartContracts/tree/master/Mainnet/AddressMapper) contract.
 
 ![img](https://dm2301files.storage.live.com/y4mLu9yA4qSBuSATzoJqXQtKfaJCMsDx11duBmqvmt5ZDMgvXMJhvPVIurq9har4_VC2vza5GKYWXYhOReBYPW3g-xS1iDWmYiEjEqLfxzSZMzrfXTS51oDOEml0oT3Y_MuL8OLc8Bvm8VWVqToi37DxrXBTBiyfRwRU09k57lEK8riBf_OvJGxdiVNWwl-lH84?width=1916&height=1023&cropmode=none)
@@ -29,11 +29,11 @@ or in the DGML format which are natively supported in Visual Studio:
 
 ![img](https://dm2301files.storage.live.com/y4mOhd7isx7dRXOsuYjaZk1o88mkSv7sjqVzuGyTdhGRa9mYHLB2ziQQXbkyE-pdv5I4zqgYFgoXOgvZY88YBAOvs7I41I77KB1lw_9rZ9-ZSxHBWOutiBUZDYMGLnmGmaZJYGv9azJD3I9v0GTARJIIysAD4UJqoFZrQURyXfmE0HZXI1kSZIOtHAy9-H7JtEz?width=1904&height=946&cropmode=none)
 
-Silver can formally verifiy smart contracts in C# using the Spec# compiler from Microsoft Research:
+Silver can formally verify smart contracts in C# using the Spec# compiler from Microsoft Research:
 
 ![Silver verifier](https://dm2301files.storage.live.com/y4m1bPIN0-HBrPvmt-Aq62K-m3zlUQWs28zmJqtCsBRbLm4sTvK8sbR2Z1-9BEFh24LKD1WEJpn1g67tGJvP63bi6ng1VloHBFMnYXdTK6ceqrCPnM01t_CTFDEGvLkOJcodXkmpWJVcSZheLaJh-6X4oUVKBJ98dyQYdxh4hwoMK5vu1mtjBdRUPsXsfW0_78s?width=860&height=475&cropmode=none)
 
-See the [wiki](https://github.com/allisterb/Silver/wiki) for more indepth technical information and documentation.
+See the [wiki](https://github.com/allisterb/Silver/wiki) for more in-depth technical information and documentation.
 
 ## Building
 
