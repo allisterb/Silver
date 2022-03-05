@@ -16,7 +16,7 @@
     public class SmartContractAnalyzer : DiagnosticAnalyzer
     {
         #region Overriden members
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = Validator.Errors;
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } = Validator.Diagnostics;
         
         public override void Initialize(AnalysisContext context)
         {

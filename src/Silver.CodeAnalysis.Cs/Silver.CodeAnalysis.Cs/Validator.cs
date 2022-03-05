@@ -16,7 +16,7 @@ namespace Silver.CodeAnalysis.Cs
         #region Constructors
         static Validator()
         {
-            DiagnosticSeverities = new Dictionary<string, DiagnosticSeverity>
+            DiagnosticIds = new Dictionary<string, DiagnosticSeverity>
             {
                 { "SC0001", DiagnosticSeverity.Error },
                 { "SC0002", DiagnosticSeverity.Error },
@@ -31,12 +31,11 @@ namespace Silver.CodeAnalysis.Cs
                 { "SC0011", DiagnosticSeverity.Info },
                 { "SC0012", DiagnosticSeverity.Info },
             }.ToImmutableDictionary();
-            Errors = ImmutableArray.Create(DiagnosticSeverities.Select(i => GetDescriptor(i.Key, i.Value)).ToArray());
+            Diagnostics = ImmutableArray.Create(DiagnosticIds.Select(i => GetDescriptor(i.Key, i.Value)).ToArray());
         }
         #endregion
 
         #region Methods
-
         // Namespace declarations not allowed in smart contract code
         public static Diagnostic AnalyzeNamespaceDecl(NamespaceDeclarationSyntax node, SemanticModel model)
         {
@@ -139,6 +138,7 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
+        // Only struct properties or whitelisted properties of reference types can be accessed
         public static Diagnostic AnalyzePropertyReference(IPropertyReferenceOperation propReference)
         {
             var member = propReference.Member;
@@ -165,6 +165,7 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
+        // Only whitelisted methods can be accessed
         public static Diagnostic AnalyzeMethodInvocation(IInvocationOperation methodInvocation)
         {
             var node = methodInvocation.Syntax;
@@ -187,6 +188,7 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
+        // 
         public static Diagnostic AnalyzeVariableDeclaration(IVariableDeclaratorOperation variableDeclarator)
         {
             var node = variableDeclarator.Syntax;
@@ -212,6 +214,7 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
+        // Assert should not test constant value boolean condition
         private static Diagnostic AnalyzeAssertConditionConstant(IInvocationOperation methodInvocation)
         {
             if (methodInvocation.Arguments.Length == 0) return NoDiagnostic;
@@ -226,6 +229,7 @@ namespace Silver.CodeAnalysis.Cs
             return CreateDiagnostic("SC0010", DiagnosticSeverity.Warning, location, value);
         }
 
+        // Assert should be called with message
         private static Diagnostic AnalyzeAssertMessageNotProvided(IInvocationOperation methodInvocation)
         {
             var method = methodInvocation.TargetMethod;
@@ -237,6 +241,7 @@ namespace Silver.CodeAnalysis.Cs
             return CreateDiagnostic("SC0011", DiagnosticSeverity.Info, location);
         }
 
+        // Assert message should not be empty
         private static Diagnostic AnalyzeAssertMessageEmpty(IInvocationOperation methodInvocation)
         {
             var method = methodInvocation.TargetMethod;
@@ -297,14 +302,13 @@ namespace Silver.CodeAnalysis.Cs
         #endregion
 
         #region Fields
-
-        internal static readonly ImmutableDictionary<string, DiagnosticSeverity> DiagnosticSeverities;
-        internal const Diagnostic NoDiagnostic = null;
-        internal static readonly ImmutableArray<DiagnosticDescriptor> Errors;
         internal const string Category = "Smart Contract";
+        internal const Diagnostic NoDiagnostic = null;
+        internal static readonly ImmutableArray<DiagnosticDescriptor> Diagnostics;
+        internal static readonly ImmutableDictionary<string, DiagnosticSeverity> DiagnosticIds;
         internal static readonly System.Resources.ResourceManager RM = Resources.ResourceManager;
 
-        public static Type[] BoxedPrimitiveTypes =
+        internal static readonly Type[] BoxedPrimitiveTypes =
         {
             typeof(void),
             typeof(bool),
@@ -315,12 +319,12 @@ namespace Silver.CodeAnalysis.Cs
             typeof(uint),
             typeof(long),
             typeof(ulong),
-            typeof(string),
             typeof(UInt128),
-            typeof(UInt256)
+            typeof(UInt256),
+            typeof(string),
         };
 
-        public static Type[] BoxedPrimitiveArrayTypes =
+       internal static readonly Type[] BoxedPrimitiveArrayTypes =
        {
             typeof(bool[]),
             typeof(byte[]),
@@ -330,12 +334,12 @@ namespace Silver.CodeAnalysis.Cs
             typeof(uint[]),
             typeof(long[]),
             typeof(ulong[]),
-            typeof(string[]),
             typeof(UInt128[]),
-            typeof(UInt256[])
+            typeof(UInt256[]),
+            typeof(string[])
         };
 
-        public static Type[] SmartContractTypes =
+        internal static readonly Type[] SmartContractTypes =
         {
             typeof(Address),
             typeof(Block),
@@ -351,7 +355,7 @@ namespace Silver.CodeAnalysis.Cs
             typeof(SmartContract)
         };
 
-        public static Type[] SmartContractArrayTypes =
+        internal static readonly Type[] SmartContractArrayTypes =
         {
             typeof(Address[]),
             typeof(Block[]),
@@ -365,13 +369,13 @@ namespace Silver.CodeAnalysis.Cs
             typeof(Message[]),
         };
 
-        public static Type[] SmartContractAttributeTypes =
+        internal static readonly Type[] SmartContractAttributeTypes =
         {
             typeof(DeployAttribute),
             typeof(IndexAttribute)
         };
 
-        public static string[] UnboxedPrimitiveTypeNames =
+        internal static readonly string[] UnboxedPrimitiveTypeNames =
         {
             "void",
             "bool",
@@ -383,29 +387,27 @@ namespace Silver.CodeAnalysis.Cs
             "long",
             "ulong",
             "string",
-            "String"
         };
 
-        public static string[] PrimitiveTypeNames = UnboxedPrimitiveTypeNames.Concat(BoxedPrimitiveTypes.Select(t => t.FullName)).ToArray();
+        internal static readonly string[] PrimitiveTypeNames = UnboxedPrimitiveTypeNames.Concat(BoxedPrimitiveTypes.Select(t => t.FullName)).ToArray();
 
-        public static string[] PrimitiveArrayTypeNames = UnboxedPrimitiveTypeNames.Select(t => t + "[]").Concat(BoxedPrimitiveArrayTypes.Select(t => t.FullName)).ToArray();
+        internal static readonly string[] PrimitiveArrayTypeNames = UnboxedPrimitiveTypeNames.Select(t => t + "[]").Concat(BoxedPrimitiveArrayTypes.Select(t => t.FullName)).ToArray();
 
-        public static string[] SmartContractTypeNames = SmartContractTypes.Select(t => t.FullName).ToArray();
+        internal static readonly string[] SmartContractTypeNames = SmartContractTypes.Select(t => t.FullName).ToArray();
 
-        public static string[] SmartContractArrayTypeNames = SmartContractArrayTypes.Select(t => t.FullName).ToArray();
+        internal static readonly string[] SmartContractArrayTypeNames = SmartContractArrayTypes.Select(t => t.FullName).ToArray();
 
-        public static string[] WhitelistedArrayPropertyNames = { "Length" };
+        internal static readonly string[] WhitelistedArrayPropertyNames = { "Length" };
 
-        public static string[] WhitelistedArrayMethodNames = { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" };
+        internal static readonly string[] WhitelistedArrayMethodNames = { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" };
 
-        public static Dictionary<string, string[]> WhitelistedMethodNames = new Dictionary<string, string[]>() 
+        internal static readonly Dictionary<string, string[]> WhitelistedMethodNames = new Dictionary<string, string[]>() 
         {
             { "object", new string [] { "ToString" } },
             { "System.Object", new string [] { "ToString" } },
             { "System.Array", WhitelistedArrayMethodNames}
         };
-        public static string[] WhitelistedNamespaces = { "System", "Stratis.SmartContracts", "Stratis.SmartContracts.Standards" };
-
+        internal static readonly string[] WhitelistedNamespaces = { "System", "Stratis.SmartContracts", "Stratis.SmartContracts.Standards" };
         #endregion
     }
 }
