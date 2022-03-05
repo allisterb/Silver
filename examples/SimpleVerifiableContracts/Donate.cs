@@ -15,8 +15,9 @@ public class DonateContract : SmartContract
         //@ assert Owner == Owner;
         //@ assert !(owner != owner);
         //@ assert Owner.Equals(owner);
-        // Owner = new Address(0, 0, 0, 0, 0);
-        // assert Owner == new Address(0, 0, 0, 0, 0);
+        //@ Owner = new Address(0, 0, 0, 0, 0);
+        //@ assume Microsoft.Contracts.Owner.None(Owner);
+        //@ assert Owner == new Address(0, 0, 0, 0, 0);
         //@ assume Microsoft.Contracts.Owner.None(Owner);
         ITransferResult r = Transfer(Owner, Message.Value);
         Assert(r.Success, "The transfer did not succeed.");

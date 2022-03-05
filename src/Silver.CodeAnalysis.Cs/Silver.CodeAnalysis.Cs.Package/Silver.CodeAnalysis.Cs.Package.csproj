@@ -15,7 +15,7 @@
     <RepositoryUrl>https://github.com/allisterb/Silver.git</RepositoryUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>A static analyzer and formal verifier for Stratis smart contracts </Description>
-    <PackageReleaseNotes>Fix several issues with analyzing property and method references. Fix bug in analyzing constructors.</PackageReleaseNotes>
+    <PackageReleaseNotes>Add assert usage analyzers by drmathias: https://github.com/allisterb/Silver/pull/1.</PackageReleaseNotes>
     <Copyright>Copyright © 2021,2022 Allister Beharry</Copyright>
     <PackageTags>analyzers, smart contracts, stratis</PackageTags>
     <DevelopmentDependency>true</DevelopmentDependency>

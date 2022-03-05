@@ -123,12 +123,15 @@ namespace Silver.CodeAnalysis.Cs
             }
         }
 
-        // New object creation not allowed except for structs and arrays of primitives types
+        // New object creation not allowed except for structs and arrays of primitive types and structs
         public static Diagnostic AnalyzeObjectCreation(IObjectCreationOperation objectCreation)
         {
             var type = objectCreation.Type;
+            var elementtype = type.IsArrayTypeKind() ? ((IArrayTypeSymbol)type).ElementType : null;
+
             var typename = type.ToDisplayString();
-            if (type.IsValueType || type.IsArray() || PrimitiveArrayTypeNames.Contains(typename))
+        
+            if (type.IsValueType || PrimitiveArrayTypeNames.Contains(typename) || (type.IsArrayTypeKind() && (elementtype.IsValueType)))
             {
                 return NoDiagnostic;
             }
@@ -143,19 +146,24 @@ namespace Silver.CodeAnalysis.Cs
         {
             var member = propReference.Member;
             string propname = member.Name;
+            
             var type = member.ContainingType;
             var basetype = type.BaseType;
+            var elementtype = type.IsArrayTypeKind() ? ((IArrayTypeSymbol)type).ElementType : null;
+
             var typename = type.ToDisplayString();
             var basetypename = basetype?.ToDisplayString() ?? "";
+            var elementtypename = elementtype?.ToDisplayString() ?? string.Empty;
+
             if (type.IsValueType || type.IsEnum())
             {
                 return NoDiagnostic;
             }
-            if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || SmartContractTypeNames.Contains(basetypename))
+            else if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || SmartContractTypeNames.Contains(basetypename))
             {
                 return NoDiagnostic;
             }
-            else if ((type.IsArray() || PrimitiveArrayTypeNames.Contains(typename) || SmartContractArrayTypeNames.Contains(typename)) && WhitelistedArrayPropertyNames.Contains(propname))
+            else if (member.ContainingType.ToDisplayString() == "System.Array" && WhitelistedArrayPropertyNames.Contains(propname))
             {
                 return NoDiagnostic;
             }
@@ -172,8 +180,10 @@ namespace Silver.CodeAnalysis.Cs
             var method = methodInvocation.TargetMethod;
             var type = method.ContainingType;
             var basetype = type.BaseType;
+
             var typename = type.ToDisplayString();
             var basetypename = basetype?.ToDisplayString() ?? string.Empty;
+            
             if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || SmartContractTypeNames.Contains(basetypename))
             {
                 return NoDiagnostic;
@@ -193,18 +203,18 @@ namespace Silver.CodeAnalysis.Cs
         {
             var node = variableDeclarator.Syntax;
             var type = variableDeclarator.Symbol.Type;
-            if (type.Kind == SymbolKind.ArrayType)
-            {
-                var ii = (IArrayTypeSymbol)type;
-            }
-            var typename = type.ToDisplayString();
+            var elementtype = type.IsArrayTypeKind() ? ((IArrayTypeSymbol) type).ElementType : null;
             var basetype = type.BaseType;
+
+            var typename = type.ToDisplayString();    
+            var elementtypename = elementtype?.ToDisplayString() ?? string.Empty;
             var basetypename = basetype?.ToDisplayString() ?? string.Empty;
-            if (type.IsValueType || type.IsEnum() || PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename))
+
+            if (PrimitiveTypeNames.Contains(typename) || SmartContractTypeNames.Contains(typename) || SmartContractTypeNames.Contains(basetypename))
             {
                 return NoDiagnostic;
             }
-            else if ((type.IsArray() || PrimitiveArrayTypeNames.Contains(typename) || SmartContractArrayTypeNames.Contains(typename)))
+            else if (type.IsValueType || type.IsEnum() || (type.IsArrayTypeKind() && (elementtype.IsValueType || PrimitiveTypeNames.Contains(elementtypename) || SmartContractTypeNames.Contains(elementtypename))))
             {
                 return NoDiagnostic;
             }
@@ -391,7 +401,7 @@ namespace Silver.CodeAnalysis.Cs
 
         internal static readonly string[] PrimitiveTypeNames = UnboxedPrimitiveTypeNames.Concat(BoxedPrimitiveTypes.Select(t => t.FullName)).ToArray();
 
-        internal static readonly string[] PrimitiveArrayTypeNames = UnboxedPrimitiveTypeNames.Select(t => t + "[]").Concat(BoxedPrimitiveArrayTypes.Select(t => t.FullName)).ToArray();
+        internal static readonly string[] PrimitiveArrayTypeNames = UnboxedPrimitiveTypeNames.Skip(1).Select(t => t + "[]").Concat(BoxedPrimitiveArrayTypes.Select(t => t.FullName)).ToArray();
 
         internal static readonly string[] SmartContractTypeNames = SmartContractTypes.Select(t => t.FullName).ToArray();
 
@@ -399,7 +409,7 @@ namespace Silver.CodeAnalysis.Cs
 
         internal static readonly string[] WhitelistedArrayPropertyNames = { "Length" };
 
-        internal static readonly string[] WhitelistedArrayMethodNames = { "GetLength", "Copy", "GetValue", "SetValue", "ReSize" };
+        internal static readonly string[] WhitelistedArrayMethodNames = { "GetLength", "Copy", "GetValue", "SetValue", "Resize" };
 
         internal static readonly Dictionary<string, string[]> WhitelistedMethodNames = new Dictionary<string, string[]>() 
         {
