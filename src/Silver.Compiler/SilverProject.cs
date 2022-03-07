@@ -241,6 +241,15 @@ public abstract class SilverProject : Runtime
             }
             List<SyntaxTree> rewrittenSyntaxTrees = new();
             OriginalSourceFiles = new();
+            var rwoptions = new CSharpCompilationOptions(
+                        OutputKind.DynamicallyLinkedLibrary,
+                        allowUnsafe: true,
+                        optimizationLevel: OptimizationLevel.Debug,
+                        platform: Platform.AnyCpu,
+                        warningLevel: 4);
+            var rwreferences = RoslynWorkspace.CurrentSolution.Projects.Any() ?
+                       (IEnumerable<MetadataReference>)RoslynWorkspace.CurrentSolution.Projects.First().MetadataReferences :
+                       this.References.Select(r => MetadataReference.CreateFromFile(r));
             foreach (var st in syntaxTrees)
             {
                 SyntaxNode rwt = st.GetRoot(Ct);
@@ -252,7 +261,29 @@ public abstract class SilverProject : Runtime
                     var prevSt = prev.SyntaxTree;
                     try
                     {
-                        rwt = rw.Visit(rwt);
+                        if (rw is SymbolicRewriter srw && !srw.IsPurelySyntactic() )
+                        {
+                            /* I think we can just pass the lone tree here, don't need trees for the entire compilation. 
+                            var trees = rewrittenSyntaxTrees
+                                .Concat(syntaxTrees.Where(__st => !rewrittenSyntaxTrees.Any(rwst => rwst.FilePath == __st.FilePath || rwst.FilePath == rwt.SyntaxTree.FilePath)))
+                                .Append(rwt.SyntaxTree);
+                            */
+                            var c = GetCsCompilation(new SyntaxTree[] {rwt.SyntaxTree}, rwoptions, rwreferences);
+                            var model = c?.GetSemanticModel(rwt.SyntaxTree);
+                            if (c is null || model is null)
+                            {
+                                Error("The rewriter {0} requires a semantic model but could not get the semantic model for file {1}. Skipping.", rwn, rwt.SyntaxTree.FilePath);
+                                continue;
+                            }
+                            else
+                            {
+                                rwt = srw.Apply(rwt.SyntaxTree, model).GetRoot();
+                            }
+                        }
+                        else
+                        {
+                            rwt = rw.Visit(rwt);
+                        }
                         var preText = prevSt.GetText();
                         foreach (var tc in rwt.SyntaxTree.GetChanges(prevSt))
                         {
@@ -369,8 +400,16 @@ public abstract class SilverProject : Runtime
                     else if (e.Data is not null && e.Data.Contains("error"))
                     {
                         var errs = e.Data.Split("error:");
-                        compilerErrors.Add(new SscCompilerError("", "", errs.Skip(1).JoinWith("")));
-                        Error(errs.Skip(1).JoinWith(""));
+                        if (errs.Length > 1)
+                        {
+                            compilerErrors.Add(new SscCompilerError("", "", errs.Skip(1).JoinWith("")));
+                            Error(errs.Skip(1).JoinWith(""));
+                        }
+                        else
+                        {
+                            compilerErrors.Add(new SscCompilerError("", "", e.Data));
+                            Error(e.Data);
+                        }
                     }
                     else if (e.Data is not null && e.Data.Contains("warning CS") && !e.Data.Trim().StartsWith("warning"))
                     {
@@ -458,6 +497,9 @@ public abstract class SilverProject : Runtime
         }
     }
 
+    public Compilation? GetCsCompilation(IEnumerable<SyntaxTree> syntaxTrees, CSharpCompilationOptions options, IEnumerable<MetadataReference> references)
+        => CSharpCompilation.Create("rewriter", syntaxTrees, references, options);
+    
     public static bool HasProjectExtension(string f)
     {
         switch (Path.GetExtension(f))
@@ -470,6 +512,7 @@ public abstract class SilverProject : Runtime
             default: return false;
         }
     }
+    
     public static SilverProject? GetProject(string filePath, string buildConfig, params string [] additionalFiles)
     {  
         var f = new FileInfo(FailIfFileNotFound(filePath));
@@ -564,7 +607,8 @@ public abstract class SilverProject : Runtime
         new TranslateLinq(),
         //new UncoalesceCoalescedNull(),
         new UninterpolateString(),
-        new NoNameof()
+        new NoNameof(),
+        new NoVar()
         //new SharpSyntaxRewriter.Rewriters.UnparameterizeRecordDeclaration()
 
     };

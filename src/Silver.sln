@@ -99,7 +99,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Code
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Package", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Package\Silver.CodeAnalysis.Cs.Package.csproj", "{B716D692-D69D-47E8-AEDD-C1D2CFB506E6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Test", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Test\Silver.CodeAnalysis.Cs.Test.csproj", "{EFB70574-78DC-413B-8FE0-ABB448C463EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Tests", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Tests\Silver.CodeAnalysis.Cs.Tests.csproj", "{EFB70574-78DC-413B-8FE0-ABB448C463EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.CodeAnalysis.Cs.Vsix", "Silver.CodeAnalysis.Cs\Silver.CodeAnalysis.Cs.Vsix\Silver.CodeAnalysis.Cs.Vsix.csproj", "{5B8714AB-3A06-431D-8BF4-3BF79FE93ECF}"
 EndProject
