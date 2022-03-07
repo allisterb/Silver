@@ -261,7 +261,7 @@ public abstract class SilverProject : Runtime
                     var prevSt = prev.SyntaxTree;
                     try
                     {
-                        if (rw is SymbolicRewriter srw && !srw.IsPurelySyntactic() )
+                        if (rw is SymbolicRewriter srw)
                         {
                             /* I think we can just pass the lone tree here, don't need trees for the entire compilation. 
                             var trees = rewrittenSyntaxTrees
@@ -289,7 +289,7 @@ public abstract class SilverProject : Runtime
                         {
                             if (string.IsNullOrEmpty(tc.NewText)) continue;
                             var flp = prevSt.GetLineSpan(tc.Span);
-                            Info("Rewriter: {0}.", rwn);
+                            Info("Rewriter: {0}", rwn);
                             Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
                             Info("Line: {0}", i);
                             Info("Original: {0}", preText.ToString(tc.Span).Trim());
@@ -318,7 +318,7 @@ public abstract class SilverProject : Runtime
                     {
                         var ot = lines[i];
                         lines[i] = ot.Replace("//@", "");
-                        Info("Rewriter: {0}.", "EmbeddedAsComment_1");
+                        Info("Rewriter: {0}", "EmbeddedAsComment_1");
                         Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
                         Info("Line: {0}", i);
                         Info("Original: {0}", ot.Trim());
@@ -333,7 +333,7 @@ public abstract class SilverProject : Runtime
                             {
                                 var ot = lines[i];
                                 lines[i] = ot.Replace(m0.Groups[0].Value, $"assume {m0.Groups[1].Value.Split(',')[0]}");
-                                Info("Rewriter: {0}.", "AssertStmt");
+                                Info("Rewriter: {0}", "AssertStmt");
                                 Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
                                 Info("Line: {0}", i);
                                 Info("Original: {0}", ot.Trim());
@@ -346,7 +346,7 @@ public abstract class SilverProject : Runtime
                         {
                             var ot = lines[i];
                             lines[i] = ot.Replace(m1.Groups[0].Value, m1.Groups[1].Value) ;
-                            Info("Rewriter: {0}.", "EmbeddedAsComment_2");
+                            Info("Rewriter: {0}", "EmbeddedAsComment_2");
                             Info("File: {0}", ViewFilePath(st.FilePath, ProjectFile.DirectoryName));
                             Info("Line: {0}", i);
                             Info("Original: {0}", ot.Trim());
