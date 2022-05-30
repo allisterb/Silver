@@ -22,3 +22,6 @@
 [submodule "ext/Stratis.SmartContracts.Tools.Sct"]
 	path = ext/Stratis.SmartContracts.Tools.Sct
 	url = https://github.com/stratisproject/Stratis.SmartContracts.Tools.Sct.git
+[submodule "ext/dotnet-interactive-extension-lab"]
+	path = ext/dotnet-interactive-extension-lab
+	url = https://github.com/allisterb/dotnet-interactive-extension-lab.git
