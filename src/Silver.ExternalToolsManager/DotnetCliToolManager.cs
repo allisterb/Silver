@@ -7,7 +7,7 @@ namespace Silver
     internal class DotnetCliToolManager : ToolManager
     {
         #region Constructor
-        internal DotnetCliToolManager(ToolSourceSettings settings) : base(settings)
+        internal DotnetCliToolManager(ToolSourceSettings settings, IInterface managerInterface) : base(settings, managerInterface)
         {
         }
         #endregion

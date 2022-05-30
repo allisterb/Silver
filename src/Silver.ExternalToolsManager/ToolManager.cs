@@ -6,9 +6,10 @@ using System.Runtime.InteropServices;
 public abstract class ToolManager : Runtime
 {
     #region Constructors
-    internal ToolManager(ToolSourceSettings settings) : base()
+    internal ToolManager(ToolSourceSettings settings, IInterface managerInterface) : base()
     {
         this.settings = settings;
+        this.managerInterface = managerInterface;
         Debug("External tool {0} manager created.", settings.Name);
         //Debug("{0} command is {1}.", settings.Name, this.Command);
 
@@ -35,6 +36,8 @@ public abstract class ToolManager : Runtime
         }
     }
     protected readonly ToolSourceSettings settings;
+
+    protected readonly IInterface managerInterface;
 
     public virtual string ExeName
     {

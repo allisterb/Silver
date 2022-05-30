@@ -6,7 +6,7 @@ using System.IO.Compression;
 internal class DownloadedDotNetToolManager : DownloadedToolManager
 {
     #region Constructors
-    internal DownloadedDotNetToolManager(ToolSourceSettings settings) : base(settings)
+    internal DownloadedDotNetToolManager(ToolSourceSettings settings, IInterface managerInterface) : base(settings, managerInterface)
     {
         this.Directory = settings.Directory;
     }

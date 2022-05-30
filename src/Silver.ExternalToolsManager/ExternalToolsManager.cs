@@ -6,23 +6,6 @@ using Microsoft.Extensions.Configuration;
     
 public class ExternalToolsManager : Runtime
 {
-    #region Constructors
-    static ExternalToolsManager()
-    {
-        var z3SourceSettings = new ToolSourceSettings();
-        ToolSourceConfig.GetSection("z3").Bind(z3SourceSettings);
-        Z3 = new DownloadedToolManager(z3SourceSettings);
-
-        var specsharpSourceSettings = new ToolSourceSettings();
-        ToolSourceConfig.GetSection("specsharp").Bind(specsharpSourceSettings);
-        SpecSharp = new DownloadedDotNetToolManager(specsharpSourceSettings);
-
-        var sctSettings = new ToolSourceSettings();
-        ToolSourceConfig.GetSection("sct").Bind(sctSettings);
-        Sct = new DownloadedDotNetToolManager(sctSettings);
-    }
-    #endregion
-
     #region Properties
     public static IConfiguration ToolSourceConfig { get; } = new ConfigurationBuilder()
             .AddJsonFile(Path.Combine("toolsourcesettings.json"), false, false)
@@ -36,6 +19,21 @@ public class ExternalToolsManager : Runtime
     #endregion
 
     #region Methods
+    public static void Init(IInterface managerInterface)
+    {
+        var z3SourceSettings = new ToolSourceSettings();
+        ToolSourceConfig.GetSection("z3").Bind(z3SourceSettings);
+        Z3 = new DownloadedToolManager(z3SourceSettings, managerInterface);
+
+        var specsharpSourceSettings = new ToolSourceSettings();
+        ToolSourceConfig.GetSection("specsharp").Bind(specsharpSourceSettings);
+        SpecSharp = new DownloadedDotNetToolManager(specsharpSourceSettings, managerInterface);
+
+        var sctSettings = new ToolSourceSettings();
+        ToolSourceConfig.GetSection("sct").Bind(sctSettings);
+        Sct = new DownloadedDotNetToolManager(sctSettings, managerInterface);
+    }
+    
     public static void EnsureAllExists()
     {
         Z3.EnsureExists();

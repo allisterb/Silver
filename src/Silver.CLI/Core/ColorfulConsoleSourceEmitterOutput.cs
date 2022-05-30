@@ -22,7 +22,7 @@ public class ColorfulConsoleSourceEmitterOutput : IColorfulSourceEmitterOutput
     public void WriteLine(string str, bool fIndent, Color color)
     {
         OutputBegin(fIndent);
-        CC.WriteLine(str, color);
+        ColorCon.WriteLine(str, color);
         //System.Console.WriteLine(str);
         this.CurrentLineEmpty = true;
     }
@@ -35,7 +35,7 @@ public class ColorfulConsoleSourceEmitterOutput : IColorfulSourceEmitterOutput
     public void Write(string str, bool fIndent, Color color)
     {
         OutputBegin(fIndent);
-        CC.Write(str, color);  
+        ColorCon.Write(str, color);  
         //System.Console.Write(str);
         this.CurrentLineEmpty = false;
     }

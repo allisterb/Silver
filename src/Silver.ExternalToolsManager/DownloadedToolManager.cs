@@ -10,7 +10,7 @@ namespace Silver
     internal class DownloadedToolManager : ToolManager
     {
         #region Constructors
-        internal DownloadedToolManager(ToolSourceSettings settings) : base(settings)
+        internal DownloadedToolManager(ToolSourceSettings settings, IInterface managerInterface) : base(settings, managerInterface)
         {
             
         }
@@ -173,7 +173,7 @@ namespace Silver
             //    client.DownloadFile(DownloadURL, ZipFilePath);
             //    op.Complete();
             //}
-            DownloadFile(this.settings.Name, new Uri(DownloadURL), ZipFilePath);
+            this.managerInterface.DownloadFile(this.settings.Name, new Uri(DownloadURL), ZipFilePath);
 #pragma warning restore SYSLIB0014 // Type or member is obsolete
         }
 

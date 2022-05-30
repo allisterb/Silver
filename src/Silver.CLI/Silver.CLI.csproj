@@ -21,8 +21,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
-    <ProjectReference Include="..\Silver.CLI.Core\Silver.CLI.Core.csproj" />
+    <ProjectReference Include="..\Silver.CodeAnalysis.IL\Silver.CodeAnalysis.IL.csproj" />
+    <ProjectReference Include="..\Silver.Compiler\Silver.Compiler.csproj" />
+    <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
     <ProjectReference Include="..\Silver.ExternalToolsManager\Silver.ExternalToolsManager.csproj" />
+    <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
+    <ProjectReference Include="..\Silver.Verifiier\Silver.Verifiier.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,7 +2,9 @@ namespace Silver.CLI;
 
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
+
 using CommandLine;
 using CommandLine.Text;
 
@@ -21,7 +23,7 @@ public enum ExitResult
 }
 #endregion
 
-class Program : Runtime
+class Program : Runtime, IInterface
 {
     #region Constructor
     static Program()
@@ -52,7 +54,7 @@ class Program : Runtime
         }
 
         PrintLogo();
-
+        var pi = new ProgramInterface();
         #region Parse options
         ParserResult<object> result = new Parser().ParseArguments<Options, CompileOptions, AnalyzeOptions, DisassemblerOptions,
             SummarizeOptions, CallGraphOptions, ControlFlowGraphOptions,
@@ -65,6 +67,7 @@ class Program : Runtime
         #region External tools manager
         .WithParsed<InstallOptions>(o =>
         {
+            ExternalToolsManager.Init(pi);
             ExternalToolsManager.EnsureAllExists();
             if(o.Info)
             {
@@ -277,6 +280,53 @@ class Program : Runtime
         }
     }
 
+    public static T GetTimed_<T>(Func<T> p, string status, string messageTemplate, params object[] o)
+    {
+        T ret;
+        using (var op = Runtime.Begin(messageTemplate, o))
+        {
+            ret = InteractiveConsole ? AnsiConsole.Status().Spinner(Spinner.Known.Dots).Start($"{status}...", ctx => p()) : p();
+            op.Complete();
+        }
+        return ret;
+    }
+
+    public static void DownloadFile_(string name, Uri downloadUrl, string downloadPath)
+    {
+        #pragma warning disable SYSLIB0014 // Type or member is obsolete
+        using (var op = Begin("Downloading {0} from {1} to {2}", name, downloadUrl, downloadPath))
+        {
+            using (var client = new WebClient())
+            {
+                if (InteractiveConsole)
+                {
+                    AnsiConsole.Progress().Start(ctx =>
+                    {
+                        var task = ctx.AddTask($"[bold white]Download[/] [bold cyan]{downloadUrl}[/]");
+                        client.DownloadProgressChanged += (object sender, DownloadProgressChangedEventArgs e) =>
+                        {
+                            task.Value = 100.0 * ((double)e.BytesReceived / (double)e.TotalBytesToReceive);
+                        };
+                        client.DownloadDataCompleted += (object sender, DownloadDataCompletedEventArgs e) =>
+                        {
+                            task.StopTask();
+                        };
+                        client.DownloadFileAsync(downloadUrl, downloadPath);
+                        while (!task.IsFinished) ;
+                    });
+                    op.Complete();
+                }
+                else
+                {
+                    client.DownloadFile(downloadUrl, downloadPath);
+                    op.Complete();
+                }
+            }
+
+        }
+        #pragma warning restore SYSLIB0014 // Type or member is obsolete
+    }
+
     static void PrintLogo()
     {
         Con.Write(new FigletText(font, "Silver").LeftAligned().Color(Spectre.Console.Color.Cyan1));
@@ -301,6 +351,12 @@ class Program : Runtime
             return e;
         });
     }
+    #endregion
+
+    #region Overriden and implemented members
+    public T GetTimed<T>(Func<T> p, string status, string messageTemplate, params object[] o) => Program.GetTimed_<T>(p, status, messageTemplate, o);
+
+    public void DownloadFile(string name, Uri downloadUrl, string downloadPath) => Program.DownloadFile_(name, downloadUrl, downloadPath);
     #endregion
 
     #region Event Handlers
@@ -336,4 +392,14 @@ class Program : Runtime
     static ConsoleColor originalConsoleForegroundColor = Console.ForegroundColor;
     static ConsoleColor originalConsoleBackgroundColor = Console.BackgroundColor;
     #endregion
+
+    #region Inner classes
+    private class ProgramInterface : IInterface
+    {
+        public T GetTimed<T>(Func<T> p, string status, string messageTemplate, params object[] o) => Program.GetTimed_<T>(p, status, messageTemplate, o);
+
+        public void DownloadFile(string name, Uri downloadUrl, string downloadPath) => Program.DownloadFile_(name, downloadUrl, downloadPath);
+    }
+    #endregion
 }
+
