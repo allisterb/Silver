@@ -159,6 +159,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BC68
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stratis.SmartContracts.CLR.Validation", "..\ext\Stratis.SmartContracts.CLR.Validation\Stratis.SmartContracts.CLR.Validation.csproj", "{244D01B9-EC73-40C4-935F-C43E866A7216}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.ExternalToolsManager", "Silver.ExternalToolsManager\Silver.ExternalToolsManager.csproj", "{CDE03033-D996-489C-8B59-208BF571CFDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -884,6 +886,20 @@ Global
 		{244D01B9-EC73-40C4-935F-C43E866A7216}.Release|Any CPU.Build.0 = Release|Any CPU
 		{244D01B9-EC73-40C4-935F-C43E866A7216}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
 		{244D01B9-EC73-40C4-935F-C43E866A7216}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.DebugCommandLine|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.DebugCommandLine|Any CPU.Build.0 = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.DebugExp|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.DebugExp|Any CPU.Build.0 = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.DebugNoData|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.DebugNoData|Any CPU.Build.0 = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.NoExtendedRuntime|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.NoExtendedRuntime|Any CPU.Build.0 = Debug|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.ReleaseCommandLine|Any CPU.ActiveCfg = Release|Any CPU
+		{CDE03033-D996-489C-8B59-208BF571CFDD}.ReleaseCommandLine|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -951,6 +967,7 @@ Global
 		{819DDAFA-D87D-4158-BBE9-981F10879B84} = {BD039360-D4FD-4D2C-BF67-C4BEA9A8AC9C}
 		{7A93231A-F684-44A1-A7CD-CDAD0785CEF3} = {ECF38B43-7F77-465D-A429-E85507FA8E3E}
 		{244D01B9-EC73-40C4-935F-C43E866A7216} = {6F26C6D2-5658-43F2-9D39-A68C108A01ED}
+		{CDE03033-D996-489C-8B59-208BF571CFDD} = {BD039360-D4FD-4D2C-BF67-C4BEA9A8AC9C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A800CA14-15CB-411A-B812-8369BB95894D}

@@ -65,10 +65,10 @@ class Program : Runtime
         #region External tools manager
         .WithParsed<InstallOptions>(o =>
         {
-            Core.ExternalToolsManager.EnsureAllExists();
+            ExternalToolsManager.EnsureAllExists();
             if(o.Info)
             {
-                foreach(var vi in Core.ExternalToolsManager.GetVersionInfo())
+                foreach(var vi in ExternalToolsManager.GetVersionInfo())
                 {
                     Con.WriteLine(vi.Trim());
                 }

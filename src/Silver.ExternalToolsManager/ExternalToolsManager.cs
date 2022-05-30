@@ -1,4 +1,6 @@
-namespace Silver.CLI.Core;
+namespace Silver;
+
+using System.IO;
 
 using Microsoft.Extensions.Configuration;
     
@@ -23,7 +25,7 @@ public class ExternalToolsManager : Runtime
 
     #region Properties
     public static IConfiguration ToolSourceConfig { get; } = new ConfigurationBuilder()
-            .AddJsonFile(Path.Combine("ExternalToolsManager", "toolsourcesettings.json"), false, false)
+            .AddJsonFile(Path.Combine("toolsourcesettings.json"), false, false)
             .Build();
     
     public static ToolManager Z3 { get; private set; }

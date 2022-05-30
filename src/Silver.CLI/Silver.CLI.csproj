@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\Silver.CLI.Core\Silver.CLI.Core.csproj" />
+    <ProjectReference Include="..\Silver.ExternalToolsManager\Silver.ExternalToolsManager.csproj" />
   </ItemGroup>
 
   <ItemGroup>

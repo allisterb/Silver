@@ -594,6 +594,7 @@ public abstract class SilverProject : Runtime
     #region Fields
     private static CSharpSyntaxRewriter[] rewriters =
     {
+        new StoreStructCreation(),
         new BlockifyExpressionBody(),
         //new SharpSyntaxRewriter.Rewriters.DeanonymizeType(),
         //new SharpSyntaxRewriter.Rewriters.EmplaceGlobalStatement(),

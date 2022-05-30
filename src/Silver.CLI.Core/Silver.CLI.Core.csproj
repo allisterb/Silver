@@ -24,10 +24,4 @@
     <ProjectReference Include="..\Silver.Verifiier\Silver.Verifiier.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="ExternalToolsManager\toolsourcesettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

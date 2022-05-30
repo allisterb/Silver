@@ -1,4 +1,4 @@
-﻿namespace Silver.CLI.Core;
+﻿namespace Silver;
 
 using System.IO;
 using System.IO.Compression;
