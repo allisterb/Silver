@@ -24,7 +24,7 @@ public abstract class Logger
 
     public bool IsConfigured { get; protected set; } = false;
 
-    public bool IsDebug { get; init; } = false;
+    public bool IsDebug { get; protected set; } = false;
 
     public abstract void Info(string messageTemplate, params object[] args);
 
