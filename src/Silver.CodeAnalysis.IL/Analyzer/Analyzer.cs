@@ -136,6 +136,7 @@ public partial class Analyzer : Runtime
                 g.AddEdge(csNode.Id, rootNode.Id);
             }
         }
+        op.Complete();
         return g;
     }
 

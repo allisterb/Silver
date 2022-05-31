@@ -161,7 +161,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.ExternalToolsManager
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{F054137D-EC06-484B-A412-3BF9D1437A48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.Notebooks.DotNetInteractive", "Silver.Notebooks.DotNetInteractive\Silver.Notebooks.DotNetInteractive.csproj", "{F6C13411-C07C-48F6-96AA-A82C9E0C8B35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Notebooks.DotNetInteractive", "Silver.Notebooks.DotNetInteractive\Silver.Notebooks.DotNetInteractive.csproj", "{F6C13411-C07C-48F6-96AA-A82C9E0C8B35}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dotnet-interactive-extension-lab", "dotnet-interactive-extension-lab", "{8322E8EB-7E69-4B79-8308-98A8DB1576F0}"
 EndProject
@@ -171,7 +171,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotLanguage.InteractiveExte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageSharp.InteractiveExtension", "..\ext\dotnet-interactive-extension-lab\src\ImageSharp.InteractiveExtension\ImageSharp.InteractiveExtension.csproj", "{A5E6675A-92E5-4FDE-ADDE-536ACB4C370E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.Notebooks", "Silver.Notebooks\Silver.Notebooks.csproj", "{31BC7388-C1D1-4038-ABE0-FEF75E6A3057}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Notebooks", "Silver.Notebooks\Silver.Notebooks.csproj", "{31BC7388-C1D1-4038-ABE0-FEF75E6A3057}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{C6CADBA7-84B0-4894-A186-C03573062031}"
+	ProjectSection(SolutionItems) = preProject
+		..\notebooks\DotNetInteractive.csx = ..\notebooks\DotNetInteractive.csx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

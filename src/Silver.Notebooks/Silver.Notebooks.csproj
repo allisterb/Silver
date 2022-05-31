@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
@@ -10,6 +9,7 @@
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\Silver.CodeAnalysis.IL\Silver.CodeAnalysis.IL.csproj" />
     <ProjectReference Include="..\Silver.Compiler\Silver.Compiler.csproj" />
+    <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,6 @@
 ﻿namespace Silver.Notebooks;
 
+using System.IO;
 using Microsoft.Msagl.Drawing;
 
 using Silver.CodeAnalysis.IL;
