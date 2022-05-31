@@ -95,6 +95,86 @@ public class Graph : Runtime
         Info("Saved graph to {0} file {1}.", format, filename);
     }
 
+    public static string Draw(Microsoft.Msagl.Drawing.Graph graph, GraphFormat format, int width = 2000, int height = 2000, double rotateBy = 0.0)
+    {
+        graph.GeometryGraph = new GeometryGraph();
+        var layout = GetSugiyamaLayout(5, 10, rotateBy);
+        graph.LayoutAlgorithmSettings = layout;
+        int nodeWidth = graph.Nodes.Max(n => n.LabelText.Length) * 9;
+        foreach (Node n in graph.Nodes)
+        {
+            var gn = new GeometryNode(CurveFactory.CreateRectangle(nodeWidth, 40, new GeometryPoint()), n);
+            graph.GeometryGraph.Nodes.Add(gn);
+            n.GeometryNode = gn;
+        }
+        foreach (Edge edge in graph.Edges)
+        {
+            var sn = graph.FindGeometryNode(edge.Source);
+            var tn = graph.FindGeometryNode(edge.Target);
+            var ge = new GeometryEdge(sn, tn);
+            ge.UserData = edge;
+            ge.EdgeGeometry.TargetArrowhead = new Arrowhead();
+            graph.GeometryGraph.Edges.Add(ge);
+            edge.GeometryEdge = ge;
+        }
+        graph.GeometryGraph.UpdateBoundingBox();
+        new LayeredLayout(graph.GeometryGraph, layout).Run();
+
+        using Bitmap bmp = new Bitmap(width, height);
+        using Graphics g = Graphics.FromImage(bmp);
+        g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        g.CompositingQuality = CompositingQuality.HighQuality;
+        g.SmoothingMode = SmoothingMode.HighQuality;
+        g.Clear(System.DrawingCore.Color.White);
+        Rectangle rect = new Rectangle(0, 0, width, height);
+
+        GdiUtils.SetGraphTransform(graph.GeometryGraph, rect, g);
+       
+        switch (format)
+        {
+            case GraphFormat.BMP:
+                GdiUtils.Draw2(rect, graph, graph.GeometryGraph, g);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    bmp.Save(ms, ImageFormat.Bmp);
+                    return Convert.ToBase64String(ms.ToArray());
+                }
+
+            case GraphFormat.PNG:
+                GdiUtils.Draw2(rect, graph, graph.GeometryGraph, g);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    bmp.Save(ms, ImageFormat.Png);
+                    return Convert.ToBase64String(ms.ToArray());
+                }
+                
+            case GraphFormat.DOT:
+                return DOTWriter.Write(graph);
+               
+            case GraphFormat.DGML:
+                StringBuilder sb = new StringBuilder();
+                TextWriter sw = new StringWriter(sb);
+                DGMLWriter.Write(sw, graph);
+                sw.Flush();
+                return sb.ToString();
+                
+            case GraphFormat.SVG:
+                sb = new StringBuilder();
+                var svgWriter = new SvgGraphWriter(sb, graph);
+                svgWriter.Write();
+                return sb.ToString();
+                
+            case GraphFormat.XML:
+                sb = new StringBuilder();
+                var xmlWriter = new GraphWriter(sb, graph);
+                xmlWriter.Write();
+                return sb.ToString();
+
+            default:
+                throw new NotImplementedException();
+        }
+        
+    }
     public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeWidth = 2000, int minNodeHeight = 1000, double rotateBy = 0.0)
     {
         SugiyamaLayoutSettings sugiyamaSettings = new SugiyamaLayoutSettings

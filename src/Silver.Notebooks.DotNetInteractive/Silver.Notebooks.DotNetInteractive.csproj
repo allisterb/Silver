@@ -1,13 +1,36 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageVersion>0.1.5</PackageVersion>
+    <IsPackable>true</IsPackable>
+    <PackageProjectUrl>https://github.com/allisterb/Silver</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/allisterb/Silver.git</RepositoryUrl>
+    <PackageLicenseExpression>GPL</PackageLicenseExpression>
+    <Description>Adds formatting support for Silver types to .NET Interactive notebooks</Description>
+    <Copyright>2021, 2022</Copyright>
+    <Version>0.1.5.0</Version>
+    <Authors>Allister Beharry</Authors>
+    <PackageTags>Silver interactive interactive-extension</PackageTags>
+    <PackageId>Silver.InteractiveExtension</PackageId>
+    <IncludeBuildOutput>true</IncludeBuildOutput>
     <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.22256.1" />
     <PackageReference Include="Microsoft.DotNet.Interactive.Formatting" Version="1.0.0-beta.22256.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.Gdi\AGL.Drawing.Gdi.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.NETStandard\AGL.Drawing.NETStandard.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\AGL.NETStandard\AGL.NETStandard.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(OutputPath)/AGL.*.dll" Pack="true" PackagePath="interactive-extensions/dotnet" />
   </ItemGroup>
 
 </Project>
