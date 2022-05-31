@@ -102,7 +102,7 @@ public class GraphFormatter
     }
     private static PocketView CreateImgTag(Microsoft.Msagl.Drawing.Graph g, string id, int height, int width)
     {
-        var imageSource = Draw(g, width, height);
-        return (PocketView) img[id: id, src: imageSource, height: height, width: width]();
+        var imgdata = $"data:image/png;base64,{Draw(g, width, height)}";
+        return (PocketView) img[id: id, src: imgdata, height: height, width: width]();
     }
 }

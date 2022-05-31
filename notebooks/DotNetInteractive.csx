@@ -7,6 +7,6 @@
 #r "..\src\Silver.Notebooks\bin\Debug\net6.0\AGL.NETStandard.dll"
 #r "..\src\Silver.Notebooks.DotNetInteractive\bin\Debug\net6.0\Silver.Notebooks.DotNetInteractive.dll"
 
-using Silver;
 using Silver.Notebooks;
+
 GraphFormatter.Register();
