@@ -1,6 +1,3 @@
-﻿#r "nuget: ZKWeb.System.Drawing"
-#r "nuget: Mermaid.InteractiveExtension"
-
 #r "..\src\Silver.Notebooks\bin\Debug\net6.0\Silver.Base.dll"
 #r "..\src\Silver.Notebooks\bin\Debug\net6.0\Silver.CodeAnalysis.IL.dll"
 #r "..\src\Silver.Notebooks\bin\Debug\net6.0\Silver.Compiler.dll"
@@ -12,4 +9,4 @@
 
 using Silver;
 using Silver.Notebooks;
-GraphFormatter.RegisterAsync();
+GraphFormatter.Register();

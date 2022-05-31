@@ -1,8 +1,0 @@
-﻿#r "C:\Projects\Silver\src\Silver.Notebooks\bin\Debug\net6.0\Silver.Base.dll"
-#r "C:\Projects\Silver\src\Silver.Notebooks\bin\Debug\net6.0\Silver.CodeAnalysis.IL.dll"
-#r "C:\Projects\Silver\src\Silver.Notebooks\bin\Debug\net6.0\Silver.Compiler.dll"
-#r "C:\Projects\Silver\src\Silver.Notebooks\bin\Debug\net6.0\Silver.Notebooks.dll"
-#r "C:\Projects\Silver\src\Silver.Notebooks\bin\Debug\net6.0\AGL.NETStandard.dll"
-#r "C:\Projects\Silver\src\Silver.Notebooks\bin\Debug\net6.0\AGL.Drawing.NETStandard.dll"
-#r "C:\Projects\Silver\src\Silver.Notebooks\bin\Debug\net6.0\AGL.NETStandard.dll"
-#r "C:\Projects\Silver\src\Silver.Notebooks.DotNetInteractive\bin\Debug\net6.0\Silver.Notebooks.DotNetInteractive.dll"

@@ -43,7 +43,7 @@ public class GraphFormatter
         Kernel.Current.SendAsync(
             new DisplayValue(new FormattedValue(
                 "text/markdown",
-                $"Added formatter for AGL graphs to kernel {Kernel.Current.Name}.")));
+                $"Added formatter for AGL graphs to .NET Interactive kernel {Kernel.Current.Name}.")));
     }
 
     public static SugiyamaLayoutSettings GetSugiyamaLayout(int minNodeWidth = 2000, int minNodeHeight = 1000, double rotateBy = 0.0)
