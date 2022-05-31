@@ -41,29 +41,41 @@ public abstract class Logger
     public abstract Op Begin(string messageTemplate, params object[] args);
 }
 
+#region Console logger
 public class ConsoleOp : Logger.Op
 {
-    public ConsoleOp(ConsoleLogger l) : base(l) { }
+    public ConsoleOp(ConsoleLogger l, string opName) : base(l) 
+    { 
+        this.opName = opName;
+        timer.Start();
+        L.Info(opName + "...");
+    }
 
     public override void Complete()
     {
-        L.Info("Complete.");
+        timer.Stop();
+        L.Info($"{opName} completed in {timer.ElapsedMilliseconds}ms.");
         isCompleted = true;
     }
 
     public override void Abandon()
     {
+        timer.Stop();
         isAbandoned = true;
-        L.Error("Abandoned.");
+        L.Error($"{opName} abandoned after {timer.ElapsedMilliseconds}ms.");
     }
 
     public override void Dispose()
     {
+        if (timer.IsRunning) timer.Stop();
         if (!(isCompleted || isAbandoned))
         {
-            L.Error("Abandoned.");
+            L.Error($"{opName} abandoned after {timer.ElapsedMilliseconds}ms.");
         }
     }
+
+    string opName;
+    Stopwatch timer = new Stopwatch();
 }
 
 public class ConsoleLogger : Logger
@@ -91,5 +103,6 @@ public class ConsoleLogger : Logger
 
     public override void Fatal(string messageTemplate, params object[] args) => Console.WriteLine("[FATAL] " + messageTemplate, args);
 
-    public override Op Begin(string messageTemplate, params object[] args) => new ConsoleOp(this);
+    public override Op Begin(string messageTemplate, params object[] args) => new ConsoleOp(this, String.Format(messageTemplate, args));
 }
+#endregion
