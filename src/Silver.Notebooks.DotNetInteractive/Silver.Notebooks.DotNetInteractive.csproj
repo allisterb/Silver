@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.Gdi\AGL.Drawing.Gdi.csproj" />
+    <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
   </ItemGroup>
 
 </Project>

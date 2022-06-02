@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Xml;
 
 using Microsoft.DotNet.Interactive;
 using Microsoft.DotNet.Interactive.Commands;
@@ -100,9 +100,43 @@ public class GraphFormatter
             return Convert.ToBase64String(ms.ToArray());
         }
     }
-    private static PocketView CreateImgTag(Microsoft.Msagl.Drawing.Graph g, string id, int height, int width)
+
+    public static string DrawSvg(Graph graph, int width = 2000, int height = 2000, double rotateBy = 0.0)
     {
-        var imgdata = $"data:image/png;base64,{Draw(g, width, height)}";
+        graph.GeometryGraph = new GeometryGraph();
+        var layout = GetSugiyamaLayout(5, 10, rotateBy);
+        graph.LayoutAlgorithmSettings = layout;
+        int nodeWidth = graph.Nodes.Max(n => n.LabelText.Length) * 9;
+        foreach (Node n in graph.Nodes)
+        {
+            var gn = new GeometryNode(CurveFactory.CreateRectangle(nodeWidth, 40, new GeometryPoint()), n);
+            graph.GeometryGraph.Nodes.Add(gn);
+            n.GeometryNode = gn;
+        }
+        foreach (Edge edge in graph.Edges)
+        {
+            var sn = graph.FindGeometryNode(edge.Source);
+            var tn = graph.FindGeometryNode(edge.Target);
+            var ge = new GeometryEdge(sn, tn);
+            ge.UserData = edge;
+            ge.EdgeGeometry.TargetArrowhead = new Arrowhead();
+            graph.GeometryGraph.Edges.Add(ge);
+            edge.GeometryEdge = ge;
+        }
+        graph.GeometryGraph.UpdateBoundingBox();
+        new LayeredLayout(graph.GeometryGraph, layout).Run();
+
+        var sb = new StringBuilder();
+        var svgWriter = new SvgGraphWriter(sb, graph);
+        svgWriter.Write();
+        return sb.ToString();
+    }
+    private static PocketView CreateImgTag(Graph g, string id, int height, int width)
+    {
+        var xmldoc = new XmlDocument();
+        xmldoc.LoadXml(DrawSvg(g, width, height));
+
+        var imgdata = $"data:image/svg+xml;base64,{Convert.ToBase64String(Encoding.UTF8.GetBytes(xmldoc.DocumentElement.OuterXml))}";
         return (PocketView) img[id: id, src: imgdata, height: height, width: width]();
     }
 }

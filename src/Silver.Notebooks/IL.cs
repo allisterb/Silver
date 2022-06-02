@@ -3,9 +3,8 @@
 using System.IO;
 using Microsoft.Msagl.Drawing;
 
-using Silver.CodeAnalysis.IL;
 using Silver.Compiler;
-using Silver.Drawing;
+using Silver.CodeAnalysis.IL;
 
 public class IL : Runtime
 {
@@ -61,7 +60,7 @@ public class IL : Runtime
         else return an;
     }
 
-    public static Microsoft.Msagl.Drawing.Graph PrintCallGraphs(string fileName)
+    public static Graph GetCallGraph(string fileName)
     {
         var analyzer = GetAnalyzer(fileName);
         return analyzer!.GetCallGraph();
