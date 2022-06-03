@@ -151,6 +151,9 @@ public partial class Analyzer : Runtime
         using var op = Begin("Creating control-flow graph for methods in assembly {0}", AssemblyFile.Name);
         var methods = CollectMethods();
         Graph g = new Graph();
+        
+        g.Kind = "cfg";
+        
         var sourceEmitterOutput = new MonochromeSourceEmitterOutput();
         foreach (var method in methods)
         {

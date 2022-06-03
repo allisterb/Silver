@@ -1,6 +1,4 @@
-﻿// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-
-namespace Silver.Notebooks.VisJS;
+﻿namespace Silver.Drawing.VisJS;
 
 using System.Collections.Generic;
 using System.IO;

@@ -16,5 +16,5 @@ global using static Silver.CollectionUtils;
 
 global using Microsoft.Cci;
 global using Backend;
-global using Spectre.Console;
+
 global using AnalyzerState = System.Collections.Generic.Dictionary<string, object>;

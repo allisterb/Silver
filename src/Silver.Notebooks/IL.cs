@@ -65,4 +65,10 @@ public class IL : Runtime
         var analyzer = GetAnalyzer(fileName);
         return analyzer!.GetCallGraph();
     }
+
+    public static Graph GetControlFlowGraph(string fileName)
+    {
+        var analyzer = GetAnalyzer(fileName);
+        return analyzer!.GetControlFlowGraph();
+    }
 }

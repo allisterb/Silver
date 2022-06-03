@@ -119,7 +119,7 @@ public class IL : Runtime
         if (analyzer is null) return false;
         var cg = analyzer.GetCallGraph();
         if (cg is null) return false;
-        Graph.Draw(cg, outputFileName, graphFormat, rotateBy: Math.PI / 2);
+        Drawing.Draw(cg, outputFileName, graphFormat, rotateBy: Math.PI / 2);
         return true;
     }
             
@@ -134,7 +134,7 @@ public class IL : Runtime
         if (analyzer is null) return false;
         var cfg = analyzer.GetControlFlowGraph();
         if (cfg is null) return false;
-        Graph.Draw(cfg, outputFileName, graphFormat);
+        Drawing.Draw(cfg, outputFileName, graphFormat);
         return true;
     }
 
