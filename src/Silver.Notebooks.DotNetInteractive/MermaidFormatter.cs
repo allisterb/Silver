@@ -97,7 +97,7 @@ namespace Silver.Notebooks
             Kernel.Current.SendAsync(
                 new DisplayValue(new FormattedValue(
                     "text/markdown",
-                    $"Added formatter for Mermaid lanfuage to .NET Interactive kernel {Kernel.Current.Name}.")));
+                    $"Added formatter for Mermaid language to .NET Interactive kernel {Kernel.Current.Name}.")));
         }
     }
 }

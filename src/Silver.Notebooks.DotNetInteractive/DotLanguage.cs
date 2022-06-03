@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.IO;
 namespace Silver.Notebooks
 {
     public class DotLanguage
@@ -25,6 +21,10 @@ namespace Silver.Notebooks
         internal string Height { get; set; }
         #endregion
 
+        #region Methods
+        public static DotLanguage LoadFrom(string f) => new DotLanguage(File.ReadAllText(f))!;
+        #endregion
+    
         #region Overriden members
         public override string ToString()
         {

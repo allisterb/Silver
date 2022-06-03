@@ -8,10 +8,11 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.Interactive" Version="1.0.0-beta.22256.1" />
     <PackageReference Include="Microsoft.DotNet.Interactive.Formatting" Version="1.0.0-beta.22256.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.Gdi\AGL.Drawing.Gdi.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.NETStandard\AGL.Drawing.NETStandard.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
   </ItemGroup>
 

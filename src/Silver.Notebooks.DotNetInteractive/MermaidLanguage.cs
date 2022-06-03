@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Silver.Notebooks
 {
@@ -25,5 +22,7 @@ namespace Silver.Notebooks
             Height = string.Empty;
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
+
+        public static MermaidLanguage LoadFrom(string f) => new MermaidLanguage(File.ReadAllText(f))!;
     }
 }
