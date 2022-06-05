@@ -2,6 +2,9 @@ using Stratis.SmartContracts;
 //^ using Microsoft.Contracts;
 
 
+/// <summary>
+/// Test
+/// </summary>
 public class Player : SmartContract
 {
     //^ [NotDelayed]

@@ -1,5 +1,7 @@
 ﻿namespace Silver.CLI.Commands;
 
+using Microsoft.Msagl.Drawing;
+
 using Silver.CLI.Core;
 using static Program;
 internal class ILCmd : Command
@@ -39,7 +41,7 @@ internal class ILCmd : Command
     internal static void PrintControlFlowGraph(ControlFlowGraphOptions o)
     {
         ExitIfFileNotExists(o.InputFile);
-        if (!Enum.TryParse<Drawing.GraphFormat>(o.OutputFormat.ToUpper(), out var graphFormat))
+        if (!Enum.TryParse<GraphFormat>(o.OutputFormat.ToUpper(), out var graphFormat))
         {
             Error("Invalid graph format: {0}.", o.OutputFormat);
             Exit(ExitResult.INVALID_OPTIONS);

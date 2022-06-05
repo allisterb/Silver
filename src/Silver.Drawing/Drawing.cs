@@ -2,7 +2,6 @@
 
 using Microsoft.Msagl.Drawing;
 
-using AGL.Drawing;
 using AGL.Drawing.Gdi;
 public class Drawing : Runtime 
 {

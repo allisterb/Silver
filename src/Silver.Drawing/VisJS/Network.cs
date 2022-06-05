@@ -98,6 +98,9 @@ public class NetworkNode
 
 public class NetworkOptions
 {
+    [JsonProperty("autoresize", NullValueHandling = NullValueHandling.Ignore)]
+    public bool? AutoResize { get; set; }
+
     [JsonProperty("manipulation", NullValueHandling = NullValueHandling.Ignore)]
     public bool Manipulation { get; set; }
 
@@ -112,6 +115,9 @@ public class NetworkOptions
 
     [JsonProperty("physics", NullValueHandling = NullValueHandling.Ignore)]
     public NetworkPhysics? Physics { get; set; }
+
+    [JsonProperty("edges", NullValueHandling = NullValueHandling.Ignore)]
+    public NetworkEdges? Edges { get; set; }
 }
 
 public class NetworkPhysics
@@ -122,6 +128,32 @@ public class NetworkPhysics
 
 public class NetworkSmooth
 {
+    [JsonProperty("enabled", NullValueHandling = NullValueHandling.Ignore)]
+    public bool? Enabled { get; set; }
+
     [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
     public string? Type { get; set; }
 }
+
+public class NetworkEdgeArrows
+{
+    [JsonProperty("to", NullValueHandling = NullValueHandling.Ignore)]
+    public NetworkEdgeTo? To { get; set; }
+}
+
+public class NetworkEdges
+{
+    [JsonProperty("arrows", NullValueHandling = NullValueHandling.Ignore)]
+    public NetworkEdgeArrows? Arrows { get; set; }
+
+    [JsonProperty("smooth", NullValueHandling = NullValueHandling.Ignore)]
+    public NetworkSmooth? Smooth { get; set; }
+}
+
+
+public class NetworkEdgeTo
+{
+    [JsonProperty("enabled", NullValueHandling = NullValueHandling.Ignore)]
+    public bool Enabled { get; set; }
+}
+

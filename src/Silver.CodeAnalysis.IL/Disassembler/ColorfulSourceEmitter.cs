@@ -53,6 +53,7 @@ public class ColorfulSourceEmitter : SourceEmitter
         //var td = (ITypeDefinition)namespaceTypeDefinition;
         if (namespaceTypeDefinition.IsClass && classPattern is not null && classPattern.IsMatch(namespaceTypeDefinition.GetName()))
         {
+            Runtime.Debug("Traversing class {0} that matches pattern {1}...", namespaceTypeDefinition.GetName(), classPattern);
             base.TraverseChildren(namespaceTypeDefinition);
         }
         else if (namespaceTypeDefinition.IsClass && classPattern is not null && !classPattern.IsMatch(namespaceTypeDefinition.GetName()))
@@ -62,6 +63,7 @@ public class ColorfulSourceEmitter : SourceEmitter
         }
         else
         {
+            Runtime.Debug(Environment.NewLine + "Traversing class {0}...", namespaceTypeDefinition.GetName());
             base.TraverseChildren(namespaceTypeDefinition);
         }
     }
@@ -70,6 +72,7 @@ public class ColorfulSourceEmitter : SourceEmitter
     {
         if (methodPattern is not null && methodPattern.IsMatch(method.Name.Value))
         {
+            Runtime.Debug(Environment.NewLine + "Traversing method {0} that matches pattern {1}...", method.Name.Value, methodPattern);
             base.TraverseChildren(method);
         }
         else if (methodPattern is not null && !methodPattern.IsMatch(method.Name.Value))
@@ -79,6 +82,7 @@ public class ColorfulSourceEmitter : SourceEmitter
         }
         else
         {
+            Runtime.Debug(Environment.NewLine + "Traversing method {0}...", method.Name.Value);
             base.TraverseChildren(method);
         }
     }
@@ -87,6 +91,7 @@ public class ColorfulSourceEmitter : SourceEmitter
     {
         if (methodPattern is not null && methodPattern.IsMatch(prop.Name.Value))
         {
+            Runtime.Debug(Environment.NewLine + "Traversing property {0} that matches pattern {1}...", prop.Name.Value, methodPattern);
             base.TraverseChildren(prop);
         }
         else if (methodPattern is not null && !methodPattern.IsMatch(prop.Name.Value))
@@ -96,7 +101,9 @@ public class ColorfulSourceEmitter : SourceEmitter
         }
         else
         {
+            Runtime.Debug(Environment.NewLine + "Traversing property {0}...", prop.Name.Value);
             base.TraverseChildren(prop);
+
         }
     }
 

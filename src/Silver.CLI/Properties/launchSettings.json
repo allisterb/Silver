@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": " compile $(SolutionDir)..\\examples\\TicketBooth\\Ticketbooth.Contract.csproj --ssc --rewrite"
+      "commandLineArgs": "dis --debug $(SolutionDir)..\\examples\\PingPongContract\\bin\\Debug\\netcoreapp3.1\\PingPongContract.dll"
     }
   }
 }

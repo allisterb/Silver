@@ -1,6 +1,7 @@
 ﻿namespace Silver.CLI.Core;
 
 using Microsoft.Cci;
+using Microsoft.Msagl.Drawing;
 
 using Silver.CodeAnalysis.IL;
 using Silver.Compiler;
