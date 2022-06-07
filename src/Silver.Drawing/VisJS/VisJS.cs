@@ -68,10 +68,11 @@ namespace Silver.Drawing.VisJS
                     Font = new NetworkFont() { Face = "monospace", Align = "left" },
                     Shape = nodeshape,
                     Size = nodesize,
-                    Color = new NetworkColor()
-                    {
-                        Background = ( node.Attr.FillColor == Color.Transparent || node.Attr.FillColor == Color.Black) ? null : node.Attr.FillColor.ToString().Trim('"')
-                    }
+                    Color = node.Attr.FillColor != Color.Transparent || node.Attr.Color != Color.White ? 
+                        new NetworkColor()
+                        {
+                            Background = node.Attr.FillColor.ToString().Trim('"')
+                        } : null
                 }); ;
             }
             
