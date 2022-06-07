@@ -101,6 +101,12 @@ public class NetworkNode
     [JsonProperty("label", NullValueHandling = NullValueHandling.Ignore)]
     public string? Label { get; set; }
 
+    [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
+    public string? Title { get; set; }
+
+    [JsonProperty("level", NullValueHandling = NullValueHandling.Ignore)]
+    public int? Level { get; set; }
+
     [JsonProperty("color", NullValueHandling = NullValueHandling.Ignore)]
     public NetworkColor? Color { get; set; }
 

@@ -138,6 +138,18 @@ public partial class Analyzer : Runtime
                 }
                 g.AddEdge(csNode.Id, rootNode.Id);
             }
+            if (method.ResolvedMethod is not null && method.ResolvedMethod.IsDeployedSmartContractMethod())
+            {
+                rootNode.Attr.FillColor = Color.Red;
+            }
+            else if (method.ResolvedMethod is not null && method.ResolvedMethod.IsSmartContractMethod())
+            {
+                rootNode.Attr.FillColor = Color.Yellow;
+            }
+            else
+            {
+                rootNode.Attr.FillColor = Color.White;
+            }
         }
         op.Complete();
         return g;

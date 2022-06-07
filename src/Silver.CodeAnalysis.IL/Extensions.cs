@@ -13,12 +13,20 @@ public static class Extensions
         return t.HaseBaseClass() && t.BaseClasses.Any(t => t.ToString() == "Stratis.SmartContracts.SmartContract");
     }
 
+    public static bool IsDeployedSmartContract(this ITypeDefinition t)
+    {
+        return t.IsSmartContract() && t.Attributes is not null && t.Attributes.Any(a => a.Type.ResolvedType.ToString() == "Stratis.SmartContracts.DeployAttribute");
+    }
+
     public static bool IsDummyName(this ITypeDefinitionMember method) =>
         method.Name.ToString() == "Microsoft.Cci.DummyName";
 
     public static bool IsSmartContractMethod(this IMethodDefinition method)
         => method.ContainingTypeDefinition.IsSmartContract() && method.Visibility == TypeMemberVisibility.Public;
-    
+
+    public static bool IsDeployedSmartContractMethod(this IMethodDefinition method)
+       => method.ContainingTypeDefinition.IsDeployedSmartContract() && method.Visibility == TypeMemberVisibility.Public;
+
     public static string GetUniqueName(this IMethodDefinition md)
         => !md.IsDummyName() ? MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature) : MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature).TrimStart('.');
     public static string GetUniqueId(this IMethodDefinition md, int id)
