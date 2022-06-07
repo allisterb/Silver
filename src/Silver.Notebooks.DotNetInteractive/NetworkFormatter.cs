@@ -40,7 +40,7 @@ public class NetworkFormatter : Runtime
         }});
         }}");
     }
-    private static IHtmlContent GenerateHtml(Network network, Uri libraryUri, string? libraryVersion, string cacheBuster, string width, string height)
+    internal static IHtmlContent GenerateHtml(Network network, Uri libraryUri, string? libraryVersion, string cacheBuster, string width, string height)
     {
         var requireUri = new Uri("https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js");
         var divId = Guid.NewGuid().ToString("N");
@@ -66,7 +66,7 @@ public class NetworkFormatter : Runtime
         {
             var html = GenerateHtml(network, new Uri("https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js", UriKind.Absolute),
                 "0.0.0", cacheBuster, network.Width, network.Height);
-            Debug("Generated HTML code {0} for DOT code {1} of width {2} and height {3}.", html, JsonConvert.SerializeObject(network), network.Width, network.Height);
+            Debug("Generated HTML code {0} for VisJS network {1} of width {2} and height {3}.", html, JsonConvert.SerializeObject(network), network.Width, network.Height);
             html.WriteTo(writer, HtmlEncoder.Default);
         }, HtmlFormatter.MimeType);
         Kernel.Current.SendAsync(

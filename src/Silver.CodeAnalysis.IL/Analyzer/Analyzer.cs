@@ -106,7 +106,10 @@ public partial class Analyzer : Runtime
             return false;            
         };
         var cg = cha.Analyze(methods);
+        
         var g = new Graph();
+        g.Kind = "cg";
+        
         foreach (var method in cg.Roots)
         {
             Node? rootNode = null;
@@ -150,8 +153,8 @@ public partial class Analyzer : Runtime
         }
         using var op = Begin("Creating control-flow graph for methods in assembly {0}", AssemblyFile.Name);
         var methods = CollectMethods();
-        Graph g = new Graph();
         
+        Graph g = new Graph();
         g.Kind = "cfg";
         
         var sourceEmitterOutput = new MonochromeSourceEmitterOutput();

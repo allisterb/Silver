@@ -147,6 +147,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleVerifiableContracts",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BC68EC82-CCAC-4BB3-9C76-63AC9A206788}"
 	ProjectSection(SolutionItems) = preProject
+		..\scripts\build-notebooks = ..\scripts\build-notebooks
+		..\scripts\build-notebooks.cmd = ..\scripts\build-notebooks.cmd
 		..\scripts\build-sc-analyzer = ..\scripts\build-sc-analyzer
 		..\scripts\build-sc-analyzer.cmd = ..\scripts\build-sc-analyzer.cmd
 		..\scripts\build-sc-base = ..\scripts\build-sc-base
