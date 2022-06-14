@@ -8,7 +8,7 @@ internal class ILCmd : Command
 {
     internal static void Dissassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
     {
-        ExitIfFileNotExists(fileName);
+        ExitIfFileNotFound(fileName);
         if (!IL.Disassemble(fileName, boogie, noIL, classPattern, methodPattern))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);
@@ -21,7 +21,7 @@ internal class ILCmd : Command
 
     internal static void Summarize(string fileName)
     {
-        ExitIfFileNotExists(fileName);
+        ExitIfFileNotFound(fileName);
         if (!IL.Summarize(fileName))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);
@@ -34,13 +34,13 @@ internal class ILCmd : Command
 
     internal static void PrintCallGraph(CallGraphOptions o)
     {
-        ExitIfFileNotExists(o.InputFile);
+        ExitIfFileNotFound(o.InputFile);
         IL.PrintCallGraphs(o.InputFile, o.OutputFile, o.OutputFormat);
     }
 
     internal static void PrintControlFlowGraph(ControlFlowGraphOptions o)
     {
-        ExitIfFileNotExists(o.InputFile);
+        ExitIfFileNotFound(o.InputFile);
         if (!Enum.TryParse<GraphFormat>(o.OutputFormat.ToUpper(), out var graphFormat))
         {
             Error("Invalid graph format: {0}.", o.OutputFormat);

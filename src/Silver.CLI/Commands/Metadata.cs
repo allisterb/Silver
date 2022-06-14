@@ -6,7 +6,7 @@ internal class AssemblyCmd : Command
 {
     internal static void References(string path)
     {
-        ExitIfFileNotExists(path);
+        ExitIfFileNotFound(path);
         if(!Metadata.GetReferences(path))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);

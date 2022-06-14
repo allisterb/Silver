@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using CCIProvider;
+using Microsoft.Cci.
 using Model;
-using Model.Types;
+using Backend.Model.Types;
 using Backend.Analyses;
 using Backend.Serialization;
 using Backend.Transformations;
 using Backend.Utils;
-using Model.ThreeAddressCode.Values;
+using Backend.Model.ThreeAddressCode.Values;
 using Backend.Model;
 using Tac = Model.ThreeAddressCode.Instructions;
 using Bytecode = Model.Bytecode;

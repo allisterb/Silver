@@ -146,6 +146,38 @@ public abstract class Runtime
     [DebuggerStepThrough]
     public T FailIfNotInitialized<T>(Func<T> r) => Initialized ? r() : throw new RuntimeNotInitializedException(this);
 
+    [DebuggerStepThrough]
+    public static string FailIfFileNotFound(string filePath)
+    {
+        if (filePath.StartsWith("http://") || filePath.StartsWith("https://"))
+        {
+            return filePath;
+        }
+        else if (!File.Exists(filePath))
+        {
+            throw new FileNotFoundException(filePath);
+        }
+        else return filePath;
+    }
+
+    [DebuggerStepThrough]
+    public static void SetProps<T>(T o, Dictionary<string, object> setprops)
+    {
+        PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        foreach (var kv in setprops)
+        {
+            properties.Where(x => x.Name == kv.Key).First().SetValue(o, kv.Value);
+        }
+    }
+
+    [DebuggerStepThrough]
+    public static object? GetProp<T>(T o, string name)
+    {
+        PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        return properties.FirstOrDefault(x => x.Name == name)?.GetValue(o);
+    }
+
     public static string? RunCmd(string cmdName, string arguments = "", string? workingDir = null, DataReceivedEventHandler? outputHandler = null, DataReceivedEventHandler? errorHandler = null, 
         bool checkExists = true, bool isNETFxTool = false, bool isNETCoreTool = false)
     {
@@ -254,31 +286,6 @@ public abstract class Runtime
             }
         }
         op.Complete();
-    }
-
-    [DebuggerStepThrough]
-    public static void SetProps<T>(T o, Dictionary<string, object> setprops)
-    {
-        PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public |  BindingFlags.NonPublic | BindingFlags.Instance);
-
-        foreach (var kv in setprops)
-        {
-            properties.Where(x => x.Name == kv.Key).First().SetValue(o, kv.Value);
-        }
-    }
-
-    [DebuggerStepThrough]
-    public static object? GetProp<T>(T o, string name)
-    {
-        PropertyInfo[] properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        return properties.FirstOrDefault(x => x.Name == name)?.GetValue(o); 
-    }
-
-    [DebuggerStepThrough]
-    public static string FailIfFileNotFound(string filePath)
-    {
-        if (!File.Exists(filePath)) throw new FileNotFoundException(filePath);
-        return filePath;
     }
 
     public static string ViewFilePath(string path, string? relativeTo = null)

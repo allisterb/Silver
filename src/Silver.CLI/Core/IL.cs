@@ -6,7 +6,8 @@ using Microsoft.Msagl.Drawing;
 using Silver.CodeAnalysis.IL;
 using Silver.Compiler;
 using Silver.Drawing;
-    
+using Silver.Metadata;
+
 public class IL : Runtime
 {
     public static bool Disassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
@@ -170,6 +171,10 @@ public class IL : Runtime
                 Error("Could not build project {0}.", f);
                 return null;
             }
+        }
+        else if (f.IsGitHubUrl())
+        {
+            return GitHub.GetAssemblyByteCode(f).ToString();
         }
         else return null;
     }

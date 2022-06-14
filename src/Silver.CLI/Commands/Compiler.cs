@@ -9,7 +9,7 @@ internal class CompilerCmd : Command
 {
     internal static void GetProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
     {
-        ExitIfFileNotFound(filePath);
+        Program.ExitIfFileNotFound(filePath);
         if (!Compiler.PrintProperty(filePath, buildConfig, prop, additionalFiles))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);
@@ -22,7 +22,7 @@ internal class CompilerCmd : Command
 
     internal static void GetCommandLine(string filePath, string buildConfig, params string[] additionalFiles)
     {
-        ExitIfFileNotFound(filePath);
+        Program.ExitIfFileNotFound(filePath);
         if (!Compiler.GetCommandLine(filePath, buildConfig))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);
@@ -35,7 +35,7 @@ internal class CompilerCmd : Command
 
     internal static void Compile(string filePath, string buildConfig, bool verify, bool ssc, bool rewrite, bool validate, bool norewriteassert, bool noscanalyze, string? classPattern = null, string? methodPattern = null, params string[] additionalFiles)
     {
-        ExitIfFileNotFound(filePath);
+        Program.ExitIfFileNotFound(filePath);
         if (!Compiler.Compile(filePath, buildConfig, verify, ssc, rewrite, validate, norewriteassert, noscanalyze, out var target) || target is null)
         {
             Exit(ExitResult.UNKNOWN_ERROR);

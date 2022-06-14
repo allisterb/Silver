@@ -152,7 +152,6 @@ class Program : Runtime, IInterface
           .WithParsed<ControlFlowGraphOptions>(o =>
           {
               ExitIfFileNotFound(o.InputFile);
-
               if (string.IsNullOrEmpty(o.OutputFormat)) o.OutputFormat = Path.GetExtension(o.OutputFile).TrimStart('.');
               ILCmd.PrintControlFlowGraph(o);
 
@@ -273,12 +272,15 @@ class Program : Runtime, IInterface
 
     public static void ExitIfFileNotFound(string filePath)
     {
+        if (filePath.StartsWith("http://") || filePath.StartsWith("https://")) return;
         if (!File.Exists(filePath))
         {
             Error("The file {0} does not exist.", filePath);
             Exit(ExitResult.NOT_FOUND);
         }
     }
+
+    public static void ExitWithSuccess() => Exit(ExitResult.SUCCESS);
 
     public static T GetTimed_<T>(Func<T> p, string status, string messageTemplate, params object[] o)
     {

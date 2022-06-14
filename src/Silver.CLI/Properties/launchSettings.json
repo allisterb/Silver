@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "dis --debug $(SolutionDir)..\\examples\\PingPongContract\\bin\\Debug\\netcoreapp3.1\\PingPongContract.dll"
+      "commandLineArgs": "cg https://github.com/stratisproject/CirrusSmartContracts/pull/31 foo.png"
     }
   }
 }
