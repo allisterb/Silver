@@ -1,6 +1,7 @@
 ﻿namespace Silver.Notebooks;
 
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.Msagl.Drawing;
 
@@ -79,6 +80,47 @@ public class IL : Runtime
     {
         var builder = new StringBuilder();
         builder.AppendLine("classDiagram");
+        foreach (var c in summary.Classes)
+        {
+            var className = c.GetName();
+            builder.AppendLineFormat("class {0}", className);
+            foreach (var m in c.Methods)
+            {
+                builder.AppendFormat("{0} : ", className);
+                switch (m.Visibility)
+                {
+                    case Microsoft.Cci.TypeMemberVisibility.Public:
+                        builder.AppendFormat("+");
+                        break;
+                    case Microsoft.Cci.TypeMemberVisibility.Private:
+                        builder.AppendFormat("-");
+                        break;
+                    case Microsoft.Cci.TypeMemberVisibility.Family:
+                        builder.AppendFormat("#");
+                        break;
+                    case Microsoft.Cci.TypeMemberVisibility.Assembly:
+                        builder.AppendFormat("~");
+                        break;
+                    default:
+                        builder.AppendFormat("-");
+                        break;
+                }
+                builder.AppendFormat(m.Name.Value);
+                builder.Append("(");
+                foreach(var p in m.Parameters)
+                {
+                    builder.Append(p.Name.Value);
+                    builder.Append(",");
+                }
+                if (m.Parameters.Count() > 0)
+                {
+                    builder.Remove(builder.Length - 1, 1);
+                }
+                builder.Append(")");
+                builder.AppendFormat(System.Environment.NewLine);
+            }
+        }
+            
         return new MermaidLanguage(builder.ToString());
     }
 }

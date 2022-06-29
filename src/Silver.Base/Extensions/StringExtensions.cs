@@ -1,5 +1,6 @@
 namespace Silver;
 
+using System.Text;
 public static class StringExtensions
 {
     public static bool IsEmpty(this string s) => s == "";
@@ -40,6 +41,8 @@ public static class StringExtensions
                     StringComparison.InvariantCultureIgnoreCase) ? -1 : 1);
         }
     }
+
+    public static void AppendLineFormat(this StringBuilder s, string format, params object?[] args) => s.AppendLine(string.Format(format, args));
 
     private static Dictionary<string, int> numberTable = new Dictionary<string, int>
     {{"zero",0},{"one",1},{"two",2},{"three",3},{"four",4},
