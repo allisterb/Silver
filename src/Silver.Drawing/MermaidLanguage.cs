@@ -1,13 +1,13 @@
-﻿namespace Silver.Notebooks;
+﻿namespace Silver.Drawing;
 
 using System;
 using System.IO;
 
 public class MermaidLanguage
 {
-    internal string Background { get; set; }
-    internal string Width { get; set; }
-    internal string Height { get; set; }
+    public string Background { get; set; }
+    public string Width { get; set; }
+    public string Height { get; set; }
     public override string ToString()
     {
         return _value;

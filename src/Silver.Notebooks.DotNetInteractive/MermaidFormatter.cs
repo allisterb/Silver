@@ -14,6 +14,8 @@ using Microsoft.DotNet.Interactive.Commands;
 using Microsoft.DotNet.Interactive.Formatting;
 using Microsoft.DotNet.Interactive.Http;
 
+using Silver.Drawing;
+
 public class MermaidFormatter : Runtime
 {
     private static void AppendJsCode(StringBuilder stringBuilder, string divId, string functionName, Uri? libraryUri, string? libraryVersion, string? cacheBuster, string markdown)

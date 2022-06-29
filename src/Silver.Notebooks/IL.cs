@@ -1,10 +1,13 @@
 ﻿namespace Silver.Notebooks;
 
 using System.IO;
+using System.Text;
 using Microsoft.Msagl.Drawing;
 
 using Silver.Compiler;
 using Silver.CodeAnalysis.IL;
+using Silver.Drawing;
+using Silver.Metadata;
 
 public class IL : Runtime
 {
@@ -40,8 +43,20 @@ public class IL : Runtime
                 return null;
             }
         }
+        else if (f.IsGitHubUrl())
+        {
+            var fn = GitHub.GetAssemblyFromStratisPR(f);
+            if (fn is null)
+            {
+                Error("Could not get target assembly.");
+                return null;
+            }
+            Info("Target assembly is {0}.", fn);
+            return fn;
+        }
         else return null;
     }
+
     public static Analyzer? GetAnalyzer(string fileName)
     {
         var a = GetTargetAssembly(FailIfFileNotFound(fileName));
@@ -60,15 +75,10 @@ public class IL : Runtime
         else return an;
     }
 
-    public static Graph GetCallGraph(string fileName)
+    public static MermaidLanguage Draw(Summary summary)
     {
-        var analyzer = GetAnalyzer(fileName);
-        return analyzer!.GetCallGraph();
-    }
-
-    public static Graph GetControlFlowGraph(string fileName)
-    {
-        var analyzer = GetAnalyzer(fileName);
-        return analyzer!.GetControlFlowGraph();
+        var builder = new StringBuilder();
+        builder.AppendLine("classDiagram");
+        return new MermaidLanguage(builder.ToString());
     }
 }

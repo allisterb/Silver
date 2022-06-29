@@ -174,7 +174,9 @@ public class IL : Runtime
         }
         else if (f.IsGitHubUrl())
         {
-            return GitHub.GetAssemblyFromStratisPR(f);
+            var fn = GitHub.GetAssemblyFromStratisPR(f);
+            Info("Target assembly is {0}.", fn);
+            return fn;
         }
         else return null;
     }

@@ -53,6 +53,7 @@ public class GitHub : Runtime
         var fn = "Stratis.PR" + pr.Id + ".dll";
         WarnIfFileExists(fn);
         File.WriteAllBytes(fn, b);
+        Info("Assembly for Stratis pull request {0} is at {1}.", pr.IssueUrl, fn);
         op.Complete();
         return fn;
     }

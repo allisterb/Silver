@@ -367,3 +367,5 @@ FodyWeavers.xsd
 
 # MacOS
 .DS_Store
+
+notebooks/*.dll
