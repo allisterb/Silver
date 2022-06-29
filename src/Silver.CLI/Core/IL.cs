@@ -174,7 +174,7 @@ public class IL : Runtime
         }
         else if (f.IsGitHubUrl())
         {
-            return GitHub.GetAssemblyByteCode(f).ToString();
+            return GitHub.GetAssemblyFromStratisPR(f);
         }
         else return null;
     }
