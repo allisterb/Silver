@@ -15,7 +15,7 @@ public static class Extensions
 
     public static bool IsDeployedSmartContract(this ITypeDefinition t)
     {
-        return t.IsSmartContract() && t.Attributes is not null && t.Attributes.Any(a => a.Type.ResolvedType.ToString() == "Stratis.SmartContracts.DeployAttribute");
+        return t.IsSmartContract() && t.Attributes is not null && t.Attributes.Any(a => TypeHelper.GetTypeName(a.Type) == "Stratis.SmartContracts.DeployAttribute");
     }
 
     public static bool IsDummyName(this ITypeDefinitionMember method) =>
@@ -31,6 +31,9 @@ public static class Extensions
         => !md.IsDummyName() ? MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature) : MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature).TrimStart('.');
     public static string GetUniqueId(this IMethodDefinition md, int id)
         => md.GetUniqueName() + "::" + id;
+
+    public static string GetName(this ITypeReference tr)
+        => TypeHelper.GetTypeName(tr);//!td.IsDummyName() ? MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature) : MemberHelper.GetMemberSignature(md, NameFormattingOptions.Signature).TrimStart('.');
 
     public static IEnumerable<IOperation> GetILFromBody(this Instruction i, IMethodBody body) => body.Operations.Where(il => il.Offset == i.Offset);
 

@@ -95,11 +95,14 @@ public class MermaidFormatter : Runtime
                 "9.1.1",
                 cacheBuster);
             html.WriteTo(writer, HtmlEncoder.Default);
+            
         }, HtmlFormatter.MimeType);
         Kernel.Current.SendAsync(
             new DisplayValue(new FormattedValue(
                 "text/markdown",
                 $"Added formatter for Mermaid language to .NET Interactive kernel {Kernel.Current.Name}.")));
     }
+
+
 }
 

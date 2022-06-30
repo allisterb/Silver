@@ -84,7 +84,28 @@ public class IL : Runtime
         {
             var className = c.GetName();
             builder.AppendLineFormat("class {0}", className);
-            foreach (var m in c.Methods)
+            if (c.IsDeployedSmartContract()) builder.AppendLineFormat("<<contract>> {0}", className);
+            foreach (var m in c.Methods.Where(m => m.Visibility == Microsoft.Cci.TypeMemberVisibility.Public).OrderBy(m => m.Name.Value))
+            {
+                builder.AppendFormat("{0} : ", className);
+                builder.AppendFormat("+");
+                builder.AppendFormat(m.Name.Value);
+                builder.Append("(");
+                foreach (var p in m.Parameters)
+                {
+                    var t = p.Type.GetName().Replace("<", "~").Replace(">", "~") + " ";
+                    //builder.Append(t);
+                    builder.Append(p.Name.Value);
+                    builder.Append(",");
+                }
+                if (m.Parameters.Count() > 0)
+                {
+                    builder.Remove(builder.Length - 1, 1);
+                }
+                builder.Append(")");
+                builder.AppendFormat(System.Environment.NewLine);
+            }
+            foreach (var m in c.Methods.Where(m => m.Visibility != Microsoft.Cci.TypeMemberVisibility.Public).OrderBy(m => m.Name.Value))
             {
                 builder.AppendFormat("{0} : ", className);
                 switch (m.Visibility)
@@ -118,6 +139,12 @@ public class IL : Runtime
                 }
                 builder.Append(")");
                 builder.AppendFormat(System.Environment.NewLine);
+            }
+
+            var subtypes = summary.ClassHierarchy.GetSubtypes(c);
+            foreach (var subtype in subtypes)
+            {
+                builder.AppendLineFormat("{0}<|--{1}", className, subtype.GetName());
             }
         }
             

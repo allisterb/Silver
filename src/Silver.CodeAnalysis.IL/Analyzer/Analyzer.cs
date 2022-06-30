@@ -10,7 +10,7 @@ using Silver.Metadata;
 #region Records
 public record Summary(
     ITypeDefinition[] Classes, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
-    IPropertyDefinition[] Properties, IFieldDefinition[] Fields);
+    IPropertyDefinition[] Properties, IFieldDefinition[] Fields, ClassHierarchyAnalysis ClassHierarchy);
 #endregion
 
 public partial class Analyzer : Runtime
@@ -79,7 +79,8 @@ public partial class Analyzer : Runtime
         var enums = CollectEnums();
         var properties = CollectProperties();
         var fields = CollectFields();	
-        return new(classes, structs, enums, methods, properties, fields);
+        var cha = GetClassHierarchyAnalysis();
+        return new(classes, structs, enums, methods, properties, fields, cha);
     }
 
     public Graph GetCallGraph()
@@ -290,6 +291,15 @@ public partial class Analyzer : Runtime
         var visitor = new MethodVisitor(action, State);
         visitor.Traverse(Module);
         return visitor.state;
+    }
+
+    public ClassHierarchyAnalysis GetClassHierarchyAnalysis()
+    {
+        using var op = Begin("Analyzing class hierachy");
+        var cha = new ClassHierarchyAnalysis(this.Host);
+        cha.Analyze();
+        op.Complete();
+        return cha;
     }
 
     public static void Test(string fileName)
