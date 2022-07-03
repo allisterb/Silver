@@ -14,6 +14,7 @@ using Microsoft.DotNet.Interactive.Commands;
 using Microsoft.DotNet.Interactive.Formatting;
 using Microsoft.DotNet.Interactive.Http;
 
+using Silver.CodeAnalysis.IL;
 using Silver.Drawing;
 
 public class MermaidFormatter : Runtime
@@ -97,6 +98,16 @@ public class MermaidFormatter : Runtime
             html.WriteTo(writer, HtmlEncoder.Default);
             
         }, HtmlFormatter.MimeType);
+
+        Formatter.Register<Summary>((s, writer) =>
+        {
+            var html = GenerateHtml(IL.Draw(s), new Uri(@"https://cdn.jsdelivr.net/npm/mermaid@9.1.1/dist/mermaid.min.js", UriKind.Absolute),
+                "9.1.1",
+                cacheBuster);
+            html.WriteTo(writer, HtmlEncoder.Default);
+
+        }, HtmlFormatter.MimeType);
+
         Kernel.Current.SendAsync(
             new DisplayValue(new FormattedValue(
                 "text/markdown",

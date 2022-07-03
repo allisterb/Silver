@@ -9,7 +9,7 @@ using Silver.Metadata;
 
 #region Records
 public record Summary(
-    ITypeDefinition[] Classes, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
+    ITypeDefinition[] Classes, ITypeDefinition[] Interfaces, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
     IPropertyDefinition[] Properties, IFieldDefinition[] Fields, ClassHierarchyAnalysis ClassHierarchy);
 #endregion
 
@@ -74,13 +74,14 @@ public partial class Analyzer : Runtime
     {
         FailIfNotInitialized();
         var classes = CollectClasses();
+        var interfaces = CollectInterfaces();
         var methods = CollectMethods();
         var structs = CollectStructs();
         var enums = CollectEnums();
         var properties = CollectProperties();
         var fields = CollectFields();	
         var cha = GetClassHierarchyAnalysis();
-        return new(classes, structs, enums, methods, properties, fields, cha);
+        return new(classes, interfaces, structs, enums, methods, properties, fields, cha);
     }
 
     public Graph GetCallGraph()
@@ -141,11 +142,11 @@ public partial class Analyzer : Runtime
             }
             if (method.ResolvedMethod is not null && method.ResolvedMethod.IsDeployedSmartContractMethod())
             {
-                rootNode.Attr.FillColor = Color.Red;
+                rootNode.Attr.FillColor = Color.Yellow;
             }
             else if (method.ResolvedMethod is not null && method.ResolvedMethod.IsSmartContractMethod())
             {
-                rootNode.Attr.FillColor = Color.Yellow;
+                rootNode.Attr.FillColor = Color.Blue;
             }
             else
             {
@@ -268,6 +269,8 @@ public partial class Analyzer : Runtime
     internal T[] CollectMembers<T>(string name) where T : ITypeDefinitionMember => CollectMembers<T>(name, All<T>(), Identity<T>());
 
     internal ITypeDefinition[] CollectClasses() => CollectTypes("Classes", (t => t.IsClass && t.GetName() != "<Module>")).ToArray();
+
+    internal ITypeDefinition[] CollectInterfaces() => CollectTypes("Interfaces", (t => t.IsInterface)).ToArray();
 
     internal ITypeDefinition[] CollectStructs() => CollectTypes("Structs", (t => t.IsStruct)).ToArray();
 

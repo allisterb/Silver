@@ -80,7 +80,7 @@ public class IL : Runtime
     {
         var builder = new StringBuilder();
         builder.AppendLine("classDiagram");
-        foreach (var c in summary.Classes)
+        foreach (var c in summary.Classes.Concat(summary.Interfaces).Concat(summary.Structs))
         {
             var className = c.GetName();
             builder.AppendLineFormat("class {0}", className);

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
@@ -16,6 +16,7 @@
     <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.NETStandard\AGL.Drawing.NETStandard.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
+    <ProjectReference Include="..\Silver.Notebooks\Silver.Notebooks.csproj" />
   </ItemGroup>
 
 </Project>
