@@ -25,3 +25,6 @@
 [submodule "ext/dotnet-interactive-extension-lab"]
 	path = ext/dotnet-interactive-extension-lab
 	url = https://github.com/allisterb/dotnet-interactive-extension-lab.git
+[submodule "ext/satsumagraph"]
+	path = ext/satsumagraph
+	url = https://github.com/allisterb/satsumagraph.git
