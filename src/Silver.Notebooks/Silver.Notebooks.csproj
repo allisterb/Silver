@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.Gdi\AGL.Drawing.Gdi.csproj" />
+    <ProjectReference Include="..\..\ext\AGL\AGL.Drawing.NETStandard\AGL.Drawing.NETStandard.csproj" />
     <ProjectReference Include="..\Silver.Base\Silver.Base.csproj" />
     <ProjectReference Include="..\Silver.CodeAnalysis.IL\Silver.CodeAnalysis.IL.csproj" />
     <ProjectReference Include="..\Silver.Compiler\Silver.Compiler.csproj" />
+    <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
     <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
   </ItemGroup>
 

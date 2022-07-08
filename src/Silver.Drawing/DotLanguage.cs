@@ -8,18 +8,16 @@ public class DotLanguage
     #region Constructors
     public DotLanguage(string code, string width = "100%", string height = "600px")
     {
-
-        Code = code ?? throw new ArgumentNullException(nameof(code));
+        Code = code;
         Width = width;
         Height = height;
-
     }
     #endregion
 
     #region Properties
-    internal string Code { get; set; }
-    internal string Width { get; set; }
-    internal string Height { get; set; }
+    public string Code { get; set; }
+    public string Width { get; set; }
+    public string Height { get; set; }
     #endregion
 
     #region Methods
