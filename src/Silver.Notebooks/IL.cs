@@ -82,7 +82,7 @@ public class IL : Runtime
         builder.AppendLine("classDiagram");
         foreach (var c in summary.Classes.Concat(summary.Interfaces).Concat(summary.Structs))
         {
-            var className = c.GetName();
+            var className = c.GetName().Replace(".", "_");
             builder.AppendLineFormat("class {0}", className);
             if (c.IsDeployedSmartContract()) builder.AppendLineFormat("<<contract>> {0}", className);
             foreach (var m in c.Methods.Where(m => m.Visibility == Microsoft.Cci.TypeMemberVisibility.Public).OrderBy(m => m.Name.Value))
