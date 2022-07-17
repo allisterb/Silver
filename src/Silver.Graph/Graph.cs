@@ -111,6 +111,18 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		return this;
 	}
 
+	public Node AddNode(Node node)
+	{
+		if (nodes.Contains(node))
+		{
+			throw new ArgumentException($"This graph already contains the node {node.Id}");
+		}
+		nodes.Add(node);
+		nodeMap.Add(node.Id, node.Id.ToString());
+		graph.AddNode(node.Id.ToString());
+		return node;
+	}
+
 	public Graph AddEdge(string src, string tgt, string? label = null)
 	{
 		var u = new Node(src.GetHashCode());
@@ -127,7 +139,7 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		AddArc(u, v, Directedness.Directed);
 		if (label is null)
         {
-			graph.AddEdge(src, label);
+			graph.AddEdge(src, tgt);
         }
 		else
         {
@@ -135,18 +147,7 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		}
 		return this;
 	}
-	public Node AddNode(Node node)
-	{
-		if (nodes.Contains(node))
-        {
-			throw new ArgumentException($"This graph already contains the node {node.Id}");
-        }
-		nodes.Add(node);
-		nodeMap.Add(node.Id, node.Id.ToString());
-		graph.AddNode(node.Id.ToString());
-		return node;
-	}
-
+	
 	public Arc AddArc(Node u, Node v, Directedness directedness)
 	{
 		if (ArcCount() == int.MaxValue) throw new InvalidOperationException("Error: too many arcs!");
@@ -297,5 +298,12 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 
 	public bool HasArc(Arc arc) => arcs.Contains(arc);
     #endregion
+
+    #region Properties
+    internal MsAglGraph MsAglGraph
+    {
+		get => graph;
+    }
+	#endregion
 }
 
