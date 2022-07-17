@@ -2,15 +2,17 @@
 
 using Satsuma;
 using MsAglGraph =  Microsoft.Msagl.Drawing.Graph;
+using InternalNode = Satsuma.Node;
+
 
 public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 {
-    #region Classes
+    #region Types
     private class NodeAllocator : IdAllocator
 	{
 		public Graph? Parent;
 		public NodeAllocator() : base() { }
-		protected override bool IsAllocated(long id) { return Parent is not null && Parent.HasNode(new Node(id)); }
+		protected override bool IsAllocated(long id) { return Parent is not null && Parent.HasNode(new InternalNode(id)); }
 	}
 
 	private class ArcAllocator : IdAllocator
@@ -22,35 +24,17 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 
 	private class ArcProperties
 	{
-		public Node U { get; private set; }
-		public Node V { get; private set; }
+		public InternalNode U { get; private set; }
+		public InternalNode V { get; private set; }
 		public bool IsEdge { get; private set; }
 
-		public ArcProperties(Node u, Node v, bool isEdge)
+		public ArcProperties(InternalNode u, InternalNode v, bool isEdge)
 		{
 			U = u;
 			V = v;
 			IsEdge = isEdge;
 		}
 	}
-    #endregion
-
-    #region Fields
-    private MsAglGraph graph;
-
-	private NodeAllocator nodeAllocator;
-	private ArcAllocator arcAllocator;
-
-	private HashSet<Node> nodes;
-	private HashSet<Arc> arcs;
-	private Dictionary<Arc, ArcProperties> arcProperties;
-	private Dictionary<long, string> nodeMap;
-	private HashSet<Arc> edges;
-
-	private Dictionary<Node, List<Arc>> nodeArcs_All;
-	private Dictionary<Node, List<Arc>> nodeArcs_Edge;
-	private Dictionary<Node, List<Arc>> nodeArcs_Forward;
-	private Dictionary<Node, List<Arc>> nodeArcs_Backward;
     #endregion
 
     #region Constructors
@@ -61,16 +45,18 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		nodeAllocator = new NodeAllocator() { Parent = this };
 		arcAllocator = new ArcAllocator() { Parent = this };
 
-		nodes = new HashSet<Node>();
+		nodes = new HashSet<InternalNode>();
 		arcs = new HashSet<Arc>();
 		arcProperties = new Dictionary<Arc, ArcProperties>();
 		nodeMap = new Dictionary<long, string>();
 		edges = new HashSet<Arc>();
 
-		nodeArcs_All = new Dictionary<Node, List<Arc>>();
-		nodeArcs_Edge = new Dictionary<Node, List<Arc>>();
-		nodeArcs_Forward = new Dictionary<Node, List<Arc>>();
-		nodeArcs_Backward = new Dictionary<Node, List<Arc>>();
+		nodeArcs_All = new Dictionary<InternalNode, List<Arc>>();
+		nodeArcs_Edge = new Dictionary<InternalNode, List<Arc>>();
+		nodeArcs_Forward = new Dictionary<InternalNode, List<Arc>>();
+		nodeArcs_Backward = new Dictionary<InternalNode, List<Arc>>();
+
+		Kind = "";
 	}
     #endregion
 
@@ -92,41 +78,44 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		nodeArcs_Backward.Clear();
 	}
 
-	public Node AddNode()
+	public InternalNode AddNode()
 	{
 		var id = nodeAllocator.Allocate();
-		Node node = new Node(id);
-		nodes.Add(node);
+		InternalNode InternalNode = new InternalNode(id);
+		nodes.Add(InternalNode);
 		nodeMap.Add(id, id.ToString());
 		graph.AddNode(id.ToString());
-		return node;
+		return InternalNode;
 	}
 
-	public Graph AddNode(string id)
+	public InternalNode AddNode(InternalNode InternalNode)
 	{
-		Node node = new Node(id.GetHashCode());
-		nodes.Add(node);
-		nodeMap.Add(id.GetHashCode(), id);
-		graph.AddNode(id);
-		return this;
+		if (nodes.Contains(InternalNode))
+		{
+			throw new ArgumentException($"This graph already contains the InternalNode {InternalNode.Id}");
+		}
+		nodes.Add(InternalNode);
+		nodeMap.Add(InternalNode.Id, InternalNode.Id.ToString());
+		graph.AddNode(InternalNode.Id.ToString());
+		return InternalNode;
 	}
 
 	public Node AddNode(Node node)
 	{
-		if (nodes.Contains(node))
-		{
-			throw new ArgumentException($"This graph already contains the node {node.Id}");
-		}
-		nodes.Add(node);
-		nodeMap.Add(node.Id, node.Id.ToString());
-		graph.AddNode(node.Id.ToString());
+		nodes.Add(node.InternalNode);
+		nodeMap.Add(node.Id.GetHashCode(), node.Id);
+		graph.AddNode(node.MsAglNode);
 		return node;
 	}
 
+	public Node AddNode(string id) => AddNode(new Node(id));
+
+	public Node FindNode(string id) => HasNode(id) ? new Node(id, graph.FindNode(id), nodes.Single(n => n.Id == n.Id.GetHashCode())) : throw new ArgumentException($"The node {id} does not exist.");
+
 	public Graph AddEdge(string src, string tgt, string? label = null)
 	{
-		var u = new Node(src.GetHashCode());
-		var v = new Node(tgt.GetHashCode());
+		var u = new InternalNode(src.GetHashCode());
+		var v = new InternalNode(tgt.GetHashCode());
 		if (!this.HasNode(u))
 		{
 			AddNode(u);
@@ -147,8 +136,10 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		}
 		return this;
 	}
-	
-	public Arc AddArc(Node u, Node v, Directedness directedness)
+
+	public Graph AddEdge(Node u, Node v, string? label = null) => AddEdge(u.Id, v.Id, label);
+
+	public Arc AddArc(InternalNode u, InternalNode v, Directedness directedness)
 	{
 		if (ArcCount() == int.MaxValue) throw new InvalidOperationException("Error: too many arcs!");
 		Arc a = new Arc(arcAllocator.Allocate());
@@ -180,16 +171,16 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		return a;
 	}
 
-	public bool DeleteNode(Node node)
+	public bool DeleteNode(InternalNode InternalNode)
 	{
-		if (!nodes.Remove(node)) return false;
-		graph.RemoveNode(graph.FindNode(nodeMap[node.Id]));
-		Func<Arc, bool> arcsToRemove = (a => (U(a) == node || V(a) == node));
+		if (!nodes.Remove(InternalNode)) return false;
+		graph.RemoveNode(graph.FindNode(nodeMap[InternalNode.Id]));
+		Func<Arc, bool> arcsToRemove = (a => (U(a) == InternalNode || V(a) == InternalNode));
 
-		// remove arcs from nodeArcs_... of other ends of the arcs going from "node"
-		foreach (Node otherNode in Nodes())
+		// remove arcs from nodeArcs_... of other ends of the arcs going from "InternalNode"
+		foreach (InternalNode otherNode in Nodes())
 		{
-			if (otherNode != node)
+			if (otherNode != InternalNode)
 			{
 				Utils.RemoveAll(nodeArcs_All[otherNode], arcsToRemove);
 				Utils.RemoveAll(nodeArcs_Edge[otherNode], arcsToRemove);
@@ -202,11 +193,11 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		Utils.RemoveAll(edges, arcsToRemove);
 		Utils.RemoveAll(arcProperties, arcsToRemove);
 
-		nodeArcs_All.Remove(node);
-		nodeArcs_Edge.Remove(node);
-		nodeArcs_Forward.Remove(node);
-		nodeArcs_Backward.Remove(node);
-		nodeMap.Remove(node.Id);
+		nodeArcs_All.Remove(InternalNode);
+		nodeArcs_Edge.Remove(InternalNode);
+		nodeArcs_Forward.Remove(InternalNode);
+		nodeArcs_Backward.Remove(InternalNode);
+		nodeMap.Remove(InternalNode.Id);
 		return true;
 	}
 
@@ -241,9 +232,9 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		return true;
 	}
 
-	public Node U(Arc arc) => arcProperties[arc].U;
+	public InternalNode U(Arc arc) => arcProperties[arc].U;
 
-	public Node V(Arc arc) => arcProperties[arc].V;
+	public InternalNode V(Arc arc) => arcProperties[arc].V;
 
 	public bool IsEdge(Arc arc) => arcProperties.ContainsKey(arc) && arcProperties[arc].IsEdge;
 
@@ -253,7 +244,7 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 	}
 
 	private static readonly List<Arc> EmptyArcList = new List<Arc>();
-	private List<Arc> ArcsInternal(Node v, ArcFilter filter)
+	private List<Arc> ArcsInternal(InternalNode v, ArcFilter filter)
 	{
 		List<Arc>? result;
 		switch (filter)
@@ -266,13 +257,13 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		return result ?? EmptyArcList;
 	}
 
-	public IEnumerable<Node> Nodes() => Nodes();
+	public IEnumerable<InternalNode> Nodes() => Nodes();
 
 	public IEnumerable<Arc> Arcs(ArcFilter filter = ArcFilter.All) => ArcsInternal(filter);
 
-	public IEnumerable<Arc> Arcs(Node u, ArcFilter filter = ArcFilter.All) => ArcsInternal(u, filter);
+	public IEnumerable<Arc> Arcs(InternalNode u, ArcFilter filter = ArcFilter.All) => ArcsInternal(u, filter);
 
-	public IEnumerable<Arc> Arcs(Node u, Node v, ArcFilter filter = ArcFilter.All)
+	public IEnumerable<Arc> Arcs(InternalNode u, InternalNode v, ArcFilter filter = ArcFilter.All)
 	{
 		foreach (var arc in ArcsInternal(u, filter))
 			if (this.Other(arc, u) == v) yield return arc;
@@ -282,9 +273,9 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 
 	public int ArcCount(ArcFilter filter = ArcFilter.All) => ArcsInternal(filter).Count;
 
-	public int ArcCount(Node u, ArcFilter filter = ArcFilter.All) => ArcsInternal(u, filter).Count;
+	public int ArcCount(InternalNode u, ArcFilter filter = ArcFilter.All) => ArcsInternal(u, filter).Count;
 
-	public int ArcCount(Node u, Node v, ArcFilter filter = ArcFilter.All)
+	public int ArcCount(InternalNode u, InternalNode v, ArcFilter filter = ArcFilter.All)
 	{
 		int result = 0;
 		foreach (var arc in ArcsInternal(u, filter))
@@ -292,18 +283,40 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		return result;
 	}
 
-	public bool HasNode(Node node) => nodes.Contains(node);
+	public bool HasNode(InternalNode InternalNode) => nodes.Contains(InternalNode);
 
-	public bool HasNode(string id) => nodes.Contains(new Node(id.GetHashCode()));
+	public bool HasNode(string id) => nodes.Contains(new InternalNode(id.GetHashCode()));
 
+	public bool HasNode(Node node) => HasNode(node.Id);
 	public bool HasArc(Arc arc) => arcs.Contains(arc);
     #endregion
 
     #region Properties
-    internal MsAglGraph MsAglGraph
+    public string Kind { get; set; }
+
+	internal MsAglGraph MsAglGraph
     {
 		get => graph;
     }
 	#endregion
+
+	#region Fields
+	private MsAglGraph graph;
+
+	private NodeAllocator nodeAllocator;
+	private ArcAllocator arcAllocator;
+
+	private HashSet<InternalNode> nodes;
+	private HashSet<Arc> arcs;
+	private Dictionary<Arc, ArcProperties> arcProperties;
+	private Dictionary<long, string> nodeMap;
+	private HashSet<Arc> edges;
+
+	private Dictionary<InternalNode, List<Arc>> nodeArcs_All;
+	private Dictionary<InternalNode, List<Arc>> nodeArcs_Edge;
+	private Dictionary<InternalNode, List<Arc>> nodeArcs_Forward;
+	private Dictionary<InternalNode, List<Arc>> nodeArcs_Backward;
+	#endregion
+
 }
 

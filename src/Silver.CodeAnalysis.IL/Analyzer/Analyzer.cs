@@ -3,8 +3,7 @@
 using Backend.Analyses;
 using Backend.Model;
 
-using Microsoft.Msagl.Drawing;
-
+using Silver;
 using Silver.Metadata;
 
 #region Records
@@ -114,43 +113,27 @@ public partial class Analyzer : Runtime
         
         foreach (var method in cg.Roots)
         {
-            Node? rootNode = null;
             var calllsites = cg.GetCallSites(method);
             var inv = cg.GetInvocations(method);
             var nid = MemberHelper.GetMethodSignature(method);
-            if (!g.Nodes.Any(n => n.Id == nid))
-            {
-                rootNode = g.AddNode(nid);
-            }
-            else
-            {
-                rootNode = g.FindNode(nid);
-            }
+            Node rootNode = g.HasNode(nid) ? g.FindNode(nid) : g.AddNode(nid);
             foreach (var cs in calllsites)
             {
-                Node? csNode = null;
                 var csid = MemberHelper.GetMethodSignature(cs.Caller);
-                if (!g.Nodes.Any(n => nid == csid))
-                {
-                    csNode = g.AddNode(csid);
-                }
-                else
-                {
-                    csNode = g.FindNode(csid);
-                }
-                g.AddEdge(csNode.Id, rootNode.Id);
+                Node csNode = g.HasNode(csid) ? g.FindNode(csid) : g.AddNode(csid);
+                g.AddEdge(csNode, rootNode);
             }
             if (method.ResolvedMethod is not null && method.ResolvedMethod.IsDeployedSmartContractMethod())
             {
-                rootNode.Attr.FillColor = Color.Yellow;
+                rootNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Yellow;
             }
             else if (method.ResolvedMethod is not null && method.ResolvedMethod.IsSmartContractMethod())
             {
-                rootNode.Attr.FillColor = Color.Blue;
+                rootNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Blue;
             }
             else
             {
-                rootNode.Attr.FillColor = Color.White;
+                rootNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.White;
             }
         }
         op.Complete();
@@ -178,23 +161,22 @@ public partial class Analyzer : Runtime
             foreach (var cfgNode in cfg.Nodes)
             {
                 var nid = method.GetUniqueId(cfgNode.Id);
-                var node = g.Nodes.FirstOrDefault(n => n.Id == nid);
-                if (node is null)
+                if (!g.HasNode(nid))
                 {
                     switch (cfgNode.Kind)
                     {
                         case CFGNodeKind.Exit:
                             break;
                         default:
-                            node = new Node(nid);
-                            node.LabelText = PrintCFGNodeLabel(method, cfgNode, sourceEmitterOutput);
+                            var node = new Node(nid);
+                            node.SetLabel(PrintCFGNodeLabel(method, cfgNode, sourceEmitterOutput));
                             if (method.IsSmartContractMethod() && cfgNode.Kind == CFGNodeKind.Entry)
                             {
-                                node.Attr.FillColor = Color.Yellow;
+                                node.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Yellow;
                             }
                             else
                             {
-                                node.Attr.FillColor = Color.White;
+                                node.Attr.FillColor = Microsoft.Msagl.Drawing.Color.White;
                             }
                             g.AddNode(node);
                             break;
