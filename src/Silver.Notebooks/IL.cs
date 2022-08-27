@@ -19,7 +19,7 @@ public class IL : Runtime
             Info("Target assembly is {0}.", f);
             return f;
         }
-        else if (SilverProject.HasProjectExtension(f))
+        else if (f.HasProjectExtension())
         {
             var proj = SilverProject.GetProject(f, "Debug");
             if (proj is null || !proj.Initialized)
@@ -55,7 +55,10 @@ public class IL : Runtime
             Info("Target assembly is {0}.", fn);
             return fn;
         }
-        else return null;
+        else
+        {
+            return null;
+        }
     }
 
     public static Analyzer? GetAnalyzer(string fileName)

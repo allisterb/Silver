@@ -66,6 +66,19 @@ public static class StringExtensions
     public static bool HasPeExtension(this string s) =>
         Path.GetExtension(s) == ".dll" || Path.GetExtension(s) == ".exe";
 
+    public static bool HasProjectExtension(this string s)
+    {
+        switch (Path.GetExtension(s))
+        {
+            case ".csproj":
+            case ".sscproj":
+            case ".cs":
+            case ".ssc":
+                return true;
+            default: return false;
+        }
+    }
+
     public static bool IsGitHubUrl(this string u) =>
         Uri.TryCreate(u, UriKind.Absolute, out var uri) && uri.Host == "github.com" ? true : false;
 }
