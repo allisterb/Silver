@@ -14,6 +14,7 @@
     <ProjectReference Include="..\Silver.Drawing\Silver.Drawing.csproj" />
     <ProjectReference Include="..\Silver.Graph\Silver.Graph.csproj" />
     <ProjectReference Include="..\Silver.Metadata\Silver.Metadata.csproj" />
+    <ProjectReference Include="..\Silver.Verifiier\Silver.Verifiier.csproj" />
   </ItemGroup>
 
 </Project>

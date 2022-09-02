@@ -154,6 +154,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{BC68
 		..\scripts\build-sc-base = ..\scripts\build-sc-base
 		..\scripts\build-sc-base.cmd = ..\scripts\build-sc-base.cmd
 		..\build.cmd = ..\build.cmd
+		..\notebooks\DotNetInteractive.csx = ..\notebooks\DotNetInteractive.csx
 		..\silver.cmd = ..\silver.cmd
 	EndProjectSection
 EndProject
@@ -175,16 +176,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImageSharp.InteractiveExten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Notebooks", "Silver.Notebooks\Silver.Notebooks.csproj", "{31BC7388-C1D1-4038-ABE0-FEF75E6A3057}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notebooks", "Notebooks", "{C6CADBA7-84B0-4894-A186-C03573062031}"
-	ProjectSection(SolutionItems) = preProject
-		..\notebooks\DotNetInteractive.csx = ..\notebooks\DotNetInteractive.csx
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "satsumagraph", "satsumagraph", "{84AC73AA-DC1D-4470-8AD0-1A4A52D6BA57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Satsuma", "..\ext\satsumagraph\Satsuma.csproj", "{3C752CC8-07E6-41BC-8089-E000E9CC16FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silver.Graph", "Silver.Graph\Silver.Graph.csproj", "{F95EED55-A665-4E3A-B35E-C4FDC6DA7827}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Silver.Graph", "Silver.Graph\Silver.Graph.csproj", "{F95EED55-A665-4E3A-B35E-C4FDC6DA7827}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -38,11 +38,11 @@ public class AdhocSilverProject : SilverProject
                 optimizationLevel: OptimizationLevel.Debug,
                 deterministic: true
             );
-        ProjectInfo project = 
+        ProjectInfo project =
             ProjectInfo
             .Create(projectId, versionStamp, projectName, projectName, LanguageNames.CSharp, documents: docs)
-            .WithCompilationOptions(options)
-            .WithMetadataReferences(SctAssemblies.Select(a => MetadataReference.CreateFromFile(a.Location)));
+            .WithCompilationOptions(options);
+            //.WithMetadataReferences(SctAssemblies.Select(a => MetadataReference.CreateFromFile(a.Location)));
         RoslynWorkspace.AddProject(project);
         op.Complete();
         Initialized = true;

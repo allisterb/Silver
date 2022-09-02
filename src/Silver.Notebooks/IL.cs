@@ -3,7 +3,6 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using Microsoft.Msagl.Drawing;
 
 using Silver.Compiler;
 using Silver.CodeAnalysis.IL;
