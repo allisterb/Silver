@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 public class TreeNode
 {
@@ -17,6 +18,25 @@ public class TreeNode
         Attributes = attributes ?? new Dictionary<string, string>();
         Children = children ?? new List<TreeNode>();
     }
+
+    public string DrawWithJSTree()
+    {
+        var html = new StringBuilder();
+        html.AppendLine("<li>");
+        html.AppendLine(Data);
+        if (Children.Count > 0)
+        {
+            html.AppendLine("<ul>");
+            foreach (var child in Children)
+            {
+                html.AppendLine(child.DrawWithJSTree());
+            }
+            html.AppendLine("</ul>");
+        }
+
+        html.AppendLine("</li>");
+        return html.ToString(); 
+    }
 }
 
 public class TreeDiagram
@@ -30,7 +50,16 @@ public class TreeDiagram
 
     public string DrawWithJSTree()
     {
-
+        var html = new StringBuilder();
+        html.AppendLine("<div id=\"\">");
+        html.AppendLine("<ul>");
+        foreach(var node in TreeNodes)
+        {
+            html.AppendLine(node.DrawWithJSTree());
+        }
+        html.AppendLine("</ul>");
+        html.AppendLine("</div>");
+        return html.ToString();
     }
 }
 
