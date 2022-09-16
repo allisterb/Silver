@@ -23,18 +23,17 @@ public class TreeDiagramFormatter : Runtime
     {
         Formatter.Register<TreeDiagram>((t, writer) =>
         {
-            var code = new StringBuilder();
-            if (!JSLibs.JSTreeLoaded)
+            if (!Resources.JSTreeLibLoaded)
             {
                 var html = new HtmlString("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js\"></script>");
                 html.WriteTo(writer, HtmlEncoder.Default);
-                JSLibs.JSTreeLoaded = true;
+                Resources.JSTreeLibLoaded = true;
             }
-            if (!Css.JSTreeLoaded)
+            if (!Resources.JSTreeCssLoaded)
             {
                 var html = new HtmlString("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css\" />");
                 html.WriteTo(writer, HtmlEncoder.Default);
-                Css.JSTreeLoaded = true;
+                Resources.JSTreeCssLoaded = true;
             }
             var h = new HtmlString(t.DrawWithJSTree(Guid.NewGuid().ToString("N")));
             h.WriteTo(writer, HtmlEncoder.Default);
