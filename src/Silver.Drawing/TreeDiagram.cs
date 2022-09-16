@@ -48,10 +48,10 @@ public class TreeDiagram
         TreeNodes = treeNodes.ToList();
     }
 
-    public string DrawWithJSTree()
+    public string DrawWithJSTree(string id)
     {
         var html = new StringBuilder();
-        html.AppendLine("<div id=\"\">");
+        html.AppendLine($"<div id=\"{id}\">");
         html.AppendLine("<ul>");
         foreach(var node in TreeNodes)
         {
@@ -59,6 +59,7 @@ public class TreeDiagram
         }
         html.AppendLine("</ul>");
         html.AppendLine("</div>");
+        html.AppendLine($"<script language='JavaScript'>$('#{id}').jstree();</script>");
         return html.ToString();
     }
 }

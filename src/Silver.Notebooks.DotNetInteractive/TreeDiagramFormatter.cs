@@ -23,20 +23,10 @@ public class TreeDiagramFormatter : Runtime
     {
         Formatter.Register<TreeDiagram>((t, writer) =>
         {
-            if (!JSLibs.JQueryLoaded)
-            {
-                //var html = new HtmlString("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js\"></script>");
-                //html.WriteTo(writer, HtmlEncoder.Default);
-                
-                var html = new HtmlString(JavascriptUtilities.GetCodeForEnsureRequireJs(new Uri("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")));
-                html.WriteTo(writer, HtmlEncoder.Default);
-                JSLibs.JQueryLoaded = true;
-            }
+            var code = new StringBuilder();
             if (!JSLibs.JSTreeLoaded)
             {
-                //var html = new HtmlString("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js\"></script>");
-                //html.WriteTo(writer, HtmlEncoder.Default);
-                var html = new HtmlString(JavascriptUtilities.GetCodeForEnsureRequireJs(new Uri("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js")));
+                var html = new HtmlString("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js\"></script>");
                 html.WriteTo(writer, HtmlEncoder.Default);
                 JSLibs.JSTreeLoaded = true;
             }
@@ -46,15 +36,13 @@ public class TreeDiagramFormatter : Runtime
                 html.WriteTo(writer, HtmlEncoder.Default);
                 Css.JSTreeLoaded = true;
             }
-
-            var h = new HtmlString(t.DrawWithJSTree());
+            var h = new HtmlString(t.DrawWithJSTree(Guid.NewGuid().ToString("N")));
             h.WriteTo(writer, HtmlEncoder.Default);
-
-            Kernel.Current.SendAsync(
+        }, HtmlFormatter.MimeType);
+        
+        Kernel.Current.SendAsync(
             new DisplayValue(new FormattedValue(
                 "text/markdown",
                 $"Added formatter for jsTree diagrams to .NET Interactive kernel {Kernel.Current.Name}.")));
-
-        }, HtmlFormatter.MimeType);
     }
 }
