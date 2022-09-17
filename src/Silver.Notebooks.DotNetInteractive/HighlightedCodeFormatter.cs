@@ -20,33 +20,44 @@ using Newtonsoft.Json;
 using Silver.Drawing;
 public class HighlightedCodeFormatter : Runtime
 {
-    
-        
-    
     public static void Register()
     {
+        var html = new HtmlString(Resources.GenerateScriptElement("https://unpkg.com/@antfu/shiki@0.5.2/dist/index.unpkg.iife.js", "shikilib"));
+        KernelInvocationContext.Current?.Display(html, "text/html");
+        html = new HtmlString(Resources.GenerateScriptElement("https://unpkg.com/@antfu/shiki-renderer-svg@0.5.2/dist/index.iife.min.js", "shikirendererlib"));
+        KernelInvocationContext.Current?.Display(html, "text/html");
+        html = new HtmlString(Resources.GenerateScriptElement("https://dokans3fs-test-1.us-east-1.linodeobjects.com/shikiLanguages.js", "shikilanguageslib"));
+        KernelInvocationContext.Current?.Display(html, "text/html");
         Formatter.Register<TmHighlightedCode>((t, writer) =>
         {
-            var c = DefaultHttpClient.GetStringAsync("https://raw.githubusercontent.com/boogie-org/boogie-vscode/master/syntaxes/boogie.tmLanguage.json").Result;
+            /*
             if (!Resources.ShikiLibLoaded)
             {
-                var html = new HtmlString("<script src=\"https://unpkg.com/shiki\"></script>");
+                var html = new HtmlString(Resources.GenerateScriptElement("https://unpkg.com/@antfu/shiki@0.5.2/dist/index.unpkg.iife.js", "shikilib"));
+                
                 html.WriteTo(writer, HtmlEncoder.Default);
                 Resources.ShikiLibLoaded = true;
             }
-            if (!Resources.JSTreeCssLoaded)
+            if (!Resources.ShikiRendererLibLoaded)
             {
-                var html = new HtmlString("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css\" />");
+                var html = new HtmlString(Resources.GenerateScriptElement("https://unpkg.com/@antfu/shiki-renderer-svg@0.5.2/dist/index.iife.min.js", "shikirendererlib"));
                 html.WriteTo(writer, HtmlEncoder.Default);
-                Resources.JSTreeCssLoaded = true;
+                Resources.ShikiRendererLibLoaded = true;
             }
-            var h = new HtmlString(t.DrawWithJSTree(Guid.NewGuid().ToString("N")));
+            if (!Resources.ShikiLanguagesLoaded)
+            {
+                var html = new HtmlString(Resources.GenerateScriptElement("https://dokans3fs-test-1.us-east-1.linodeobjects.com/shikiLanguages.js", "shikilanguageslib"));
+
+
+                //var l = DefaultHttpClient.GetStringAsync("https://dokans3fs-test-1.us-east-1.linodeobjects.com/shikiLanguages.js").Result;
+                //var html = new HtmlString("<script type = \"text/javascript\">\n" + l + " </script>");
+                html.WriteTo(writer, HtmlEncoder.Default);
+                Resources.ShikiLanguagesLoaded = true;
+            }*/
+            var h = new HtmlString(t.DrawWithShiki(Guid.NewGuid().ToString("N")));
             h.WriteTo(writer, HtmlEncoder.Default);
         }, HtmlFormatter.MimeType);
-        
-        Kernel.Current.SendAsync(
-            new DisplayValue(new FormattedValue(
-                "text/markdown",
-                $"Added formatter for jsTree diagrams to .NET Interactive kernel {Kernel.Current.Name}.")));
+
+        Kernel.Current.SendAsync(new DisplayValue(new FormattedValue("text/markdown", $"Added formatter for TmHighlightedCode to .NET Interactive kernel {Kernel.Current.Name}.")));
     }
 }

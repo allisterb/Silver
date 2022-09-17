@@ -59,7 +59,7 @@ public class TreeDiagram
         }
         html.AppendLine("</ul>");
         html.AppendLine("</div>");
-        html.AppendLine($"<script language='JavaScript'>$('#{id}').jstree();</script>");
+        html.AppendLine($"<script>$('#{id}').jstree();</script>");
         return html.ToString();
     }
 }

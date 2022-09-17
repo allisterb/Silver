@@ -143,17 +143,29 @@ const boogieLanguage = {
   aliases: ["boogie"],
   embeddedLangs: ["boogie"]
 };
-shiki
-  .getSVGRenderer({
-    fontFamily: "Fira Code",
-    fontSize: 14
-  })
-  .then((i) => {renderer = i; });
-  
-highlighter = shiki.getHighlighter({
-    theme: "nord",
-	langs: [boogieLanguage]
-  })
-  .then((i) => {
-		highlighter = i;
-  });
+
+requirejs.config({
+    paths: {
+        shiki_renderer: "https://unpkg.com/@antfu/shiki-renderer-svg@0.5.2/dist/index.iife.min.js",
+        shiki: "https://unpkg.com/@antfu/shiki@0.5.2/dist/index.unpkg.iife.js"
+    }
+});
+
+require(["shiki"], shiki => {
+
+    console.log("foo");
+    shiki
+        .getSVGRenderer({
+            fontFamily: "Fira Code",
+            fontSize: 14
+        })
+        .then((i) => { renderer = i; });
+
+    highlighter = shiki.getHighlighter({
+        theme: "nord",
+        langs: [boogieLanguage]
+    })
+        .then((i) => {
+            highlighter = i;
+        });
+});

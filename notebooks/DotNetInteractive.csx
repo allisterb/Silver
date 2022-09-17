@@ -4,6 +4,7 @@ using Silver.Notebooks;
 
 GraphFormatter.Register();
 MermaidFormatter.Register();
-DotFormatter.Register();
-NetworkFormatter.Register();
-TreeDiagramFormatter.Register();
+//DotFormatter.Register();
+//NetworkFormatter.Register();
+//TreeDiagramFormatter.Register();
+HighlightedCodeFormatter.Register();

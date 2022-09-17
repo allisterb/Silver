@@ -28,15 +28,30 @@ public class HighlightedCode
 }
 
 
-public class TmHighlightedCode : HighlightedCode
+public class TmHighlightedCode : Runtime
 {
-    public TmHighlightedCode(string lang, string code, string grammarUrl) :base(lang, code)
+    #region Constructors
+    public TmHighlightedCode(string lang, string code)
     {
-        GrammarUrl = grammarUrl;
+        Lang = lang;
+        Code = code;
     }
+    #endregion
 
     #region Properties
-    public string GrammarUrl { get; set; }
+    public string Lang { get; set; }
+    public string Code { get; set; }
+    #endregion
+
+    #region Methods
+    public string DrawWithShiki(string id)
+    {
+        var html = new StringBuilder();
+        html.AppendLine($"<div id=\"{id}\">");
+        html.AppendLine("</div>");
+        html.AppendLine($"<script>alert(highlighter.codeToHtml(\"{this.Code}\", \"{this.Lang}\", \"nord\"));</script>");
+        return html.ToString();
+    }
     #endregion
 }
 

@@ -23,9 +23,15 @@ public class TreeDiagramFormatter : Runtime
     {
         Formatter.Register<TreeDiagram>((t, writer) =>
         {
+            if (!Resources.JQueryLibLoaded)
+            {
+                var html = new HtmlString(Resources.GenerateScriptElement("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js", "jquerylib"));
+                html.WriteTo(writer, HtmlEncoder.Default);
+                Resources.JQueryLibLoaded = true;
+            }
             if (!Resources.JSTreeLibLoaded)
             {
-                var html = new HtmlString("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js\"></script>");
+                var html = new HtmlString(Resources.GenerateScriptElement("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js", "jstreelib"));
                 html.WriteTo(writer, HtmlEncoder.Default);
                 Resources.JSTreeLibLoaded = true;
             }
