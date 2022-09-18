@@ -294,7 +294,7 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
     #region Properties
     public string Kind { get; set; }
 
-	internal MsAglGraph MsAglGraph
+	public MsAglGraph MsAglGraph
     {
 		get => graph;
     }

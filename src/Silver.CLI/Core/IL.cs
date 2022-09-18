@@ -16,14 +16,25 @@ public class IL : Runtime
         if (targetAssembly is null) return false;
         if (boogie)
         {
-            var output = Translator.ToBoogie(FailIfFileNotFound(targetAssembly));
-            if (output is null)
+            using var op = Begin("Dissassembling {0} to Boogie", targetAssembly);
+            var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), targetAssembly + " " + "/print:-" + " /noVerify", isNETFxTool: true);
+
+            if (ret is null)
             {
-                Error("Could not disassemble {0} as  Boogie.", targetAssembly);
+                Error("Could not run Boogie translator.");
+                op.Abandon();
+                return false;
+            }
+            else if (!ret.Contains("Spec# program verifier finished"))
+            {
+                Error("Boogie translator did not complete successfully.");
+                op.Abandon();
                 return false;
             }
             else
             {
+                op.Complete();
+                Console.WriteLine(ret);
                 return true;
             }
         }
@@ -55,13 +66,13 @@ public class IL : Runtime
             var contract = tree.AddNode($"Contract [royalblue1]{c.GetName().EscapeMarkup()}[/]");
             var ctors = contract.AddNode("[yellow]Constructors[/]");
             var methods = contract.AddNode("[yellow]Methods[/]");
-            List<TreeNode> publicMethodNodes = new();
-            List<TreeNode> notpublicMethodNodes = new();
+            List<Spectre.Console.TreeNode> publicMethodNodes = new();
+            List<Spectre.Console.TreeNode> notpublicMethodNodes = new();
             foreach(var method in summary.Methods
                 .Where(m => m.ContainingTypeDefinition == c)
                 .OrderByDescending(m => m.Visibility))
             {
-                TreeNode? node = null;
+                Spectre.Console.TreeNode? node = null;
                 if (method.Visibility == TypeMemberVisibility.Public)
                 {
                     var parameters = method.Parameters is not null && method.Parameters.Any() ?
@@ -97,7 +108,7 @@ public class IL : Runtime
                 node.AddNode($"Instructions: [fuchsia]{method.Body.Operations.Count()}[/]");
                 node.AddNode($"Gas cost: [fuchsia]{method.Body.Operations.GasCost()}[/]");
             }
-            TreeNode[] nodes = publicMethodNodes.Concat(notpublicMethodNodes).ToArray();
+            Spectre.Console.TreeNode[] nodes = publicMethodNodes.Concat(notpublicMethodNodes).ToArray();
             foreach(var node in nodes)
             {
                 //node.AddNode("Parameters: {0}", me)
@@ -121,7 +132,7 @@ public class IL : Runtime
         if (analyzer is null) return false;
         var cg = analyzer.GetCallGraph();
         if (cg is null) return false;
-        Drawing.Draw(cg, outputFileName, graphFormat, rotateBy: Math.PI / 2);
+        Drawing.Draw(cg.MsAglGraph, outputFileName, graphFormat, rotateBy: Math.PI / 2);
         return true;
     }
             
@@ -136,7 +147,7 @@ public class IL : Runtime
         if (analyzer is null) return false;
         var cfg = analyzer.GetControlFlowGraph();
         if (cfg is null) return false;
-        Drawing.Draw(cfg, outputFileName, graphFormat);
+        Drawing.Draw(cfg.MsAglGraph, outputFileName, graphFormat);
         return true;
     }
 
