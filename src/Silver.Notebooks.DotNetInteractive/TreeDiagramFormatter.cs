@@ -23,25 +23,23 @@ public class TreeDiagramFormatter : Runtime
     {
         Formatter.Register<TreeDiagram>((t, writer) =>
         {
-            if (!Resources.JQueryLibLoaded)
-            {
-                var html = new HtmlString(Resources.GenerateScriptElement("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js", "jquerylib"));
-                html.WriteTo(writer, HtmlEncoder.Default);
-                Resources.JQueryLibLoaded = true;
-            }
-            if (!Resources.JSTreeLibLoaded)
-            {
-                var html = new HtmlString(Resources.GenerateScriptElement("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js", "jstreelib"));
-                html.WriteTo(writer, HtmlEncoder.Default);
-                Resources.JSTreeLibLoaded = true;
-            }
+            //if (!Resources.JSTreeLibLoaded)
+            //{
+            //    var html = new HtmlString(Resources.GenerateScriptElement("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js", "jstreelib"));
+            //    html.WriteTo(writer, HtmlEncoder.Default);
+            //    Resources.JSTreeLibLoaded = true;
+            //}
             if (!Resources.JSTreeCssLoaded)
             {
                 var html = new HtmlString("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css\" />");
                 html.WriteTo(writer, HtmlEncoder.Default);
                 Resources.JSTreeCssLoaded = true;
             }
-            var h = new HtmlString(t.DrawWithJSTree(Guid.NewGuid().ToString("N")));
+            var id = Guid.NewGuid().ToString("N");
+            var s = $@"<script>(require.config({{ 'paths': {{ 'jstree' : 'https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min' }}}}) || require)(['jstree'], (jstree) => {{$('#{id}').jstree();}});</script>";
+
+            var h = new HtmlString(t.DrawWithJSTree(id) + s);
+            
             h.WriteTo(writer, HtmlEncoder.Default);
         }, HtmlFormatter.MimeType);
         

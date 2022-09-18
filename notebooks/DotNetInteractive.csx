@@ -6,5 +6,5 @@ GraphFormatter.Register();
 MermaidFormatter.Register();
 //DotFormatter.Register();
 //NetworkFormatter.Register();
-//TreeDiagramFormatter.Register();
+TreeDiagramFormatter.Register();
 HighlightedCodeFormatter.Register();

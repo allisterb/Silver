@@ -144,22 +144,18 @@ var boogieLanguage = {
   embeddedLangs: ["boogie"]
 };
 
-
-
-
-    console.log("foo");
-    shiki
-        .getSVGRenderer({
-            fontFamily: "Fira Code",
-            fontSize: 14
-        })
-        .then((i) => { renderer = i; });
-
-    highlighter = shiki.getHighlighter({
-        theme: "nord",
-        langs: [boogieLanguage]
+shiki
+    .getSVGRenderer({
+        fontFamily: "Fira Code",
+        fontSize: 14
     })
-        .then((i) => {
-            highlighter = i;
-        });
+    .then((i) => { renderer = i; });
+
+highlighter = shiki.getHighlighter({
+    theme: "nord",
+    langs: [boogieLanguage]
+})
+    .then((i) => {
+        highlighter = i;
+    });
 
