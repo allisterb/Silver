@@ -143,19 +143,22 @@ var boogieLanguage = {
   aliases: ["boogie"],
   embeddedLangs: ["boogie"]
 };
+if (shiki === undefined) {
+    console.error("Shiki library is not loaded yet! Run the notebook init script.")
+}
+else {
+    shiki
+        .getSVGRenderer({
+            fontFamily: "Fira Code",
+            fontSize: 14
+        })
+        .then((i) => { renderer = i; });
 
-shiki
-    .getSVGRenderer({
-        fontFamily: "Fira Code",
-        fontSize: 14
+    highlighter = shiki.getHighlighter({
+        themes: ["github-light", "light-plus"],
+        langs: [boogieLanguage]
     })
-    .then((i) => { renderer = i; });
-
-highlighter = shiki.getHighlighter({
-    theme: "nord",
-    langs: [boogieLanguage]
-})
     .then((i) => {
         highlighter = i;
     });
-
+}

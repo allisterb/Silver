@@ -21,25 +21,14 @@ public class TreeDiagramFormatter : Runtime
 {
     public static void Register()
     {
+        var html = new HtmlString("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css\" />");
+        KernelInvocationContext.Current?.Display(html, "text/html");
+        Resources.JSTreeCssLoaded = true;
         Formatter.Register<TreeDiagram>((t, writer) =>
         {
-            //if (!Resources.JSTreeLibLoaded)
-            //{
-            //    var html = new HtmlString(Resources.GenerateScriptElement("https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js", "jstreelib"));
-            //    html.WriteTo(writer, HtmlEncoder.Default);
-            //    Resources.JSTreeLibLoaded = true;
-            //}
-            if (!Resources.JSTreeCssLoaded)
-            {
-                var html = new HtmlString("<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css\" />");
-                html.WriteTo(writer, HtmlEncoder.Default);
-                Resources.JSTreeCssLoaded = true;
-            }
             var id = Guid.NewGuid().ToString("N");
             var s = $@"<script>(require.config({{ 'paths': {{ 'jstree' : 'https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min' }}}}) || require)(['jstree'], (jstree) => {{$('#{id}').jstree();}});</script>";
-
             var h = new HtmlString(t.DrawWithJSTree(id) + s);
-            
             h.WriteTo(writer, HtmlEncoder.Default);
         }, HtmlFormatter.MimeType);
         
