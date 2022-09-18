@@ -49,7 +49,7 @@ public class TmHighlightedCode : Runtime
         var html = new StringBuilder();
         html.AppendLine($"<div id=\"{id}\">");
         html.AppendLine("</div>");
-        html.AppendLine($"<script>alert(highlighter.codeToHtml(\"{this.Code}\", \"{this.Lang}\", \"nord\"));</script>");
+        html.AppendLine($"<script>$('#{id}').html(highlighter.codeToHtml(\"{this.Code}\", \"{this.Lang}\", \"nord\"));</script>");
         return html.ToString();
     }
     #endregion

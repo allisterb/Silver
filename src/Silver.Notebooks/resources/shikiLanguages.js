@@ -134,9 +134,9 @@ var boogieGrammar = {
     "scopeName": "source.boogie"
 }
 
-let highlighter;
-let renderer;
-const boogieLanguage = {
+var highlighter;
+var renderer;
+var boogieLanguage = {
   id: "boogie",
   scopeName: 'source.boogie',
   grammar: boogieGrammar,
@@ -144,14 +144,8 @@ const boogieLanguage = {
   embeddedLangs: ["boogie"]
 };
 
-requirejs.config({
-    paths: {
-        shiki_renderer: "https://unpkg.com/@antfu/shiki-renderer-svg@0.5.2/dist/index.iife.min.js",
-        shiki: "https://unpkg.com/@antfu/shiki@0.5.2/dist/index.unpkg.iife.js"
-    }
-});
 
-require(["shiki"], shiki => {
+
 
     console.log("foo");
     shiki
@@ -168,4 +162,4 @@ require(["shiki"], shiki => {
         .then((i) => {
             highlighter = i;
         });
-});
+
