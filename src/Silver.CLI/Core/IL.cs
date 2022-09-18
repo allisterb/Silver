@@ -7,6 +7,7 @@ using Silver.CodeAnalysis.IL;
 using Silver.Compiler;
 using Silver.Drawing;
 using Silver.Metadata;
+using Silver.Verifier;
 
 public class IL : Runtime
 {
@@ -16,25 +17,14 @@ public class IL : Runtime
         if (targetAssembly is null) return false;
         if (boogie)
         {
-            using var op = Begin("Dissassembling {0} to Boogie", targetAssembly);
-            var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), targetAssembly + " " + "/print:-" + " /noVerify", isNETFxTool: true);
-
-            if (ret is null)
+            var b = Boogie.Translate(targetAssembly);
+            if (b is null)
             {
-                Error("Could not run Boogie translator.");
-                op.Abandon();
-                return false;
-            }
-            else if (!ret.Contains("Spec# program verifier finished"))
-            {
-                Error("Boogie translator did not complete successfully.");
-                op.Abandon();
                 return false;
             }
             else
             {
-                op.Complete();
-                Console.WriteLine(ret);
+                System.Console.WriteLine(b.Split(Environment.NewLine).SkipWhile(l => !(l.StartsWith("procedure") && l.Contains("..ctor"))).JoinWith(Environment.NewLine));
                 return true;
             }
         }
