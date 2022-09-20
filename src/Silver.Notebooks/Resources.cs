@@ -12,6 +12,9 @@ public class Resources
 
     public static bool ShikiLanguagesLoaded { get; set; } = false;
 
+    public static bool PrismLibLoaded { get; set; } = false;
+
+    public static bool PrismCssLoaded { get; set; } = false;
 
     public static string GenerateScriptElement(string uri, string tag)
     {

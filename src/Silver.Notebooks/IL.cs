@@ -78,6 +78,21 @@ public class IL : Runtime
         else return an;
     }
 
+    public static string Disassemble(string targetAssembly, bool boogie, string classPattern, string methodPattern)
+    {
+        if (boogie)
+        {
+
+        }
+        else
+        {
+            var output = new CSharpSourceEmitter.SourceEmitterOutputString();
+            Disassembler.Run(targetAssembly, output, false, classPattern, methodPattern);
+            return output.Data;
+        }
+
+    }
+
     public static MermaidLanguage Draw(Summary summary)
     {
         var builder = new StringBuilder();

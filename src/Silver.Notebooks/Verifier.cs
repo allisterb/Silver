@@ -13,55 +13,6 @@ using Silver.Verifier;
 using Silver.Verifier.Models;
 public class Verifier : Runtime
 {
-    public static string? GetTargetAssembly(string f)
-    {
-        if (f.HasPeExtension())
-        {
-            Info("Target assembly is {0}.", f);
-            return f;
-        }
-        else if (f.HasProjectExtension())
-        {
-            var proj = SilverProject.GetProject(f, "Debug");
-            if (proj is null || !proj.Initialized)
-            {
-                Error("Could not load project {0}.", f);
-                return null;
-            }
-            if (proj.BuildUpToDate)
-            {
-                Info("Project {0} is up-to-date. Last build was on {1}.", ViewFilePath(f), File.GetLastWriteTime(proj.TargetPath));
-                Info("Target assembly is {0}.", proj.TargetPath);
-                return proj.TargetPath;
-            }
-            else if (proj.Compile(false, out var _, out var _))
-            {
-                Info("Target assembly is {0}.", proj.TargetPath);
-                return proj.TargetPath;
-            }
-            else
-            {
-                Error("Could not build project {0}.", f);
-                return null;
-            }
-        }
-        else if (f.IsGitHubUrl())
-        {
-            var fn = GitHub.GetAssemblyFromStratisPR(f);
-            if (fn is null)
-            {
-                Error("Could not get target assembly.");
-                return null;
-            }
-            Info("Target assembly is {0}.", fn);
-            return fn;
-        }
-        else
-        {
-            return null;
-        }
-    }
-
     public static BoogieResults? VerifyCode(string code)
     {
         var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
@@ -90,7 +41,7 @@ public class Verifier : Runtime
         return r;
     }
 
-    public static TmHighlightedCode? TranslateCode(string code, string? classname, string? methodname)
+    public static TmHighlightedCode? TranslateCode(string code, string? classname, string? methodname, bool allcode = false)
     {
         var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
         using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFullPath(Path.GetFileNameWithoutExtension(tempFilePath) + ".dll"));
@@ -108,7 +59,29 @@ public class Verifier : Runtime
         {
             op.Complete();
             var b = Boogie.Translate(proj.TargetPath, classname, methodname);
-            return b is not null ? new TmHighlightedCode("boogie", b) : null;
+            if (b is not null)
+            {
+                if (allcode)
+                {
+                    return new TmHighlightedCode("boogie", b);
+                }
+                else
+                {
+                    var o = new StringBuilder();
+                    foreach (var l in b.Split(System.Environment.NewLine))
+                    {
+                        if (!string.IsNullOrEmpty(l) && !l.StartsWith("type") && !l.StartsWith("const") && !l.StartsWith("function") && !l.StartsWith("axiom"))
+                        {
+                            o.AppendLine(l);
+                        }
+                    }
+                    return new TmHighlightedCode("boogie", o.ToString());
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
         else
         {

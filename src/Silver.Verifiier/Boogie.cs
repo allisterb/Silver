@@ -9,7 +9,7 @@ public class Boogie : Runtime
 {
     public static string? Translate(string path, string? classname = null, string? methodname = null)
     {
-        using var op = Begin("Dissassembling assembly {0} to Boogie", path);
+        using var op = Begin("Disassembling {0} to Boogie", path);
         var f = DateTime.Now.Ticks.ToString() + Path.GetFileName(path) + ".boogie";
         string filter = "";
         if (classname is not  null && methodname is null)

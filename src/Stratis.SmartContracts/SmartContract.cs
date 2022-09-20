@@ -142,7 +142,7 @@ namespace Stratis.SmartContracts
 
         protected static ICreateResult Create<T>(
           ulong amountToTransfer,
-          object[] parameters,
+          object[]? parameters,
           ulong gasLimit)
           where T : SmartContract
             => SilverVM.RandomCreateResult;
