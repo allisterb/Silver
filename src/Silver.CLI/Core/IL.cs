@@ -164,13 +164,13 @@ public class IL : Runtime
                 Error("Could not load project {0}.", f);
                 return null;
             }
-            if (proj.BuildUpToDate)
-            {
-                Info("Project {0} is up-to-date. Last build was on {1}.", ViewFilePath(f), File.GetLastWriteTime(proj.TargetPath));
-                Info("Target assembly is {0}.", proj.TargetPath);
-                return proj.TargetPath;
-            }
-            else if (!ssc && proj.Compile(false, out var _, out var _))
+            //if (proj.BuildUpToDate)
+            //{
+            //    Info("Project {0} is up-to-date. Last build was on {1}.", ViewFilePath(f), File.GetLastWriteTime(proj.TargetPath));
+            //    Info("Target assembly is {0}.", proj.TargetPath);
+            //    return proj.TargetPath;
+            //}
+            if (!ssc && proj.Compile(false, out var _, out var _))
             {
                 Info("Target assembly is {0}.", proj.TargetPath);
                 return proj.TargetPath;
