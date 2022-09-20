@@ -1,0 +1,505 @@
+using Stratis.SmartContracts;
+
+/// <summary>
+/// A Stratis smart contract for running ticket sales (Ticketbooth v1.0.0)
+/// </summary>
+public class TicketContract : SmartContract
+{
+    #region Constants
+    /// <summary>
+    /// Maximum number of seats, necessary while construction cost is lower than cost to begin a sale
+    /// </summary>
+    public const int MAX_SEATS = 65;
+    #endregion
+
+    #region Constructor
+    /// <summary>
+    /// Creates a new ticketing contract
+    /// </summary>
+    /// <param name="smartContractState"></param>
+    /// <param name="seatsBytes">The serialized array of seats</param>
+    /// <param name="venueName">The venue that hosts the contract</param>
+    public TicketContract(ISmartContractState smartContractState, byte[] seatsBytes, string venueName)
+        : base(smartContractState)
+    {
+        TicketContract.Seat[] seats = Serializer.ToArray<Seat>(seatsBytes);
+        assume seats.Length <= MAX_SEATS;
+
+        // create tickets
+        TicketContract.Ticket[] tickets = new Ticket[seats.Length];
+        for (int i = 0; i < seats.Length; i++)
+        {
+Ticket____obj_0=new Ticket { Seat = seats[i] };            tickets[i] = ____obj_0;
+        }
+Venue____obj_1=new Venue { Name = venueName };
+        Log(____obj_1);
+        Owner = Message.Sender;
+        Tickets = tickets;
+    }
+    #endregion
+
+    #region Public properties
+    /// <summary>
+    /// Stores ticket data for the contract
+    /// </summary>
+    public Ticket[] Tickets
+    {
+        get {return State.GetArray<Ticket>("Tickets");}
+        private set {State.SetArray("Tickets", value);}
+    }
+    #endregion
+
+    #region Public methods
+    /// <summary>
+    /// Starts a ticket sale, when no sale is running
+    /// </summary>
+    /// <param name="ticketsBytes">The serialized array of tickets</param>
+    /// <param name="showName">Name of the event or performance</param>
+    /// <param name="organiser">The organiser or artist</param>
+    /// <param name="time">Unix time for the event</param>
+    /// <param name="endOfSale">The block at which the sale ends</param>
+    public void BeginSale(byte[] ticketsBytes, string showName, string organiser, ulong time, ulong endOfSale)
+    {
+        assume Message.Sender == Owner;
+        assume EndOfSale == default(ulong);
+        assume Block.Number < endOfSale;
+
+        TicketContract.Ticket[] pricedTickets = Serializer.ToArray<Ticket>(ticketsBytes);
+        TicketContract.Ticket[] tickets = Tickets;
+
+        assume tickets.Length == pricedTickets.Length;
+
+        // set ticket prices
+        for (int i = 0; i < tickets.Length; i++)
+        {
+            Ticket ticket = default(Ticket);
+
+            // find matching ticket
+            for (int y = 0; y < pricedTickets.Length; y++)
+            {
+                if (SeatsAreEqual(tickets[i].Seat, pricedTickets[y].Seat))
+                {
+                    ticket = pricedTickets[y];
+                    break;
+                }
+            }
+
+            assume !IsDefaultSeat(ticket.Seat);
+            tickets[i].Price = pricedTickets[i].Price;
+        }
+
+        Tickets = tickets;
+        EndOfSale = endOfSale;
+
+        TicketContract.Show show = new Show
+        {
+            Name = showName,
+            Organiser = organiser,
+            Time = time,
+            EndOfSale = endOfSale
+        };
+        Log(show);
+    }
+
+    /// <summary>
+    /// Called after the ending of a ticket sale to clear the contract ticket data
+    /// </summary>
+    public void EndSale()
+    {
+        assume Message.Sender == Owner;
+        assume EndOfSale != default(ulong);
+        assume Block.Number >= EndOfSale;
+
+        Tickets = ResetTickets(Tickets);
+        EndOfSale = default(ulong);
+    }
+
+    /// <summary>
+    /// Reserves a ticket for the callers address
+    /// </summary>
+    /// <param name="seatIdentifierBytes">The serialized seat identifier</param>
+    /// <param name="secret">The encrypted secret holding ticket ownership</param>
+    /// <returns>Whether the seat was successfully reserved</returns>
+    public void Reserve(byte[] seatIdentifierBytes, byte[] secret)
+    {
+        Reserve(seatIdentifierBytes, secret, null);
+    }
+
+    /// <summary>
+    /// Reserves a ticket for the callers address and with an identifier for the customer
+    /// </summary>
+    /// <param name="seatIdentifierBytes">The serialized seat identifier</param>
+    /// <param name="secret">The encrypted secret holding ticket ownership</param>
+    /// <param name="customerIdentifier">An encrypted verifiable identifier for the customer</param>
+    /// <returns>Whether the seat was successfully reserved</returns>
+    public void Reserve(byte[] seatIdentifierBytes, byte[] secret, byte[] customerIdentifier)
+    {
+        assume secret != null;
+        assume !RequireIdentityVerification || customerIdentifier != null;
+        assume SaleOpen;
+
+        TicketContract.Seat seat = Serializer.ToStruct<Seat>(seatIdentifierBytes);
+        TicketContract.Ticket[] tickets = Tickets;
+        int reserveIndex = -1;
+
+        // find index of ticket in array
+        for (int i = 0; i < tickets.Length; i++)
+        {
+            if (SeatsAreEqual(tickets[i].Seat, seat))
+            {
+                reserveIndex = i;
+                break;
+            }
+        }
+
+        assume reserveIndex >= 0;
+        assume IsAvailable(tickets[reserveIndex]);
+        assume Message.Value >= tickets[reserveIndex].Price;
+
+        // refund accidental over-payment
+        if (Message.Value > tickets[reserveIndex].Price)
+        {
+            Transfer(Message.Sender, Message.Value - tickets[reserveIndex].Price);
+        }
+
+        tickets[reserveIndex].Address = Message.Sender;
+        tickets[reserveIndex].Secret = secret;
+        tickets[reserveIndex].CustomerIdentifier = customerIdentifier;
+        Tickets = tickets;
+
+        Log(tickets[reserveIndex]);
+    }
+
+    /// <summary>
+    /// Sets the fee to refund a ticket to the contract
+    /// </summary>
+    /// <param name="releaseFee">The refund fee</param>
+    public void SetTicketReleaseFee(ulong releaseFee)
+    {
+        assume Message.Sender == Owner;
+        assume !SaleOpen;
+        ReleaseFee = releaseFee;
+    }
+
+    /// <summary>
+    /// Sets the block limit for issuing refunds on purchased tickets
+    /// </summary>
+    /// <param name="noReleaseBlocks">The number of blocks before the end of the contract to disallow refunds</param>
+    public void SetNoReleaseBlocks(ulong noReleaseBlocks)
+    {
+        assume Message.Sender == Owner;
+        assume !SaleOpen;
+        NoRefundBlockCount = noReleaseBlocks;
+    }
+
+    /// <summary>
+    /// Sets the identity verification policy of the venue
+    /// </summary>
+    /// <param name="requireIdentityVerification">Whether the venue requires identity verification</param>
+    public void SetIdentityVerificationPolicy(bool requireIdentityVerification)
+    {
+        assume Message.Sender == Owner;
+        assume !SaleOpen;
+        RequireIdentityVerification = requireIdentityVerification;
+    }
+
+    /// <summary>
+    /// Requests a refund for a ticket, which will be issued if the no refund block limit is not yet reached
+    /// </summary>
+    /// <param name="seatIdentifierBytes">The serialized seat identifier</param>
+    public void ReleaseTicket(byte[] seatIdentifierBytes)
+    {
+        assume SaleOpen;
+        assume Block.Number + NoRefundBlockCount < EndOfSale;
+
+        TicketContract.Seat seat = Serializer.ToStruct<Seat>(seatIdentifierBytes);
+        TicketContract.Ticket[] tickets = Tickets;
+        int releaseIndex = -1;
+
+        // find index of ticket in array
+        for (int i = 0; i < tickets.Length; i++)
+        {
+            if (SeatsAreEqual(tickets[i].Seat, seat))
+            {
+                releaseIndex = i;
+                break;
+            }
+        }
+
+        assume releaseIndex >= 0;
+        assume Message.Sender == tickets[releaseIndex].Address;
+
+        if (tickets[releaseIndex].Price > ReleaseFee)
+        {
+            Transfer(Message.Sender, tickets[releaseIndex].Price - ReleaseFee);
+        }
+
+        tickets[releaseIndex].Address = Address.Zero;
+        tickets[releaseIndex].Secret = null;
+        tickets[releaseIndex].CustomerIdentifier = null;
+        Tickets = tickets;
+
+        Log(tickets[releaseIndex]);
+    }
+
+    public void Test1(int count)
+    {
+        // int MAX_LEN = 100;
+        assume count <= MAX_SEATS;
+    }
+
+    public void Test2(int count)
+    {
+        // int MAX_LEN = 100;
+        assume count <= MAX_SEATS;
+    }
+
+    public void Test3(int count)
+    {
+        // int MAX_LEN = 100;
+        assume count <= MAX_SEATS;
+    }
+
+    public void Test4(string name)
+    {
+        TicketContract.TestStruct v = new TestStruct { Name = name, Time = 1000 };
+    }
+
+    public void Test5(string name)
+    {
+        TicketContract.TestStruct v = new TestStruct (name, 1000);
+        //v.Name = name;
+        //v.Time = 1000;
+    }
+
+    public void Test6(string name)
+    {
+        TestStruct v;
+        v.Name = name;
+        v.Time = 1000;
+    }
+
+    public void Test7(string name)
+    {
+        bool d = State.GetBool("foo");
+        //TestStruct v;
+        //v.Name = name;
+        //v.Time = 1000;
+    }
+    #endregion
+
+    #region Private properties
+    private ulong EndOfSale
+    {
+        get {return State.GetUInt64("EndOfSale");}
+        set {State.SetUInt64("EndOfSale", value);}
+    }
+
+    private ulong ReleaseFee
+    {
+        get {return State.GetUInt64("ReleaseFee");}
+        set
+        {
+            State.SetUInt64("ReleaseFee", value);
+TicketReleaseFee____obj_2=new TicketReleaseFee { Amount = value };            Log(____obj_2);
+        }
+    }
+
+    private ulong NoRefundBlockCount
+    {
+        get {return State.GetUInt64("NoRefundBlockCount");}
+        set
+        {
+            State.SetUInt64("NoRefundBlockCount", value);
+NoRefundBlocks____obj_3=new NoRefundBlocks { Count = value };            Log(____obj_3);
+        }
+    }
+
+    private bool RequireIdentityVerification
+    {
+        get {return State.GetBool("RequireIdentityVerification");}
+        set
+        {
+            State.SetBool("RequireIdentityVerification", value);
+IdentityVerificationPolicy____obj_4=new IdentityVerificationPolicy { RequireIdentityVerification = value };            Log(____obj_4);
+        }
+    }
+
+    private Address Owner
+    {
+        get {return State.GetAddress("Owner");}
+        set {State.SetAddress("Owner", value);}
+    }
+
+    private bool SaleOpen
+    {
+        get
+        {
+            ulong endOfSale = EndOfSale;
+            return endOfSale != default(ulong) && Block.Number < endOfSale;
+        }
+    }
+    #endregion
+
+    #region Private methods
+    private bool IsAvailable(Ticket ticket)
+    {
+        return ticket.Address == Address.Zero;
+    }
+
+    private bool IsDefaultSeat(Seat seat)
+    {
+        return seat.Number == default(int) || seat.Letter == default(char);
+    }
+
+    private bool SeatsAreEqual(Seat seat1, Seat seat2)
+    {
+        return seat1.Number == seat2.Number && seat1.Letter == seat2.Letter;
+    }
+
+    private Ticket[] ResetTickets(Ticket[] tickets)
+    {
+        for (int i = 0; i < tickets.Length; i++)
+        {
+            tickets[i].Price = 0;
+            tickets[i].Address = Address.Zero;
+            tickets[i].Secret = null;
+            tickets[i].CustomerIdentifier = null;
+        }
+
+        return tickets;
+    }
+    #endregion
+
+    #region Structs
+    /// <summary>
+    /// Identifies a specific seat by number and/or letter
+    /// </summary>
+    public struct Seat
+    {
+        /// <summary>
+        /// A number identifying the seat
+        /// </summary>
+        public int Number;
+
+        /// <summary>
+        /// A letter identifying the seat
+        /// </summary>
+        public char Letter;
+    }
+
+    /// <summary>
+    /// Represents a ticket for a specific seat
+    /// </summary>
+    public struct Ticket
+    {
+        /// <summary>
+        /// The seat the ticket is for
+        /// </summary>
+        public Seat Seat;
+
+        /// <summary>
+        /// Price of the ticket in CRS sats
+        /// </summary>
+        public ulong Price;
+
+        /// <summary>
+        /// The ticket owner
+        /// </summary>
+        public Address Address;
+
+        /// <summary>
+        /// The encrypted ticket secret
+        /// </summary>
+        public byte[] Secret;
+
+        /// <summary>
+        /// Encrypted identifier used by the venue to check identity
+        /// </summary>
+        public byte[] CustomerIdentifier;
+    }
+
+    /// <summary>
+    /// Represents the venue or the event organiser
+    /// </summary>
+    public struct Venue
+    {
+        /// <summary>
+        /// Name of the venue
+        /// </summary>
+        public string Name;
+    }
+
+    /// <summary>
+    /// Stores metadata relating to a specific ticket sale
+    /// </summary>
+    public struct Show
+    {
+        /// <summary>
+        /// Name of the show
+        /// </summary>
+        public string Name;
+
+        /// <summary>
+        /// Organiser of the show
+        /// </summary>
+        public string Organiser;
+
+        /// <summary>
+        /// Unix time (seconds) of the show
+        /// </summary>
+        public ulong Time;
+
+        /// <summary>
+        /// Block height at which the sale ends
+        /// </summary>
+        public ulong EndOfSale;
+    }
+
+    /// <summary>
+    /// Represents the fee that is charged if a ticket is released from an address
+    /// </summary>
+    public struct TicketReleaseFee
+    {
+        /// <summary>
+        /// The release fee, in sats
+        /// </summary>
+        public ulong Amount;
+    }
+
+    /// <summary>
+    /// Represents the number of blocks before the end of the contract, where refunds are not allowed
+    /// </summary>
+    public struct NoRefundBlocks
+    {
+        /// <summary>
+        /// The number of no refund blocks
+        /// </summary>
+        public ulong Count;
+    }
+
+    /// <summary>
+    /// Represents the identity verification policy of the venue
+    /// </summary>
+    public struct IdentityVerificationPolicy
+    {
+        /// <summary>
+        /// Whether the venue requires identity verification
+        /// </summary>
+        public bool RequireIdentityVerification;
+    }
+
+    public struct TestStruct
+    {
+        public TestStruct(string name, ulong time)
+        {
+            this.Name = name;
+            this.Time = time;  
+        }
+        public string Name;
+
+        public ulong Time;
+
+    }
+    #endregion
+}
