@@ -7,11 +7,24 @@ using System.Xml.Serialization;
 using Silver.Verifier.Models;
 public class Boogie : Runtime
 {
-    public static string? Translate(string path)
+    public static string? Translate(string path, string? classname = null, string? methodname = null)
     {
         using var op = Begin("Dissassembling assembly {0} to Boogie", path);
         var f = DateTime.Now.Ticks.ToString() + Path.GetFileName(path) + ".boogie";
-        var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), path + " " + "/print:" + f + " /noVerify", isNETFxTool: true);
+        string filter = "";
+        if (classname is not  null && methodname is null)
+        {
+            filter = $" /trClass:{classname}";
+        }
+        else if (classname is null && methodname is not null)
+        {
+            filter = $" /trMethod:{classname}";
+        }
+        else if (classname is not null && methodname is not null)
+        {
+            filter = $" /trMethod:{classname + "." + methodname}";
+        }
+        var ret = RunCmd(Path.Combine(AssemblyLocation, "ssc", "SscBoogie.exe"), path + filter + " /print:" + f + " /noVerify", isNETFxTool: true);
 
         if (ret is null)
         {
@@ -22,6 +35,7 @@ public class Boogie : Runtime
         }
         else if (!ret.Contains("Spec# program verifier finished"))
         {
+            Error(ret);
             Error("Boogie translator did not complete successfully.");
             File.Delete(f);
             op.Abandon();

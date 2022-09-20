@@ -369,3 +369,4 @@ FodyWeavers.xsd
 .DS_Store
 
 notebooks/*.dll
+**/ssc/*.dll

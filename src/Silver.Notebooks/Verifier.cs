@@ -89,5 +89,32 @@ public class Verifier : Runtime
         File.Delete(proj.TargetPath);
         return r;
     }
+
+    public static TmHighlightedCode? TranslateCode(string code, string? classname, string? methodname)
+    {
+        var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
+        using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFileNameWithoutExtension(tempFilePath) + ".dll");
+        File.WriteAllText(tempFilePath, code);
+        var sourceFiles = new List<string>() { tempFilePath };
+        var settings = new Dictionary<string, object>
+                {
+                    { "BuildConfig", "Debug" },
+                    { "SourceFiles", sourceFiles }
+                };
+        var proj = new AdhocSilverProject(settings);
+        proj.SscCompile(true, false, out var ssc);
+        File.Delete(tempFilePath);
+        if (ssc is not null && ssc.Succeded)
+        {
+            op.Complete();
+            var b = Boogie.Translate(proj.TargetPath, classname, methodname);
+            return b is not null ? new TmHighlightedCode("boogie", b) : null;
+        }
+        else
+        {
+            op.Abandon();
+            return null;
+        }
+    }
 }
 

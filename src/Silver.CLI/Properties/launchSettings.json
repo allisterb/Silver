@@ -2,7 +2,7 @@
   "profiles": {
     "Silver.CLI": {
       "commandName": "Project",
-      "commandLineArgs": "cg https://github.com/stratisproject/CirrusSmartContracts/pull/31 foo.png"
+      "commandLineArgs": "dis C:\\Projects\\Silver\\examples\\RosemaryMonahan\\Multiply.cs -b"
     }
   }
 }

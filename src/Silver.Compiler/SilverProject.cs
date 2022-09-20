@@ -481,9 +481,9 @@ public abstract class SilverProject : Runtime
                 if (!DebugEnabled && rewrite)
                 {
                     Debug("Deleting temporary files...");
-                    foreach (var d in SourceFiles.Select(f => Path.GetDirectoryName(f)!))
+                    foreach (var f in SourceFiles)
                     {
-                        if (Directory.Exists(d)) Directory.Delete(d, true);
+                        if (File.Exists(f)) File.Delete(f);
                     }
                 }
                 else

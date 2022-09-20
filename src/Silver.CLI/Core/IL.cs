@@ -13,18 +13,26 @@ public class IL : Runtime
 {
     public static bool Disassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
     {
-        var targetAssembly = GetTargetAssembly(FailIfFileNotFound(fileName));
+        var targetAssembly = GetTargetAssembly(FailIfFileNotFound(fileName), boogie);
         if (targetAssembly is null) return false;
         if (boogie)
         {
-            var b = Boogie.Translate(targetAssembly);
+            var b = Boogie.Translate(targetAssembly, classPattern, methodPattern);
             if (b is null)
             {
                 return false;
             }
             else
             {
-                System.Console.WriteLine(b.Split(Environment.NewLine).SkipWhile(l => !(l.StartsWith("procedure") && l.Contains("..ctor"))).JoinWith(Environment.NewLine));
+                var o = new StringBuilder();
+                foreach(var l in b.Split(Environment.NewLine))
+                {
+                    if (!string.IsNullOrEmpty(l) && !l.StartsWith("type") && !l.StartsWith("const") && !l.StartsWith("function") && !l.StartsWith("axiom"))
+                    {
+                        o.AppendLine(l);
+                    }
+                }
+                System.Console.WriteLine(o.ToString());
                 return true;
             }
         }
@@ -141,7 +149,7 @@ public class IL : Runtime
         return true;
     }
 
-    public static string? GetTargetAssembly(string f)
+    public static string? GetTargetAssembly(string f, bool ssc = false)
     {
         if (f.HasPeExtension())
         {
@@ -162,7 +170,12 @@ public class IL : Runtime
                 Info("Target assembly is {0}.", proj.TargetPath);
                 return proj.TargetPath;
             }
-            else if (proj.Compile(false, out var _, out var _))
+            else if (!ssc && proj.Compile(false, out var _, out var _))
+            {
+                Info("Target assembly is {0}.", proj.TargetPath);
+                return proj.TargetPath;
+            }
+            else if (ssc && proj.SscCompile(true, false, out var s))
             {
                 Info("Target assembly is {0}.", proj.TargetPath);
                 return proj.TargetPath;
