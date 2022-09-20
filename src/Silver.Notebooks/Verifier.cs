@@ -93,7 +93,7 @@ public class Verifier : Runtime
     public static TmHighlightedCode? TranslateCode(string code, string? classname, string? methodname)
     {
         var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
-        using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFileNameWithoutExtension(tempFilePath) + ".dll");
+        using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFullPath(Path.GetFileNameWithoutExtension(tempFilePath) + ".dll"));
         File.WriteAllText(tempFilePath, code);
         var sourceFiles = new List<string>() { tempFilePath };
         var settings = new Dictionary<string, object>

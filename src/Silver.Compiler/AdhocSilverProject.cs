@@ -19,7 +19,7 @@ public class AdhocSilverProject : SilverProject
         AssemblyName = settings.TryGet<string>("AssemblyName") ?? Path.GetFileNameWithoutExtension(SourceFiles.First());
         OutputType = settings.TryGet<string>("OutputType") ?? "library";
         TargetExt = OutputType.ToLower() == "exe" ? ".exe" : ".dll";
-        TargetPath = settings.TryGet<string>("TargetPath") ?? Path.Combine(Path.GetDirectoryName(SourceFiles.First())!, AssemblyName) + TargetExt;
+        TargetPath = settings.TryGet<string>("TargetPath") ?? Path.GetFullPath(Path.Combine(Path.GetDirectoryName(SourceFiles.First())!, AssemblyName)) + TargetExt;
         RootNamespace = settings.TryGet<string>("RootNamespace");
         StartupObject = settings.TryGet<string>("StartupObject") ?? "library";
         StandardLibraryLocation = settings.TryGet<string>("StandardLibraryLocation") ?? "";
@@ -29,7 +29,7 @@ public class AdhocSilverProject : SilverProject
         string projectName = "SmartContract";
         ProjectId projectId = ProjectId.CreateNewId();
         VersionStamp versionStamp = VersionStamp.Create();
-        var docs = SourceFiles.Select(f => DocumentInfo.Create(DocumentId.CreateNewId(projectId), Path.GetFileName(f), sourceCodeKind: SourceCodeKind.Regular, filePath: f));
+        var docs = SourceFiles.Select(f => DocumentInfo.Create(DocumentId.CreateNewId(projectId), Path.GetFileName(f), sourceCodeKind: SourceCodeKind.Regular, filePath: Path.GetFullPath(f)));
         var options = 
             new CSharpCompilationOptions
             (

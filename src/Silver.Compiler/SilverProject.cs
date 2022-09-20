@@ -142,7 +142,7 @@ public abstract class SilverProject : Runtime
             }
 
             
-            sb.Append(SourceFiles.JoinWithSpaces());
+            sb.Append(SourceFiles.Select(s => Path.GetFullPath(s)).JoinWithSpaces());
             return sb.ToString().TrimEnd();
         }
     }
@@ -367,7 +367,7 @@ public abstract class SilverProject : Runtime
         if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);
         TargetPath = Path.Combine(TargetDir, Path.GetFileName(TargetPath));
         if (!string.IsNullOrEmpty(ShadowedAssembly)) Info("Assembly will shadow {0}.", ShadowedAssembly);
-
+        Info("Target is: {0}, {1}", TargetPath, TargetDir);
         using (var op = Parent is null ?  
             Begin("Compiling Spec# project using configuration {0}", BuildConfiguration!) : Begin("Compiling Spec# reference for project {0} using configuration {1}", Parent.ProjectFile.Name, BuildConfiguration!))
         {
@@ -379,10 +379,18 @@ public abstract class SilverProject : Runtime
                     if (e.Data is not null && (e.Data.Contains("error CS") || e.Data.Contains("error ")) && !e.Data.Trim().StartsWith("error"))
                     {
                         var errs = e.Data.Split(": error");
-                        var errmsg = errs[1].Split(":");
-                        compilerErrors.Add(new(errs[0], errmsg[0], errmsg[1]));
+                        if (errs.Length == 1)
+                        {
+                            compilerErrors.Add(new("", "", errs[0]));
+                            Error("Msg: {0}", errs[0]);
+                        }
+                        else
+                        {
+                            var errmsg = errs[1].Split(":");
+                            compilerErrors.Add(new(errs[0], errmsg[0], errmsg[1]));
                             Error("File: " + errs[0] + Environment.NewLine + "               Code:{0}" + Environment.NewLine +
                                 "               Msg: {1}\n", errmsg[0], errmsg.Skip(1).JoinWith(""));
+                        }
                     }
                     else if (e.Data is not null && e.Data.Contains("error CS") && e.Data.Trim().StartsWith("error"))
                     {

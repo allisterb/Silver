@@ -370,3 +370,5 @@ FodyWeavers.xsd
 
 notebooks/*.dll
 **/ssc/*.dll
+notebooks/**/*.cs
+notebooks/**/ssc/*.ssc
