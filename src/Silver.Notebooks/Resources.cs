@@ -14,6 +14,8 @@ public class Resources
 
     public static bool PrismLibLoaded { get; set; } = false;
 
+    public static bool PrismLanguagesLoaded { get; set; } = false;
+    
     public static bool PrismCssLoaded { get; set; } = false;
 
     public static string GenerateScriptElement(string uri, string tag)

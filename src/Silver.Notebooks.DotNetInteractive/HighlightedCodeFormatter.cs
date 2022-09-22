@@ -38,6 +38,13 @@ public class HighlightedCodeFormatter : Runtime
         KernelInvocationContext.Current?.Display(html, "text/html");
         Resources.PrismLibLoaded = true;
 
+        html = new HtmlString(Resources.GenerateScriptElement("https://unpkg.com/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js", "prismjsautoloaderlib"));
+        KernelInvocationContext.Current?.Display(html, "text/html");
+        Resources.PrismLanguagesLoaded = true;
+
+        html = new HtmlString(Resources.GenerateScriptElement("https://unpkg.com/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js", "prismjsautoloaderlib"));
+        KernelInvocationContext.Current?.Display(html, "text/html");
+        Resources.PrismLanguagesLoaded = true;
 
         Formatter.Register<HighlightedCode>((t, writer) =>
         {
