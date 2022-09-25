@@ -26,8 +26,10 @@ public class TreeDiagramFormatter : Runtime
         Resources.JSTreeCssLoaded = true;
         Formatter.Register<TreeDiagram>((t, writer) =>
         {
+            var config = "{\"types\" : {\"default\" : {\"icon\" : \"glyphicon glyphicon-flash\"}, \"demo\" : {\"icon\" : \"glyphicon glyphicon-ok\"}},\"plugins\" : [\"types\"]}";
+
             var id = Guid.NewGuid().ToString("N");
-            var s = $@"<script>(require.config({{ 'paths': {{ 'jstree' : 'https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min' }}}}) || require)(['jstree'], (jstree) => {{$('#{id}').jstree();}});</script>";
+            var s = $@"<script>(require.config({{ 'paths': {{ 'jstree' : 'https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min' }}}}) || require)(['jstree'], (jstree) => {{$('#{id}').jstree({config});}});</script>";
             var h = new HtmlString(t.DrawWithJSTree(id) + s);
             h.WriteTo(writer, HtmlEncoder.Default);
         }, HtmlFormatter.MimeType);

@@ -28,7 +28,8 @@ public class TreeNode
     public string DrawWithJSTree()
     {
         var html = new StringBuilder();
-        html.AppendLine("<li>");
+        string a = (Attributes.Count > 0) ? " " + Attributes.Select(kv => kv.Key + "=" + "\"" + kv.Value + "\"").Aggregate((a, b) => a + " " + b) : "";
+        html.AppendLine($"<li{a}>");
         html.AppendLine(Data);
         if (Children.Count > 0)
         {

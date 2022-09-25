@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using Newtonsoft.Json;
+
 using Silver.Compiler;
 using Silver.CodeAnalysis.IL;
 using Silver.Drawing;
@@ -60,7 +62,11 @@ public class Verifier : Runtime
             if (methodPattern is not null && !methodPattern.IsMatch(methodName)) continue;
 
             var status = m.Conclusion.Outcome == "errors" ? "[red]Failed[/]" : "[lime]Ok[/]";
-            var method = methods.AddNode(($"[cyan]{m.Name}[/]: {status}"));
+            var attr = new Dictionary<string, string>();
+            var jstreeattr = new Dictionary<string, string>();
+            jstreeattr["type"] = "demo";
+            attr["data-jstree"] = JsonConvert.SerializeObject(jstreeattr);
+            var method = methods.AddNode($"{m.Name}: {status}", attr);
             if (m.Errors is not null && m.Errors.Any())
             {
                 var errors = method.AddNode("[red]Errors[/]");
