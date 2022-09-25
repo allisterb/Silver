@@ -16,7 +16,7 @@ using Silver.Verifier;
 using Silver.Verifier.Models;
 public class Verifier : Runtime
 {
-    public static TreeDiagram? VerifyCode(string code, string _classPattern, string _methodPattern)
+    public static TreeDiagram? VerifyCode(string code, string? _classPattern = null, string? _methodPattern = null)
     {
         var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
         using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFileNameWithoutExtension(tempFilePath) + ".dll");
@@ -50,9 +50,8 @@ public class Verifier : Runtime
         if (classPattern is not null) Info("Filtering verification output using class pattern {0}...", classPattern.ToString());
         if (methodPattern is not null) Info("Filtering verification output using method pattern {0}...", methodPattern.ToString());
 
-        var tree = new TreeNode("Verification results");
-        var file = tree.AddNode($"[royalblue1]File: {results.File.Name}[/]");
-        var methods = file.AddNode("[yellow]Methods[/]");
+        var tree = new TreeNode("Verification results", new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "file" } }) } });
+        var methods = tree.AddNode("Methods", new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "code" } }) } });
         var methodCount = results.File.Methods.Length;
         foreach (var m in results.File.Methods)
         {
@@ -61,12 +60,9 @@ public class Verifier : Runtime
             if (classPattern is not null && !classPattern.IsMatch(className)) continue;
             if (methodPattern is not null && !methodPattern.IsMatch(methodName)) continue;
 
-            var status = m.Conclusion.Outcome == "errors" ? "[red]Failed[/]" : "[lime]Ok[/]";
-            var attr = new Dictionary<string, string>();
-            var jstreeattr = new Dictionary<string, string>();
-            jstreeattr["type"] = "demo";
-            attr["data-jstree"] = JsonConvert.SerializeObject(jstreeattr);
-            var method = methods.AddNode($"{m.Name}: {status}", attr);
+            var status = m.Conclusion.Outcome == "errors" ? new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "error" } }) } } : 
+                new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "ok" } }) } };
+            var method = methods.AddNode($"{m.Name}", status);
             if (m.Errors is not null && m.Errors.Any())
             {
                 var errors = method.AddNode("[red]Errors[/]");

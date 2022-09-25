@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Silver.Notebooks\Silver.Notebooks.csproj" />
     <ProjectReference Include="..\..\src\Silver.Verifiier\Silver.Verifiier.csproj" />
   </ItemGroup>
 

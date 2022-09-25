@@ -310,8 +310,8 @@ public abstract class SilverProject : Runtime
                     }
                 }
                 rewrittenSyntaxTrees.Add(rwt.SyntaxTree);
-                var text = rwt.GetText().ToString();
-                var lines = text.Split(Environment.NewLine);
+                var text = rwt.ToFullString();
+                var lines = text.Split("\n");
                 for(int i = 0; i < lines.Length; i++)
                 {
                     if (lines[i].TrimStart().StartsWith("//@"))

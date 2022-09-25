@@ -26,7 +26,7 @@ public class TreeDiagramFormatter : Runtime
         Resources.JSTreeCssLoaded = true;
         Formatter.Register<TreeDiagram>((t, writer) =>
         {
-            var config = "{\"types\" : {\"default\" : {\"icon\" : \"fa fa-question-circle\"}, \"demo\" : {\"icon\" : \"glyphicon glyphicon-ok\"}},\"plugins\" : [\"types\"]}";
+            var config = "{\"types\" : {\"ok\" : {\"icon\" : \"fa fa-check\"}, \"error\" : {\"icon\" : \"fa fa-exclamation-triangle\"}, \"file\" : {\"icon\" : \"fa fa-file\"}, \"code\" : {\"icon\" : \"fa fa-code\"}},\"plugins\" : [\"types\"]}";
 
             var id = Guid.NewGuid().ToString("N");
             var s = $@"<script>(require.config({{ 'paths': {{ 'jstree' : 'https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min' }}}}) || require)(['jstree'], (jstree) => {{$('#{id}').jstree({config});}});</script>";
