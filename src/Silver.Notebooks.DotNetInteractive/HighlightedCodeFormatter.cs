@@ -42,14 +42,15 @@ public class HighlightedCodeFormatter : Runtime
         KernelInvocationContext.Current?.Display(html, "text/html");
         Resources.PrismLanguagesLoaded = true;
 
-        html = new HtmlString(Resources.GenerateScriptElement("https://unpkg.com/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js", "prismjsautoloaderlib"));
+        html = new HtmlString("<link href=\"https://unpkg.com/prismjs@1.29.0/themes/prism.min.css\" rel=\"stylesheet\" />");
         KernelInvocationContext.Current?.Display(html, "text/html");
-        Resources.PrismLanguagesLoaded = true;
+        Resources.PrismCssLoaded = true;
 
         Formatter.Register<HighlightedCode>((t, writer) =>
         {
             var h = new HtmlString(t.Draw(Guid.NewGuid().ToString("N")));
             h.WriteTo(writer, HtmlEncoder.Default);
+            var s = $@"<script>(require.config({{ 'paths': {{ 'prismjs' : 'https://unpkg.com/prismjs@1.29.0/prism.js' }}}}) || require)(['jstree'], (jstree) => {{$('#{h}').jstree();}});</script>";
         }, HtmlFormatter.MimeType);
 
         Kernel.Current.SendAsync(new DisplayValue(new FormattedValue("text/markdown", $"Added formatter for highlighted code using Shiki and PrismJS to .NET Interactive kernel {Kernel.Current.Name}.")));

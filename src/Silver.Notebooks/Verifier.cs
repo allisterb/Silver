@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using Silver.Compiler;
 using Silver.CodeAnalysis.IL;
@@ -13,7 +14,7 @@ using Silver.Verifier;
 using Silver.Verifier.Models;
 public class Verifier : Runtime
 {
-    public static BoogieResults? VerifyCode(string code)
+    public static TreeDiagram? VerifyCode(string code, string _classPattern, string _methodPattern)
     {
         var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
         using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFileNameWithoutExtension(tempFilePath) + ".dll");
@@ -36,9 +37,68 @@ public class Verifier : Runtime
             op.Abandon();
             return null;
         }
-        var r =  Boogie.Verify(proj.TargetPath);
+        var results =  Boogie.Verify(proj.TargetPath);
         File.Delete(proj.TargetPath);
-        return r;
+        if (results is null)
+        {
+            return null;
+        }
+        Regex? classPattern = _classPattern is not null ? new Regex(_classPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
+        Regex? methodPattern = _methodPattern is not null ? new Regex(_methodPattern, RegexOptions.Compiled | RegexOptions.Singleline) : null;
+        if (classPattern is not null) Info("Filtering verification output using class pattern {0}...", classPattern.ToString());
+        if (methodPattern is not null) Info("Filtering verification output using method pattern {0}...", methodPattern.ToString());
+
+        var tree = new TreeNode("Verification results");
+        var file = tree.AddNode($"[royalblue1]File: {results.File.Name}[/]");
+        var methods = file.AddNode("[yellow]Methods[/]");
+        var methodCount = results.File.Methods.Length;
+        foreach (var m in results.File.Methods)
+        {
+            var className = m.Name.Split('.').First();
+            var methodName = m.Name.Split('.').Last().Split('$').First();
+            if (classPattern is not null && !classPattern.IsMatch(className)) continue;
+            if (methodPattern is not null && !methodPattern.IsMatch(methodName)) continue;
+
+            var status = m.Conclusion.Outcome == "errors" ? "[red]Failed[/]" : "[lime]Ok[/]";
+            var method = methods.AddNode(($"[cyan]{m.Name}[/]: {status}"));
+            if (m.Errors is not null && m.Errors.Any())
+            {
+                var errors = method.AddNode("[red]Errors[/]");
+                foreach (var error in m.Errors)
+                {
+                    var e = errors.AddNode(error.Message);
+                    if (error.File is not null && error.File.EndsWith(".ssc"))
+                    {
+                        e.AddNode($"File: [blue]{error.File!.Replace(".ssc", ".cs")}[/]");
+                    }
+                    else
+                    {
+                        e.AddNode($"File: [blue]{error.File ?? ""}[/]");
+                    }
+                    if (error.LineSpecified)
+                    {
+                        e.AddNode($"Line: [fuchsia]{error.Line}[/]");
+                    }
+                    if (error.ColumnSpecified)
+                    {
+                        e.AddNode($"Column: [fuchsia]{error.Column}[/]");
+                    }
+                    //method.AddNode($"Message: {error.Message}");
+                }
+            }
+            method.AddNode($"Duration: [fuchsia]{m.Conclusion.Duration}s[/]");
+        }
+
+        var errorCount = results.File.Methods.Where(m => m.Conclusion.Outcome == "errors").Count();
+        if (errorCount == 0)
+        {
+            Info("Verification succeded for {0} method(s).", methodCount);
+        }
+        else
+        {
+            Info("{0} out of {1} method(s) failed verification.", errorCount, methodCount);
+        }
+        return new TreeDiagram(tree);
     }
 
     public static TmHighlightedCode? TranslateCode(string code, string? classname, string? methodname, bool allcode = false)

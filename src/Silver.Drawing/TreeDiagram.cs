@@ -19,6 +19,12 @@ public class TreeNode
         Children = children ?? new List<TreeNode>();
     }
 
+    public TreeNode AddNode(string data, Dictionary<string, string>? attributes = null, List<TreeNode>? children = null)
+    {
+        var tn = new TreeNode(data, attributes, children);
+        Children.Add(tn);
+        return tn;
+    }
     public string DrawWithJSTree()
     {
         var html = new StringBuilder();
@@ -43,7 +49,7 @@ public class TreeDiagram
 {
     public List<TreeNode> TreeNodes { get; set;}
 
-    public TreeDiagram(IEnumerable<TreeNode> treeNodes)
+    public TreeDiagram(params TreeNode[] treeNodes)
     {
         TreeNodes = treeNodes.ToList();
     }
