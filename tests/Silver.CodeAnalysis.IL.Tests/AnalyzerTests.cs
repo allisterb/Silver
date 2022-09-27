@@ -13,5 +13,12 @@ public class Analyzer
         Assert.Null(an);
 
     }
+
+    [Fact]
+    public void CanGetControlFlowGraph()
+    {
+        var an = IL.GetAnalyzer(@"..\..\..\..\..\examples\DAOContract\bin\Debug\netcoreapp2.1\DAOContract.dll");
+        Assert.Null(an.GetCallGraph());
+    }
 }
 

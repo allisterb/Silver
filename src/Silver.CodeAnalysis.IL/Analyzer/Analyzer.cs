@@ -3,13 +3,14 @@
 using Backend.Analyses;
 using Backend.Model;
 
-using Silver;
+using Microsoft.Msagl.Drawing;
+
 using Silver.Metadata;
 
 #region Records
 public record Summary(
-    ITypeDefinition[] Classes, ITypeDefinition[] Interfaces, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
-    IPropertyDefinition[] Properties, IFieldDefinition[] Fields, ClassHierarchyAnalysis ClassHierarchy);
+    ITypeDefinition[] Classes, ITypeDefinition[] Structs, ITypeDefinition[] Enums, IMethodDefinition[] Methods,
+    IPropertyDefinition[] Properties, IFieldDefinition[] Fields);
 #endregion
 
 public partial class Analyzer : Runtime
@@ -19,7 +20,7 @@ public partial class Analyzer : Runtime
     {
         AssemblyFile = new FileInfo(FailIfFileNotFound(fileName));
         Host = new PeReader.DefaultHost();
-        Module = (IModule) this.Host.LoadUnitFrom(fileName);
+        Module = (IModule)this.Host.LoadUnitFrom(fileName);
         State = state ?? new();
         if (Module is null || Module == Dummy.Module || Module == Dummy.Assembly)
         {
@@ -45,15 +46,15 @@ public partial class Analyzer : Runtime
                 }
             }
         }
-        
+
         Types.Initialize(Host);
         if (File.Exists(pdbFileName))
         {
             PdbReader = new PdbReader(fileName, pdbFileName, this.Host, true);
         }
         var _moduleTypeDefinitions = from a in Host.LoadedUnits.OfType<IModule>()
-                                from t in a.GetAllTypes()
-                                select t;
+                                     from t in a.GetAllTypes()
+                                     select t;
         moduleTypeDefinitions = _moduleTypeDefinitions.ToArray();
         Initialized = true;
     }
@@ -73,14 +74,12 @@ public partial class Analyzer : Runtime
     {
         FailIfNotInitialized();
         var classes = CollectClasses();
-        var interfaces = CollectInterfaces();
         var methods = CollectMethods();
         var structs = CollectStructs();
         var enums = CollectEnums();
         var properties = CollectProperties();
-        var fields = CollectFields();	
-        var cha = GetClassHierarchyAnalysis();
-        return new(classes, interfaces, structs, enums, methods, properties, fields, cha);
+        var fields = CollectFields();
+        return new(classes, structs, enums, methods, properties, fields);
     }
 
     public Graph GetCallGraph()
@@ -104,36 +103,52 @@ public partial class Analyzer : Runtime
             {
                 Warn("The method {0} was not analyzed.", m.GetUniqueName());
             }
-            return false;            
+            return false;
         };
         var cg = cha.Analyze(methods);
-        
+
         var g = new Graph();
         g.Kind = "cg";
-        
+
         foreach (var method in cg.Roots)
         {
+            Node? rootNode = null;
             var calllsites = cg.GetCallSites(method);
             var inv = cg.GetInvocations(method);
             var nid = MemberHelper.GetMethodSignature(method);
-            Node rootNode = g.HasNode(nid) ? g.FindNode(nid) : g.AddNode(nid);
-            foreach (var cs in calllsites)
+            if (!g.Nodes.Any(n => n.Id == nid))
             {
-                var csid = MemberHelper.GetMethodSignature(cs.Caller);
-                Node csNode = g.HasNode(csid) ? g.FindNode(csid) : g.AddNode(csid);
-                g.AddEdge(csNode, rootNode);
-            }
-            if (method.ResolvedMethod is not null && method.ResolvedMethod.IsDeployedSmartContractMethod())
-            {
-                rootNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Yellow;
-            }
-            else if (method.ResolvedMethod is not null && method.ResolvedMethod.IsSmartContractMethod())
-            {
-                rootNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Blue;
+                rootNode = g.AddNode(nid);
             }
             else
             {
-                rootNode.Attr.FillColor = Microsoft.Msagl.Drawing.Color.White;
+                rootNode = g.FindNode(nid);
+            }
+            foreach (var cs in calllsites)
+            {
+                Node? csNode = null;
+                var csid = MemberHelper.GetMethodSignature(cs.Caller);
+                if (!g.Nodes.Any(n => nid == csid))
+                {
+                    csNode = g.AddNode(csid);
+                }
+                else
+                {
+                    csNode = g.FindNode(csid);
+                }
+                g.AddEdge(csNode.Id, rootNode.Id);
+            }
+            if (method.ResolvedMethod is not null && method.ResolvedMethod.IsDeployedSmartContractMethod())
+            {
+                rootNode.Attr.FillColor = Color.Yellow;
+            }
+            else if (method.ResolvedMethod is not null && method.ResolvedMethod.IsSmartContractMethod())
+            {
+                rootNode.Attr.FillColor = Color.Blue;
+            }
+            else
+            {
+                rootNode.Attr.FillColor = Color.White;
             }
         }
         op.Complete();
@@ -150,10 +165,10 @@ public partial class Analyzer : Runtime
         }
         using var op = Begin("Creating control-flow graph for methods in assembly {0}", AssemblyFile.Name);
         var methods = CollectMethods();
-        
+
         Graph g = new Graph();
         g.Kind = "cfg";
-        
+
         var sourceEmitterOutput = new MonochromeSourceEmitterOutput();
         foreach (var method in methods)
         {
@@ -161,22 +176,23 @@ public partial class Analyzer : Runtime
             foreach (var cfgNode in cfg.Nodes)
             {
                 var nid = method.GetUniqueId(cfgNode.Id);
-                if (!g.HasNode(nid))
+                var node = g.Nodes.FirstOrDefault(n => n.Id == nid);
+                if (node is null)
                 {
                     switch (cfgNode.Kind)
                     {
                         case CFGNodeKind.Exit:
                             break;
                         default:
-                            var node = new Node(nid);
-                            node.SetLabel(PrintCFGNodeLabel(method, cfgNode, sourceEmitterOutput));
+                            node = new Node(nid);
+                            node.LabelText = PrintCFGNodeLabel(method, cfgNode, sourceEmitterOutput);
                             if (method.IsSmartContractMethod() && cfgNode.Kind == CFGNodeKind.Entry)
                             {
-                                node.Attr.FillColor = Microsoft.Msagl.Drawing.Color.Yellow;
+                                node.Attr.FillColor = Color.Yellow;
                             }
                             else
                             {
-                                node.Attr.FillColor = Microsoft.Msagl.Drawing.Color.White;
+                                node.Attr.FillColor = Color.White;
                             }
                             g.AddNode(node);
                             break;
@@ -246,13 +262,11 @@ public partial class Analyzer : Runtime
 
     internal T[] CollectMembers<T>(string name, Func<T, bool> pred) where T : ITypeDefinitionMember => CollectMembers<T>(name, pred, Identity<T>());
 
-    internal T[] CollectMembers<T>(string name, Func<T, T> func) where T : ITypeDefinitionMember  => CollectMembers<T>(name, All<T>(), func);
+    internal T[] CollectMembers<T>(string name, Func<T, T> func) where T : ITypeDefinitionMember => CollectMembers<T>(name, All<T>(), func);
 
     internal T[] CollectMembers<T>(string name) where T : ITypeDefinitionMember => CollectMembers<T>(name, All<T>(), Identity<T>());
 
     internal ITypeDefinition[] CollectClasses() => CollectTypes("Classes", (t => t.IsClass && t.GetName() != "<Module>")).ToArray();
-
-    internal ITypeDefinition[] CollectInterfaces() => CollectTypes("Interfaces", (t => t.IsInterface)).ToArray();
 
     internal ITypeDefinition[] CollectStructs() => CollectTypes("Structs", (t => t.IsStruct)).ToArray();
 
@@ -276,15 +290,6 @@ public partial class Analyzer : Runtime
         var visitor = new MethodVisitor(action, State);
         visitor.Traverse(Module);
         return visitor.state;
-    }
-
-    public ClassHierarchyAnalysis GetClassHierarchyAnalysis()
-    {
-        using var op = Begin("Analyzing class hierachy");
-        var cha = new ClassHierarchyAnalysis(this.Host);
-        cha.Analyze();
-        op.Complete();
-        return cha;
     }
 
     public static void Test(string fileName)

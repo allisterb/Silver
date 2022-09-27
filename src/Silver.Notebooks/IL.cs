@@ -97,7 +97,7 @@ public class IL : Runtime
     {
         var builder = new StringBuilder();
         builder.AppendLine("classDiagram");
-        foreach (var c in summary.Classes.Concat(summary.Interfaces).Concat(summary.Structs))
+        foreach (var c in summary.Classes)
         {
             var className = c.GetName().Replace(".", "_");
             builder.AppendLineFormat("class {0}", className);
@@ -158,11 +158,11 @@ public class IL : Runtime
                 builder.AppendFormat(System.Environment.NewLine);
             }
 
-            var subtypes = summary.ClassHierarchy.GetSubtypes(c);
-            foreach (var subtype in subtypes)
-            {
-                builder.AppendLineFormat("{0}<|--{1}", className, subtype.GetName());
-            }
+            //var subtypes = summary.ClassHierarchy.GetSubtypes(c);
+            //foreach (var subtype in subtypes)
+            //{
+                //builder.AppendLineFormat("{0}<|--{1}", className, subtype.GetName());
+            //}
         }
             
         return new MermaidLanguage(builder.ToString());
