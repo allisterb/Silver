@@ -361,7 +361,7 @@ public abstract class SilverProject : Runtime
             SourceFiles = syntaxTrees.Select(st => Path.Combine(Path.Combine(Path.GetDirectoryName(st.FilePath)!, "ssc"), Path.ChangeExtension(Path.GetFileName(st.FilePath), ".ssc"))).ToList();
             op.Complete();
         }
-                
+        Info("Assembly location is {0}", AssemblyLocation);
         References.Insert(0, Path.Combine(AssemblyLocation, "Stratis.SmartContracts.NET4.dll"));
         TargetDir = Path.Combine(Path.GetDirectoryName(TargetPath)!, "ssc");
         if (!Directory.Exists(TargetDir)) Directory.CreateDirectory(TargetDir);

@@ -60,7 +60,7 @@ public class Verifier : Runtime
             if (classPattern is not null && !classPattern.IsMatch(className)) continue;
             if (methodPattern is not null && !methodPattern.IsMatch(methodName)) continue;
 
-            var status = (m.Conclusion.Outcome != "errors" || (m.Errors is not null && m.Errors.Any() && m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer consistent (owner must not be valid)")))) ? new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "ok" } }) } } : 
+            var status = (m.Conclusion.Outcome != "errors" || (m.Errors is not null && m.Errors.Any() && m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer")))) ? new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "ok" } }) } } : 
                 new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "error" } }) } };
             var method = methods.AddNode($"{m.Name}", status);
             if (m.Errors is not null && m.Errors.Any() && !m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer")))
