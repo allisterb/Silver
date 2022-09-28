@@ -38,12 +38,5 @@
     </Reference>
     <Reference Condition="'$(TargetFramework)'=='net461'" Include="System.Numerics"></Reference>
   </ItemGroup>
-
-  <Target Name="CopyNET4" AfterTargets="Build" Condition="'$(TargetFramework)'=='net461'">
-    <Copy SourceFiles="$(TargetDir)\Stratis.SmartContracts.dll" DestinationFiles="$(TargetDir)\Stratis.SmartContracts.NET4.dll" />
-    <Copy SourceFiles="$(TargetDir)\Stratis.SmartContracts.pdb" DestinationFiles="$(TargetDir)\Stratis.SmartContracts.NET4.pdb" />
-    <Copy SourceFiles="$(TargetDir)\Stratis.SmartContracts.dll" DestinationFiles="..\Silver.Notebooks.DotNetInteractive\bin\Debug\net6.0\Stratis.SmartContracts.NET4.dll" />
-    <Copy SourceFiles="$(TargetDir)\Stratis.SmartContracts.pdb" DestinationFiles="..\Silver.Notebooks.DotNetInteractive\bin\Debug\net6.0\Stratis.SmartContracts.NET4.pdb" />
-  </Target>
   
 </Project>

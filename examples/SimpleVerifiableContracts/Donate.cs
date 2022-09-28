@@ -12,8 +12,8 @@ public class DonateContract : SmartContract
     {
         //@ assume Microsoft.Contracts.Owner.None(Owner);
 		//@ ulong oldBalance = GetBalance(Owner);
-        Transfer(Owner, Message.Value);
-        //@ assert GetBalance(Owner) == oldBalance + Message.Value;
+        ITransferResult r = Transfer(Owner, Message.Value);
+        //@ assert (GetBalance(Owner) == oldBalance + Message.Value);
     }
 
     private Address Owner
