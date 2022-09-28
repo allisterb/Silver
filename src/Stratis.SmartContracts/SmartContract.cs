@@ -194,8 +194,9 @@ namespace Stratis.SmartContracts
         [Rep]
         public readonly SilverSmartContractState contractState;
 
-        [Peer]
-        public readonly SilverSmartContractPersistentState State;
+        [Rep]
+        [NotNull]
+        public readonly SilverSmartContractPersistentState State = new SilverSmartContractPersistentState();
 
         [Rep]
         public readonly Address Address; // => this.State.Message.ContractAddress;

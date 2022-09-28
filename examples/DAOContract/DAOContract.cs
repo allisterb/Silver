@@ -1,10 +1,24 @@
 ﻿using Stratis.SmartContracts;
-//using System.Collections;
+using System.Collections;
 using System;
 
 [Deploy]
 public class DAOContract : SmartContract
 {
+    public DAOContract(ISmartContractState state, uint minVotingDuration)
+        : base(state)
+    {
+        Assert(DefaultMaxDuration > minVotingDuration, $"MinVotingDuration should be lower than maxVotingDuration({DefaultMaxDuration})");
+
+        Owner = Message.Sender;
+        LastProposalId = 1;
+        MinVotingDuration = minVotingDuration;
+        MaxVotingDuration = DefaultMaxDuration;
+        //var c = new System.Collections.Generic.Dictionary<string, int>();
+    }
+
+    //public System.Collections.Generic.List<string> Contracts;
+
     public Address Owner
     {
         get => State.GetAddress(nameof(Owner));
@@ -59,16 +73,7 @@ public class DAOContract : SmartContract
     private void SetProposal(uint index, Proposal proposal) => State.SetStruct($"Proposals:{index}", proposal);
 
     public const uint DefaultMaxDuration = 60u * 60 * 24 * 7 / 16; // 1 week period as second/ block duration as second
-    public DAOContract(ISmartContractState state, uint minVotingDuration)
-        : base(state)
-    {
-        Assert(DefaultMaxDuration > minVotingDuration, $"MinVotingDuration should be lower than maxVotingDuration({DefaultMaxDuration})");
-
-        Owner = Message.Sender;
-        LastProposalId = 1;
-        MinVotingDuration = minVotingDuration;
-        MaxVotingDuration = DefaultMaxDuration;
-    }
+    
 
     public uint CreateProposal(Address recipent, ulong amount, uint votingDuration, string description)
     {
