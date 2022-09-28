@@ -60,38 +60,38 @@ public class Verifier : Runtime
             if (classPattern is not null && !classPattern.IsMatch(className)) continue;
             if (methodPattern is not null && !methodPattern.IsMatch(methodName)) continue;
 
-            var status = m.Conclusion.Outcome == "errors" ? new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "error" } }) } } : 
-                new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "ok" } }) } };
+            var status = (m.Conclusion.Outcome != "errors" || (m.Errors is not null && m.Errors.Any() && m.Errors.All(e => e.Message == "Possible null dereference"))) ? new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "ok" } }) } } : 
+                new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "error" } }) } };
             var method = methods.AddNode($"{m.Name}", status);
-            if (m.Errors is not null && m.Errors.Any())
+            if (m.Errors is not null && m.Errors.Any() && !m.Errors.All(e => e.Message == "Possible null dereference"))
             {
-                var errors = method.AddNode("[red]Errors[/]");
-                foreach (var error in m.Errors)
+                var errors = method.AddNode("Errors");
+                foreach (var error in m.Errors.Where(e => e.Message != "Possible null dereference"))
                 {
                     var e = errors.AddNode(error.Message);
                     if (error.File is not null && error.File.EndsWith(".ssc"))
                     {
-                        e.AddNode($"File: [blue]{error.File!.Replace(".ssc", ".cs")}[/]");
+                        e.AddNode($"File: {error.File!.Replace(".ssc", ".cs")}");
                     }
                     else
                     {
-                        e.AddNode($"File: [blue]{error.File ?? ""}[/]");
+                        e.AddNode($"File: {error.File ?? ""}");
                     }
                     if (error.LineSpecified)
                     {
-                        e.AddNode($"Line: [fuchsia]{error.Line}[/]");
+                        e.AddNode($"Line: {error.Line}");
                     }
                     if (error.ColumnSpecified)
                     {
-                        e.AddNode($"Column: [fuchsia]{error.Column}[/]");
+                        e.AddNode($"Column: {error.Column}");
                     }
                     //method.AddNode($"Message: {error.Message}");
                 }
             }
-            method.AddNode($"Duration: [fuchsia]{m.Conclusion.Duration}s[/]");
+            method.AddNode($"Duration: {m.Conclusion.Duration}s");
         }
 
-        var errorCount = results.File.Methods.Where(m => m.Conclusion.Outcome == "errors").Count();
+        var errorCount = results.File.Methods.Where(m => m.Conclusion.Outcome == "errors" && m.Errors is not null && m.Errors.Any() && !m.Errors.All(e => e.Message == "Possible null dereference")).Count();
         if (errorCount == 0)
         {
             Info("Verification succeded for {0} method(s).", methodCount);
