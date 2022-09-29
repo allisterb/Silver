@@ -60,13 +60,13 @@ public class Verifier : Runtime
             if (classPattern is not null && !classPattern.IsMatch(className)) continue;
             if (methodPattern is not null && !methodPattern.IsMatch(methodName)) continue;
 
-            var status = (m.Conclusion.Outcome != "errors" || (m.Errors is not null && m.Errors.Any() && m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer") || e.Message.Contains("method invocation may violate the modifies clause of the enclosing method")))) ? new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "ok" } }) } } : 
+            var status = (m.Conclusion.Outcome != "errors" || (m.Errors is not null && m.Errors.Any() && m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer") || e.Message.Contains("method invocation may violate the modifies clause of the enclosing method") || e.Message == "array reference might be null"))) ? new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "ok" } }) } } : 
                 new Dictionary<string, string>() { { "data-jstree", JsonConvert.SerializeObject(new Dictionary<string, string> { { "type", "error" } }) } };
             var method = methods.AddNode($"{m.Name}", status);
-            if (m.Errors is not null && m.Errors.Any() && !m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer") || e.Message.Contains("method invocation may violate the modifies clause of the enclosing method")))
+            if (m.Errors is not null && m.Errors.Any() && !m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer") || e.Message.Contains("method invocation may violate the modifies clause of the enclosing method") || e.Message == "array reference might be null"))
             {
                 var errors = method.AddNode("Errors");
-                foreach (var error in m.Errors.Where(e => e.Message != "Possible null dereference" && !e.Message.Contains("to be peer") && !e.Message.Contains("method invocation may violate the modifies clause of the enclosing method")))
+                foreach (var error in m.Errors.Where(e => e.Message != "Possible null dereference" && !e.Message.Contains("to be peer") && !e.Message.Contains("method invocation may violate the modifies clause of the enclosing method") && e.Message != "array reference might be null"))
                 {
                     var e = errors.AddNode(error.Message);
                     if (error.File is not null && error.File.EndsWith(".ssc"))
@@ -91,7 +91,7 @@ public class Verifier : Runtime
             method.AddNode($"Duration: {m.Conclusion.Duration}s");
         }
 
-        var errorCount = results.File.Methods.Where(m => m.Conclusion.Outcome == "errors" && m.Errors is not null && m.Errors.Any() && !m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer") || e.Message.Contains("method invocation may violate the modifies clause of the enclosing method"))).Count();
+        var errorCount = results.File.Methods.Where(m => m.Conclusion.Outcome == "errors" && m.Errors is not null && m.Errors.Any() && !m.Errors.All(e => e.Message == "Possible null dereference" || e.Message.Contains("to be peer") || e.Message.Contains("method invocation may violate the modifies clause of the enclosing method") || e.Message == "array reference might be null")).Count();
         if (errorCount == 0)
         {
             Info("Verification succeded for {0} method(s).", methodCount);
