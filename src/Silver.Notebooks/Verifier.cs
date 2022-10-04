@@ -9,27 +9,17 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 using Silver.Compiler;
-using Silver.CodeAnalysis.IL;
 using Silver.Drawing;
-using Silver.Metadata;
 using Silver.Verifier;
-using Silver.Verifier.Models;
+
 public class Verifier : Runtime
 {
     public static TreeDiagram? VerifyCode(string code, string? _classPattern = null, string? _methodPattern = null)
     {
-        var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
-        using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFileNameWithoutExtension(tempFilePath) + ".dll");
-        File.WriteAllText(tempFilePath, code);
-        var sourceFiles = new List<string>() { tempFilePath };
-        var settings = new Dictionary<string, object>
-                {
-                    { "BuildConfig", "Debug" },
-                    { "SourceFiles", sourceFiles }
-                };
-        var proj = new AdhocSilverProject(settings);
+        var proj = SilverProject.GetProjectForCode(code);
+        using var op = Begin("Compiling code to temporary assembly {0}", proj.TargetPath);
         proj.SscCompile(true, false, out var ssc);
-        File.Delete(tempFilePath);
+        proj.AllSourceFiles.ToList().ForEach(f => File.Delete(f));
         if (ssc is not null && ssc.Succeded)
         {
             op.Complete();
@@ -103,24 +93,17 @@ public class Verifier : Runtime
         return new TreeDiagram(tree);
     }
 
-    public static TmHighlightedCode? TranslateCode(string code, string? classname, string? methodname, bool allcode = false)
+    public static TmHighlightedCode? TranslateCode(string code, string? classname = null, string? methodname = null, bool allcode = false)
     {
-        var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
-        using var op = Begin("Compiling code to temporary assembly {0}", Path.GetFullPath(Path.GetFileNameWithoutExtension(tempFilePath) + ".dll"));
-        File.WriteAllText(tempFilePath, code);
-        var sourceFiles = new List<string>() { tempFilePath };
-        var settings = new Dictionary<string, object>
-                {
-                    { "BuildConfig", "Debug" },
-                    { "SourceFiles", sourceFiles }
-                };
-        var proj = new AdhocSilverProject(settings);
+        var proj = SilverProject.GetProjectForCode(code);
+        using var op = Begin("Compiling code to temporary assembly {0}", proj.TargetPath);
         proj.SscCompile(true, false, out var ssc);
-        File.Delete(tempFilePath);
+        proj.AllSourceFiles.ToList().ForEach(f => File.Delete(f));
         if (ssc is not null && ssc.Succeded)
         {
             op.Complete();
             var b = Boogie.Translate(proj.TargetPath, classname, methodname);
+            File.Delete(proj.TargetPath);
             if (b is not null)
             {
                 if (allcode)
@@ -152,4 +135,3 @@ public class Verifier : Runtime
         }
     }
 }
-

@@ -59,8 +59,10 @@ public abstract class SilverProject : Runtime
 
     public List<string> SourceFiles { get; protected set; } = new();
 
-    public List<string>? OriginalSourceFiles { get; protected set; } 
+    public List<string>? OriginalSourceFiles { get; protected set; }
 
+    public IEnumerable<string> AllSourceFiles => SourceFiles.Union(OriginalSourceFiles ?? Enumerable.Empty<string>());
+    
     public string TargetPath { get; protected set; } = string.Empty;
 
     public string? TargetDir { get; protected set; }
@@ -543,6 +545,19 @@ public abstract class SilverProject : Runtime
                 Error("The file {0} has an unrecognized extension. Valid extensions for Spec# projects are {1}, {2}, {3}, and {4}.", f.FullName, ".csproj", ".sscproj", ".cs", ".ssc");
                 return null;
         }
+    }
+
+    public static AdhocSilverProject GetProjectForCode(string code)
+    {
+        var tempFilePath = Path.GetFileNameWithoutExtension(Path.GetTempFileName()) + ".cs";
+        File.WriteAllText(tempFilePath, code);
+        var sourceFiles = new List<string>() { tempFilePath };
+        var settings = new Dictionary<string, object>
+                {
+                    { "BuildConfig", "Debug" },
+                    { "SourceFiles", sourceFiles }
+                };
+        return new AdhocSilverProject(settings);
     }
 
     public static object? GetProperty(string filePath, string buildConfig, string prop, params string[] additionalFiles)
