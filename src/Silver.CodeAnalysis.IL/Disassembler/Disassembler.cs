@@ -6,6 +6,14 @@ using Microsoft.Cci.Contracts;
 using Microsoft.Cci.ILToCodeModel;
 using Microsoft.Cci.MetadataReader;
 
+public enum DisassemblerLang
+{
+    CIL,
+    TAC,
+    CSHARP,
+    BOOGIE,
+}
+
 public class Disassembler : Runtime
 {
     public static void Run(string fileName, ISourceEmitterOutput output, bool noIL = false, string? classPattern = null, string? methodPattern = null, bool colorful = false)
