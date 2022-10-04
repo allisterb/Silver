@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Silver.Graph\Silver.Graph.csproj" />
     <ProjectReference Include="..\Silver.Notebooks\Silver.Notebooks.csproj" />
   </ItemGroup>
 

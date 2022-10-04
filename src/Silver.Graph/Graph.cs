@@ -4,7 +4,6 @@ using Satsuma;
 using MsAglGraph =  Microsoft.Msagl.Drawing.Graph;
 using InternalNode = Satsuma.Node;
 
-
 public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 {
     #region Types
@@ -40,7 +39,7 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
     #region Constructors
     public Graph()
 	{
-		this.graph = new();
+		this.msaglgraph = new();
 
 		nodeAllocator = new NodeAllocator() { Parent = this };
 		arcAllocator = new ArcAllocator() { Parent = this };
@@ -76,27 +75,17 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		nodeArcs_Edge.Clear();
 		nodeArcs_Forward.Clear();
 		nodeArcs_Backward.Clear();
+
+		msaglgraph = new();
 	}
 
 	public InternalNode AddNode()
 	{
-		var id = nodeAllocator.Allocate();
-		InternalNode InternalNode = new InternalNode(id);
+		var id = nodeAllocator.Allocate().ToString();
+		InternalNode InternalNode = new InternalNode(id.GetHashCode());
 		nodes.Add(InternalNode);
-		nodeMap.Add(id, id.ToString());
-		graph.AddNode(id.ToString());
-		return InternalNode;
-	}
-
-	public InternalNode AddNode(InternalNode InternalNode)
-	{
-		if (nodes.Contains(InternalNode))
-		{
-			throw new ArgumentException($"This graph already contains the InternalNode {InternalNode.Id}");
-		}
-		nodes.Add(InternalNode);
-		nodeMap.Add(InternalNode.Id, InternalNode.Id.ToString());
-		graph.AddNode(InternalNode.Id.ToString());
+		nodeMap.Add(id.GetHashCode(), id);
+		msaglgraph.AddNode(id);
 		return InternalNode;
 	}
 
@@ -104,35 +93,46 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 	{
 		nodes.Add(node.InternalNode);
 		nodeMap.Add(node.Id.GetHashCode(), node.Id);
-		graph.AddNode(node.MsAglNode);
+		msaglgraph.AddNode(node.MsAglNode);
 		return node;
 	}
 
-	public Node AddNode(string id) => AddNode(new Node(id));
+	public Node AddNode(string id)
+	{
+		if (HasNode(id))
+		{
+			throw new ArgumentException($"This graph already contains the InternalNode {id}");
+		}
+		var n = new InternalNode(id.GetHashCode());
+		nodes.Add(n);
+		nodeMap.Add(id.GetHashCode(), id);
+		msaglgraph.AddNode(id);
+		return new Node(id);
+	}
 
-	public Node FindNode(string id) => HasNode(id) ? new Node(id, graph.FindNode(id), nodes.Single(n => n.Id == n.Id.GetHashCode())) : throw new ArgumentException($"The node {id} does not exist.");
+	public Node FindNode(string id) => HasNode(id) ? new Node(id, msaglgraph.FindNode(id), nodes.Single(n => n.Id == id.GetHashCode())) : throw new ArgumentException($"The node {id} does not exist.");
 
 	public Graph AddEdge(string src, string tgt, string? label = null)
 	{
-		var u = new InternalNode(src.GetHashCode());
-		var v = new InternalNode(tgt.GetHashCode());
-		if (!this.HasNode(u))
+		if (!this.HasNode(src))
 		{
-			AddNode(u);
+			AddNode(src);
 		}
-		if (!this.HasNode(v))
+		if (!this.HasNode(tgt))
 		{
-			AddNode(v);
+			AddNode(tgt);
 
 		}
+		var u = new InternalNode(src.GetHashCode());
+		var v = new InternalNode(tgt.GetHashCode());
 		AddArc(u, v, Directedness.Directed);
 		if (label is null)
         {
-			graph.AddEdge(src, tgt);
+			msaglgraph.AddEdge(src, tgt);
         }
 		else
         {
-			graph.AddEdge(src, label, tgt);
+			msaglgraph.AddEdge(src, label, tgt);
 		}
 		return this;
 	}
@@ -174,7 +174,7 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 	public bool DeleteNode(InternalNode InternalNode)
 	{
 		if (!nodes.Remove(InternalNode)) return false;
-		graph.RemoveNode(graph.FindNode(nodeMap[InternalNode.Id]));
+		msaglgraph.RemoveNode(msaglgraph.FindNode(nodeMap[InternalNode.Id]));
 		Func<Arc, bool> arcsToRemove = (a => (U(a) == InternalNode || V(a) == InternalNode));
 
 		// remove arcs from nodeArcs_... of other ends of the arcs going from "InternalNode"
@@ -206,7 +206,7 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		if (!arcs.Remove(arc)) return false;
 		ArcProperties p = arcProperties[arc];
 		arcProperties.Remove(arc);
-		graph.RemoveEdge(graph.Edges.Single(e => e.Source == nodeMap[p.U.Id] && e.Target == nodeMap[p.V.Id]));
+		msaglgraph.RemoveEdge(msaglgraph.Edges.Single(e => e.Source == nodeMap[p.U.Id] && e.Target == nodeMap[p.V.Id]));
 
 		Utils.RemoveLast(nodeArcs_All[p.U], arc);
 		Utils.RemoveLast(nodeArcs_Forward[p.U], arc);
@@ -283,9 +283,9 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 		return result;
 	}
 
-	public bool HasNode(InternalNode InternalNode) => nodes.Contains(InternalNode);
+	public bool HasNode(InternalNode InternalNode) => nodeMap.Keys.Contains(InternalNode.Id);
 
-	public bool HasNode(string id) => nodes.Contains(new InternalNode(id.GetHashCode()));
+	public bool HasNode(string id) => nodeMap.Values.Contains(id);
 
 	public bool HasNode(Node node) => HasNode(node.Id);
 	public bool HasArc(Arc arc) => arcs.Contains(arc);
@@ -296,12 +296,12 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
 
 	public MsAglGraph MsAglGraph
     {
-		get => graph;
+		get => msaglgraph;
     }
 	#endregion
 
 	#region Fields
-	private MsAglGraph graph;
+	private MsAglGraph msaglgraph;
 
 	private NodeAllocator nodeAllocator;
 	private ArcAllocator arcAllocator;
