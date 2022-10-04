@@ -292,7 +292,14 @@ public class Graph : IBuildableGraph, IDestroyableGraph, IGraph
     #endregion
 
     #region Properties
-    public string Kind { get; set; }
+    public string Kind 
+	{ 
+		get => msaglgraph.Kind;
+		set
+        {
+			msaglgraph.Kind = value;
+        }
+	}
 
 	public MsAglGraph MsAglGraph
     {
