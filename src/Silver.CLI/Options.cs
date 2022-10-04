@@ -167,6 +167,9 @@ public class DisassemblerOptions : Options
 
     [Option('b', "boogie", Required = false, HelpText = "Translate the assembly CIL to Boogie.")]
     public bool Boogie { get; set; }
+
+    [Option('t', "TAC", Required = false, HelpText = "Translate the assembly CIL to three-address code.")]
+    public bool TAC { get; set; }
 }
 #endregion
 

@@ -131,7 +131,7 @@ class Program : Runtime, IInterface
         #region Disassembler
         .WithParsed<DisassemblerOptions>(o =>
         {
-            ILCmd.Dissassemble(o.File, o.Boogie, o.NoIL, o.ClassPattern, o.MethodPattern);
+            ILCmd.Dissassemble(o);
         })
         #endregion
 

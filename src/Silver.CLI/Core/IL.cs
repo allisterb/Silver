@@ -11,43 +11,54 @@ using Silver.Verifier;
 
 public class IL : Runtime
 {
-    public static bool Disassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
+    public static bool Disassemble(DisassemblerOptions o)
     {
-        var targetAssembly = GetTargetAssembly(FailIfFileNotFound(fileName), boogie);
+        var targetAssembly = GetTargetAssembly(FailIfFileNotFound(o.File), o.Boogie);
         if (targetAssembly is null) return false;
-        if (boogie)
+        if (o.Boogie)
         {
-            var b = Boogie.Translate(targetAssembly, classPattern, methodPattern);
+            var b = Boogie.Translate(targetAssembly, o.ClassPattern, o.MethodPattern);
             if (b is null)
             {
                 return false;
             }
             else
             {
-                var o = new StringBuilder();
+                var output = new StringBuilder();
                 foreach(var l in b.Split(Environment.NewLine))
                 {
                     if (!string.IsNullOrEmpty(l) && !l.StartsWith("type") && !l.StartsWith("const") && !l.StartsWith("function") && !l.StartsWith("axiom"))
                     {
-                        o.AppendLine(l);
+                        output.AppendLine(l);
                     }
                 }
                 System.Console.WriteLine(o.ToString());
                 return true;
             }
         }
+        else if (o.TAC)
+        {
+            var a = IL.GetTargetAssembly(o.File);
+            var an = new Analyzer(a);
+            var mbs = an.GetMethodBodies();
+            foreach (var m in mbs.Values)
+            {
+                Console.WriteLine(m.ToString());
+            }
+            return true;
+        }
         else
         {
             if (InteractiveConsole)
             {
                 var output = new ColorfulConsoleSourceEmitterOutput();
-                Disassembler.Run(targetAssembly, output, noIL, classPattern, methodPattern, true);
+                Disassembler.Run(targetAssembly, output, o.NoIL, o.ClassPattern, o.MethodPattern, true);
                 return true;
             }
             else
             {
                 var output = new CSharpSourceEmitter.SourceEmitterOutputString();
-                Disassembler.Run(targetAssembly, output, noIL, classPattern, methodPattern);
+                Disassembler.Run(targetAssembly, output, o.NoIL, o.ClassPattern, o.MethodPattern);
                 System.Console.WriteLine(output.Data);
                 return true;
             }

@@ -205,6 +205,27 @@ public partial class Analyzer : Runtime
         return g;
     }
 
+    public ClassHierarchyAnalysis GetClassHierarchyAnalysis()
+    {
+        using var op = Begin("Analyzing class hierachy");
+        var cha = new ClassHierarchyAnalysis(this.Host);
+        cha.Analyze();
+        op.Complete();
+        return cha;
+    }
+
+    public Dictionary<IMethodDefinition, MethodBody> GetMethodBodies()
+    {
+        FailIfNotInitialized();
+        var methods = CollectMethods();
+        var ret = new Dictionary<IMethodDefinition, MethodBody>();
+        foreach (var m in methods)
+        {
+            ret[m] = MethodBodyProvider.Instance.GetBody(m);
+        }
+        return ret;
+        
+    }
     #region Collecters
     internal ITypeDefinition[] CollectTypes(string name, Func<ITypeDefinition, bool> pred, Func<ITypeDefinition, ITypeDefinition> func)
     {
@@ -280,15 +301,6 @@ public partial class Analyzer : Runtime
         var visitor = new MethodVisitor(action, State);
         visitor.Traverse(Module);
         return visitor.state;
-    }
-
-    public ClassHierarchyAnalysis GetClassHierarchyAnalysis()
-    {
-        using var op = Begin("Analyzing class hierachy");
-        var cha = new ClassHierarchyAnalysis(this.Host);
-        cha.Analyze();
-        op.Complete();
-        return cha;
     }
 
     public static void Test(string fileName)

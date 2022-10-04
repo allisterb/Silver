@@ -6,10 +6,10 @@ using Silver.CLI.Core;
 using static Program;
 internal class ILCmd : Command
 {
-    internal static void Dissassemble(string fileName, bool boogie, bool noIL, string? classPattern = null, string? methodPattern = null)
+    internal static void Dissassemble(DisassemblerOptions o)
     {
-        ExitIfFileNotFound(fileName);
-        if (!IL.Disassemble(fileName, boogie, noIL, classPattern, methodPattern))
+        ExitIfFileNotFound(o.File);
+        if (!IL.Disassemble(o))
         {
             Exit(ExitResult.ERROR_IN_RESULTS);
         }
