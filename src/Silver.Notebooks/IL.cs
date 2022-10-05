@@ -78,9 +78,34 @@ public class IL : Runtime
         else return an;
     }
 
-    public static HighlightedCode? DisassembleCode(string code)
+    public static PrismHighlightedCode? DisassembleCode(string code)
     {
-        return null;
+        var proj = SilverProject.GetProjectForCode(code);
+        using var op = Begin("Compiling code to temporary assembly {0}", proj.TargetPath);
+        var r =  proj.SscCompile(true, false, out var ssc);
+        proj.AllSourceFiles.ToList().ForEach(f => File.Delete(f));
+        if (r)
+        {
+            op.Complete();
+            var sb = new StringBuilder();
+            var an = GetAnalyzer(proj.TargetPath);
+            if (an is null)
+            {
+                Error("Could not get analyzer for assembly {0}.", proj.TargetPath);
+                return null;
+            }
+            var mbs = an.GetMethodBodies();
+            foreach(var m in mbs.Values)
+            {
+                sb.AppendLine(m.ToString());
+            }
+            File.Delete(proj.TargetPath);
+            return new PrismHighlightedCode("csharp", sb.ToString());
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public static MermaidLanguage Draw(Summary summary)

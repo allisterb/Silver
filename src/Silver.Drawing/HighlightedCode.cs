@@ -62,9 +62,9 @@ public class PrismHighlightedCode : HighlightedCode
     public override string Draw(string id)
     {
         var html = new StringBuilder();
-        html.AppendLine($"<code id=\"{id}\" class=\"language-{Lang}\">");
+        html.AppendLine($"<div id=\"{id}\" class=\"language-{Lang}\">");
         html.AppendLine(Code);
-        html.Append("</code>");
+        html.Append("</div>");
         return html.ToString();
     }
     #endregion

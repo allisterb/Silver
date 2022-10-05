@@ -50,7 +50,7 @@ public class HighlightedCodeFormatter : Runtime
         {
             var h = new HtmlString(t.Draw(Guid.NewGuid().ToString("N")));
             h.WriteTo(writer, HtmlEncoder.Default);
-            var s = $@"<script>(require.config({{ 'paths': {{ 'prismjs' : 'https://unpkg.com/prismjs@1.29.0/prism.js' }}}}) || require)(['jstree'], (jstree) => {{$('#{h}').jstree();}});</script>";
+            //var s = $@"<script>(require.config({{ 'paths': {{ 'prismjs' : 'https://unpkg.com/prismjs@1.29.0/prism.js' }}}}) || require)(['jstree'], (jstree) => {{$('#{h}').jstree();}});</script>";
         }, HtmlFormatter.MimeType);
 
         Kernel.Current.SendAsync(new DisplayValue(new FormattedValue("text/markdown", $"Added formatter for highlighted code using Shiki and PrismJS to .NET Interactive kernel {Kernel.Current.Name}.")));
